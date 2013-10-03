@@ -30,6 +30,16 @@ LayDown.prototype.resizeAndPosition = function( x, y, width, height ) {
 	this.height = height;
 	this.width = width;
 
+	this.doLayout();
+};
+
+LayDown.prototype.nodeChanged = function( node ) {
+
+	this.doLayout();
+};
+
+LayDown.prototype.doLayout = function() {
+
 	//we need to reset all the hasBeenLayedOut
 	for( var i = 0, len = this.nodes.length; i < len; i++ ) {
 

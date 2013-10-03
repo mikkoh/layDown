@@ -1,321 +1,5 @@
 /************************************************************/
 /************************************************************/
-/********************POSITION FUNCTIONS**********************/
-/************************************************************/
-/************************************************************/
-function positionIs( x, y ) {
-
-	this.x += x;
-	this.y += y;
-}
-
-function xIs( x ) {
-
-	this.x += x;
-}
-
-function yIs( y ) {
-
-	this.y += y;
-}
-
-function alignedBelow( item ) {
-
-	this.y += item.y + item.height;
-}
-
-function alignedAbove( item ) {
-
-	this.y += item.y - this.height;
-}
-
-function alignedLeftOf( item ) {
-
-	this.x += item.x - this.width;
-}
-
-function alignedRightOf( item ) {
-
-	this.x += item.x + item.width;
-}
-
-function alignedWith( item ) {
-
-	this.x += item.x;
-	this.y += item.y;
-}
-
-function leftAlignedWith( item ) {
-
-	this.x += item.x;
-}
-
-function rightAlignedWith( item ) {
-
-	this.x += item.x + item.x - this.width;
-}
-
-function topAlignedWith( item ) {
-
-	this.y += item.y;
-}
-
-function bottomAlignedWith( item ) {
-
-	this.y += item.y + item.height - this.height;
-}
-
-function horizonallyCenteredWith( item ) {
-
-	this.x += item.x + ( item.width - this.width ) * 0.5;
-}
-
-function verticallyCenteredWith( item ) {
-
-	this.y += item.y + ( item.height - this.height ) * 0.5;
-}
-
-
-/************************************************************/
-/************************************************************/
-/**********************SIZE FUNCTIONS************************/
-/************************************************************/
-/************************************************************/
-function sizeIs( width, height ) {
-
-	this.width += width;
-	this.height += height;
-}
-
-function widthIs( width ) {
-
-	this.width += width;
-}
-
-function heightIs( height ) {
-
-	this.height += height;
-}
-
-function sizeIsProportional( originalWidth, originalHeight ) {
-
-	if( this.width == 0 ) {
-
-		this.width += this.height / originalHeight * originalWidth;
-	} else if( this.height == 0 ) {
-
-		this.height += this.width / originalWidth * originalHeight;
-	}
-}
-
-function widthIsProportional( originalWidth, originalHeight ) {
-
-	this.width += this.height / originalHeight * originalWidth;
-}
-
-function heightIsProportional( originalWidth, originalHeight ) {
-
-	this.height += this.width / originalWidth * originalHeight;
-}
-
-function matchesSizeOf( item ) {
-
-	this.width += item.width;
-	this.height += item.height;
-}
-
-function matchesWidthOf( item ) {
-
-	this.width += item.width;
-}
-
-function matchesHeightOf( item ) {
-
-	this.height += item.height;
-}
-
-function sizeIsAPercentageOf( item, percentage ) {
-
-	this.width += item.width * percentage;	
-	this.height += item.height * percentage;
-}
-
-function widthIsAPercentageOf( item, percentage ) {
-
-	this.width += item.width * percentage;
-}
-
-function heightIsAPercentageOf( item, percentage ) {
-
-	this.height += item.height * percentage;
-}
-
-
-/************************************************************/
-/************************************************************/
-/*********************OFFSET FUNCTIONS***********************/
-/************************************************************/
-/************************************************************/
-function plusSize( amount ) {
-
-	this.width += amount;
-	this.height += amount;
-}
-
-function minusSize( amount ) {
-
-	this.width -= amount;
-	this.height -= amount;
-}
-
-function minSize( amount ) {
-
-	this.width = Math.max( amount, this.width );
-	this.height = Math.max( amount, this.height );
-}
-
-function maxSize( amount ) {
-
-	this.width = Math.min( amount, this.width );
-	this.height = Math.min( amount, this.height );
-}
-
-
-
-
-function plusWidth( amount ) {
-
-	this.width += amount;
-}
-
-function minusWidth( amount ) {
-
-	this.width -= amount;
-}
-
-function minWidth( amount ) {
-
-	this.width = Math.max( amount, this.width );
-}
-
-function maxWidth( amount ) {
-
-	this.width = Math.min( amount, this.width );
-}
-
-
-
-
-function plusHeight( amount ) {
-
-	this.height += amount;
-}
-
-function minusHeight( amount ) {
-
-	this.height -= amount;
-}
-
-function minHeight( amount ) {
-
-	this.height = Math.max( amount, this.height );
-}
-
-function maxHeight( amount ) {
-
-	this.height = Math.min( amount, this.height );
-}
-
-
-
-
-function plusPosition( amount ) {
-
-	this.x += amount;
-	this.y += amount;
-}
-
-function minusPosition( amount ) {
-
-	this.x -= amount;
-	this.y -= amount;
-}
-
-function minPosition( amount ) {
-
-	this.x = Math.max( amount, this.x );
-	this.y = Math.max( amount, this.y );
-}
-
-function maxPosition( amount ) {
-
-	this.x = Math.min( amount, this.x );
-	this.y = Math.min( amount, this.y );
-}
-
-
-
-
-function plusX( amount ) {
-
-	this.x += amount;
-}
-
-function minusX( amount ) {
-
-	this.x -= amount;
-}
-
-function minX( amount ) {
-
-	this.x = Math.max( amount, this.x );
-}
-
-function maxX( amount ) {
-
-	this.x = Math.min( amount, this.x );
-}
-
-
-
-function plusY( amount ) {
-
-	this.y += amount;
-}
-
-function minusY( amount ) {
-
-	this.y -= amount;
-}
-
-function minY( amount ) {
-
-	this.y = Math.max( amount, this.y );
-}
-
-function maxY( amount ) {
-
-	this.y = Math.min( amount, this.y );
-}
-
-
-
-
-function addRule( rule, ruleArguments, ruleArr, rulePropArr, type ) {
-
-	ruleArr.push( rule );
-	rulePropArr.push( ruleArguments );
-
-	this.lastPropTypeEffected = type;
-}
-
-
-
-
-
-
-/************************************************************/
-/************************************************************/
 /**********************PROPS TO EFFECT***********************/
 /************************************************************/
 /************************************************************/
@@ -346,10 +30,10 @@ var LayoutNode = function( layout, item, layoutFunction ) {
 };
 
 
-LayoutNode.prototype.x = 0;
-LayoutNode.prototype.y = 0;
-LayoutNode.prototype.width = 0;
-LayoutNode.prototype.height = 0;
+LayoutNode.prototype._x = 0;
+LayoutNode.prototype._y = 0;
+LayoutNode.prototype._width = 0;
+LayoutNode.prototype._height = 0;
 LayoutNode.prototype.layout = null;
 LayoutNode.prototype.item = null;
 LayoutNode.prototype.layoutFunction = null;
@@ -365,9 +49,86 @@ LayoutNode.prototype.rulesPosBoundProp = null;
 LayoutNode.prototype.rulesSizeBound = null;
 LayoutNode.prototype.rulesSizeBoundProp = null;
 
+Object.defineProperty( LayoutNode.prototype, 'x', {
+
+	get: function() {
+
+		return this._x;
+	},
+
+	set: function( value ) {
+
+		this.lastPropTypeEffected = POSITION_X;
+		this.plus( value - this._x );
+
+		if( this.hasBeenLayedOut ) {
+			
+			this.layout.nodeChanged( this );
+		}
+	}
+});
+
+Object.defineProperty( LayoutNode.prototype, 'y', {
+
+	get: function() {
+
+		return this._y;
+	},
+
+	set: function( value ) {
+
+		this.lastPropTypeEffected = POSITION_Y;
+		this.plus( value - this._y );
+
+		if( this.hasBeenLayedOut ) {
+			
+			this.layout.nodeChanged( this );
+		}
+	}
+});
+
+Object.defineProperty( LayoutNode.prototype, 'width', {
+
+	get: function() {
+
+		return this._width;
+	},
+
+	set: function( value ) {
+
+		this.lastPropTypeEffected = SIZE_WIDTH;
+		this.plus( value - this._width );
+
+		if( this.hasBeenLayedOut ) {
+			
+			this.layout.nodeChanged( this );
+		}
+	}
+});
+
+Object.defineProperty( LayoutNode.prototype, 'height', {
+
+	get: function() {
+
+		return this._height;
+	},
+
+	set: function( value ) {
+
+		this.lastPropTypeEffected = SIZE_HEIGHT;
+		this.plus( value - this._height );
+
+		if( this.hasBeenLayedOut ) {
+			
+			this.layout.nodeChanged( this );
+		}
+	}
+});
+
+
 LayoutNode.prototype.doLayout = function() {
 
-	this.x = this.y = this.width = this.height = 0;
+	this._x = this._y = this._width = this._height = 0;
 
 	for( var i = 0, len = this.dependencies.length; i < len; i++ ) {
 
@@ -405,6 +166,8 @@ LayoutNode.prototype.doLayout = function() {
 LayoutNode.prototype.setLayoutFunction = function( layoutFunction ) {
 
 	this.layoutFunction = layoutFunction;
+
+	return this;
 };
 
 LayoutNode.prototype.addDependency = function( item ) {
@@ -413,6 +176,8 @@ LayoutNode.prototype.addDependency = function( item ) {
 		
 		this.dependencies.push( item );
 	}
+
+	return this;
 };
 
 
@@ -521,6 +286,15 @@ LayoutNode.prototype.bottomAlignedWith = function( item ) {
 
 	this.addDependency( item );
 	
+	return this;
+};
+
+LayoutNode.prototype.centeredWith = function( item ) {
+
+	addRule.call( this, centeredWith, arguments, this.rulesPos, this.rulesPosProp, POSITION );
+
+	this.addDependency( item );
+
 	return this;
 };
 
@@ -782,6 +556,333 @@ LayoutNode.prototype.max = function() {
 
 	return this;
 };
+
+
+
+
+
+
+
+
+
+
+
+/************************************************************/
+/************************************************************/
+/********************POSITION FUNCTIONS**********************/
+/************************************************************/
+/************************************************************/
+function positionIs( x, y ) {
+
+	this._x += x;
+	this._y += y;
+}
+
+function xIs( x ) {
+
+	this._x += x;
+}
+
+function yIs( y ) {
+
+	this._y += y;
+}
+
+function alignedBelow( item ) {
+
+	this._y += item.y + item.height;
+}
+
+function alignedAbove( item ) {
+
+	this._y += item.y - this._height;
+}
+
+function alignedLeftOf( item ) {
+
+	this._x += item.x - this._width;
+}
+
+function alignedRightOf( item ) {
+
+	this._x += item.x + item.width;
+}
+
+function alignedWith( item ) {
+
+	this._x += item.x;
+	this._y += item.y;
+}
+
+function leftAlignedWith( item ) {
+
+	this._x += item.x;
+}
+
+function rightAlignedWith( item ) {
+
+	this._x += item.x + item.x - this._width;
+}
+
+function topAlignedWith( item ) {
+
+	this._y += item.y;
+}
+
+function bottomAlignedWith( item ) {
+
+	this._y += item.y + item.height - this._height;
+}
+
+function centeredWith( item ) {
+
+	this._x += item.x + ( item.width - this._width ) * 0.5;	
+	this._y += item.y + ( item.height - this._height ) * 0.5;
+}
+
+function horizonallyCenteredWith( item ) {
+
+	this._x += item.x + ( item.width - this._width ) * 0.5;
+}
+
+function verticallyCenteredWith( item ) {
+
+	this._y += item.y + ( item.height - this._height ) * 0.5;
+}
+
+
+/************************************************************/
+/************************************************************/
+/**********************SIZE FUNCTIONS************************/
+/************************************************************/
+/************************************************************/
+function sizeIs( width, height ) {
+
+	this._width += width;
+	this._height += height;
+}
+
+function widthIs( width ) {
+
+	this._width += width;
+}
+
+function heightIs( height ) {
+
+	this._height += height;
+}
+
+function sizeIsProportional( originalWidth, originalHeight ) {
+
+	if( this._width == 0 ) {
+
+		this._width += this._height / originalHeight * originalWidth;
+	} else if( this._height == 0 ) {
+
+		this._height += this._width / originalWidth * originalHeight;
+	}
+}
+
+function widthIsProportional( originalWidth, originalHeight ) {
+
+	this._width += this._height / originalHeight * originalWidth;
+}
+
+function heightIsProportional( originalWidth, originalHeight ) {
+
+	this._height += this._width / originalWidth * originalHeight;
+}
+
+function matchesSizeOf( item ) {
+
+	this._width += item.width;
+	this._height += item.height;
+}
+
+function matchesWidthOf( item ) {
+
+	this._width += item.width;
+}
+
+function matchesHeightOf( item ) {
+
+	this._height += item.height;
+}
+
+function sizeIsAPercentageOf( item, percentage ) {
+
+	this._width += item.width * percentage;	
+	this._height += item.height * percentage;
+}
+
+function widthIsAPercentageOf( item, percentage ) {
+
+	this._width += item.width * percentage;
+}
+
+function heightIsAPercentageOf( item, percentage ) {
+
+	this._height += item.height * percentage;
+}
+
+
+/************************************************************/
+/************************************************************/
+/*********************OFFSET FUNCTIONS***********************/
+/************************************************************/
+/************************************************************/
+function plusSize( amount ) {
+
+	this._width += amount;
+	this._height += amount;
+}
+
+function minusSize( amount ) {
+
+	this._width -= amount;
+	this._height -= amount;
+}
+
+function minSize( amount ) {
+
+	this._width = Math.max( amount, this._width );
+	this._height = Math.max( amount, this._height );
+}
+
+function maxSize( amount ) {
+
+	this._width = Math.min( amount, this._width );
+	this._height = Math.min( amount, this._height );
+}
+
+
+
+
+function plusWidth( amount ) {
+
+	this._width += amount;
+}
+
+function minusWidth( amount ) {
+
+	this._width -= amount;
+}
+
+function minWidth( amount ) {
+
+	this._width = Math.max( amount, this._width );
+}
+
+function maxWidth( amount ) {
+
+	this._width = Math.min( amount, this._width );
+}
+
+
+
+
+function plusHeight( amount ) {
+
+	this._height += amount;
+}
+
+function minusHeight( amount ) {
+
+	this._height -= amount;
+}
+
+function minHeight( amount ) {
+
+	this._height = Math.max( amount, this._height );
+}
+
+function maxHeight( amount ) {
+
+	this._height = Math.min( amount, this._height );
+}
+
+
+
+
+function plusPosition( amount ) {
+
+	this._x += amount;
+	this._y += amount;
+}
+
+function minusPosition( amount ) {
+
+	this._x -= amount;
+	this._y -= amount;
+}
+
+function minPosition( amount ) {
+
+	this._x = Math.max( amount, this._x );
+	this._y = Math.max( amount, this._y );
+}
+
+function maxPosition( amount ) {
+
+	this._x = Math.min( amount, this._x );
+	this._y = Math.min( amount, this._y );
+}
+
+
+
+
+function plusX( amount ) {
+
+	this._x += amount;
+}
+
+function minusX( amount ) {
+
+	this._x -= amount;
+}
+
+function minX( amount ) {
+
+	this._x = Math.max( amount, this._x );
+}
+
+function maxX( amount ) {
+
+	this._x = Math.min( amount, this._x );
+}
+
+
+
+function plusY( amount ) {
+
+	this._y += amount;
+}
+
+function minusY( amount ) {
+
+	this._y -= amount;
+}
+
+function minY( amount ) {
+
+	this._y = Math.max( amount, this._y );
+}
+
+function maxY( amount ) {
+
+	this._y = Math.min( amount, this._y );
+}
+
+
+
+
+function addRule( rule, ruleArguments, ruleArr, rulePropArr, type ) {
+
+	ruleArr.push( rule );
+	rulePropArr.push( ruleArguments );
+
+	this.lastPropTypeEffected = type;
+}
 
 
 
