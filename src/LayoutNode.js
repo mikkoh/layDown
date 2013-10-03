@@ -149,8 +149,6 @@ LayoutNode.prototype.doLayout = function() {
 		this.rulesSize[ i ].apply( this, this.rulesSizeProp[ i ] );
 	}
 
-	console.log( this.x, this.y, this.layout.width, this.layout.height );
-
 	this._width += this._offWidth;
 	this._height += this._offHeight;
 
@@ -656,7 +654,7 @@ function leftAlignedWith( item ) {
 
 function rightAlignedWith( item ) {
 
-	this._x += item.x + item.x - this._width;
+	this._x += item.x + item.width - this._width;
 }
 
 function topAlignedWith( item ) {
