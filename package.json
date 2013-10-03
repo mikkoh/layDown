@@ -1,0 +1,13 @@
+{
+  "name": "layDown",
+  "version": "0.0.1",
+  "author": "Mikko Haapoja <me@mikkoh.com>",
+  "description": "layDown is a layout framework that is very flexible.",
+  "contributors": [],
+  "dependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-browserify": "~1.2.8",
+    "browserify": "~2.33.1"
+  }
+}
