@@ -142,30 +142,40 @@ LayoutNode.prototype.doLayout = function() {
 		}
 	}	
 
+
+	//HANDLE SIZE
 	for( var i = 0, len = this.rulesSize.length; i < len; i++ ) {
 
 		this.rulesSize[ i ].apply( this, this.rulesSizeProp[ i ] );
 	}
+
+	console.log( this.x, this.y, this.layout.width, this.layout.height );
+
+	this._width += this._offWidth;
+	this._height += this._offHeight;
 
 	for( var i = 0, len = this.rulesSizeBound.length; i < len; i++ ) {
 
 		this.rulesSizeBound[ i ].apply( this, this.rulesPosBoundProp[ i ] );
 	}
 
+
+	//HANDLE POSITION
 	for( var i = 0, len = this.rulesPos.length; i < len; i++ ) {
 
 		this.rulesPos[ i ].apply( this, this.rulesPosProp[ i ] );
 	}
+
+	this._x += this._offX;
+	this._y += this._offY;
 
 	for( var i = 0, len = this.rulesPosBound.length; i < len; i++ ) {
 
 		this.rulesPosBound[ i ].apply( this, this.rulesPosBoundProp[ i ] );
 	}
 
-	this._x += this._offX;
-	this._y += this._offY;
-	this._width += this._offWidth;
-	this._height += this._offHeight;
+	
+	
 
 	this.layoutFunction( this.item, this );
 
@@ -445,7 +455,7 @@ LayoutNode.prototype.plus = function() {
 		case SIZE:
 			this.lastPropTypeEffected = SIZE;
 			this._offWidth += arguments[ 0 ];
-			this._offHeight += arguments[ 1 ];
+			this._offHeight += arguments[ 0 ];
 		break;
 
 		case SIZE_WIDTH:
@@ -461,7 +471,7 @@ LayoutNode.prototype.plus = function() {
 		case POSITION:
 			this.lastPropTypeEffected = POSITION;
 			this._offX += arguments[ 0 ];
-			this._offY += arguments[ 1 ];
+			this._offY += arguments[ 0 ];
 		break;
 
 		case POSITION_X:
@@ -485,7 +495,7 @@ LayoutNode.prototype.minus = function() {
 		case SIZE:
 			this.lastPropTypeEffected = SIZE;
 			this._offWidth -= arguments[ 0 ];
-			this._offHeight -= arguments[ 1 ];
+			this._offHeight -= arguments[ 0 ];
 		break;
 
 		case SIZE_WIDTH:
@@ -501,7 +511,7 @@ LayoutNode.prototype.minus = function() {
 		case POSITION:
 			this.lastPropTypeEffected = POSITION;
 			this._offX -= arguments[ 0 ];
-			this._offY -= arguments[ 1 ];
+			this._offY -= arguments[ 0 ];
 		break;
 
 		case POSITION_X:
