@@ -34,6 +34,10 @@ LayoutNode.prototype._x = 0;
 LayoutNode.prototype._y = 0;
 LayoutNode.prototype._width = 0;
 LayoutNode.prototype._height = 0;
+LayoutNode.prototype._offX = 0;
+LayoutNode.prototype._offY = 0;
+LayoutNode.prototype._offWidth = 0;
+LayoutNode.prototype._offHeight = 0;
 LayoutNode.prototype.layout = null;
 LayoutNode.prototype.item = null;
 LayoutNode.prototype.layoutFunction = null;
@@ -81,7 +85,7 @@ Object.defineProperty( LayoutNode.prototype, 'y', {
 		this.plus( value - this._y );
 
 		if( this.hasBeenLayedOut ) {
-			
+
 			this.layout.nodeChanged( this );
 		}
 	}
@@ -157,6 +161,11 @@ LayoutNode.prototype.doLayout = function() {
 
 		this.rulesPosBound[ i ].apply( this, this.rulesPosBoundProp[ i ] );
 	}
+
+	this._x += this._offX;
+	this._y += this._offY;
+	this._width += this._offWidth;
+	this._height += this._offHeight;
 
 	this.layoutFunction( this.item, this );
 
@@ -434,27 +443,35 @@ LayoutNode.prototype.plus = function() {
 	switch( this.lastPropTypeEffected ) {
 
 		case SIZE:
-			addRule.call( this, plusSize, arguments, this.rulesSize, this.rulesSizeProp, SIZE );
+			this.lastPropTypeEffected = SIZE;
+			this._offWidth += arguments[ 0 ];
+			this._offHeight += arguments[ 1 ];
 		break;
 
 		case SIZE_WIDTH:
-			addRule.call( this, plusWidth, arguments, this.rulesSize, this.rulesSizeProp, SIZE_WIDTH );
+			this.lastPropTypeEffected = SIZE_WIDTH;
+			this._offWidth += arguments[ 0 ];
 		break;
 
 		case SIZE_HEIGHT:
-			addRule.call( this, plusHeight, arguments, this.rulesSize, this.rulesSizeProp, SIZE_HEIGHT );
+			this.lastPropTypeEffected = SIZE_HEIGHT;
+			this._offHeight += arguments[ 0 ];
 		break;
 
 		case POSITION:
-			addRule.call( this, plusPosition, arguments, this.rulesPos, this.rulesPosProp, POSITION );
+			this.lastPropTypeEffected = POSITION;
+			this._offX += arguments[ 0 ];
+			this._offY += arguments[ 1 ];
 		break;
 
 		case POSITION_X:
-			addRule.call( this, plusX, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
+			this.lastPropTypeEffected = POSITION_X;
+			this._offX += arguments[ 0 ];
 		break;
 
 		case POSITION_Y:
-			addRule.call( this, plusY, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
+			athis.lastPropTypeEffected = POSITION_Y;
+			this._offY += arguments[ 0 ];
 		break;
 	}
 
@@ -466,27 +483,35 @@ LayoutNode.prototype.minus = function() {
 	switch( this.lastPropTypeEffected ) {
 
 		case SIZE:
-			addRule.call( this, minusSize, arguments, this.rulesSize, this.rulesSizeProp, SIZE );
+			this.lastPropTypeEffected = SIZE;
+			this._offWidth -= arguments[ 0 ];
+			this._offHeight -= arguments[ 1 ];
 		break;
 
 		case SIZE_WIDTH:
-			addRule.call( this, minusWidth, arguments, this.rulesSize, this.rulesSizeProp, SIZE_WIDTH );
+			this.lastPropTypeEffected = SIZE_WIDTH;
+			this._offWidth -= arguments[ 0 ];
 		break;
 
 		case SIZE_HEIGHT:
-			addRule.call( this, minusHeight, arguments, this.rulesSize, this.rulesSizeProp, SIZE_HEIGHT );
+			this.lastPropTypeEffected = SIZE_HEIGHT;
+			this._offHeight -= arguments[ 0 ];
 		break;
 
 		case POSITION:
-			addRule.call( this, minusPosition, arguments, this.rulesPos, this.rulesPosProp, POSITION );
+			this.lastPropTypeEffected = POSITION;
+			this._offX -= arguments[ 0 ];
+			this._offY -= arguments[ 1 ];
 		break;
 
 		case POSITION_X:
-			addRule.call( this, minusX, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
+			this.lastPropTypeEffected = POSITION_X;
+			this._offX -= arguments[ 0 ];
 		break;
 
 		case POSITION_Y:
-			addRule.call( this, minusY, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
+			athis.lastPropTypeEffected = POSITION_Y;
+			this._offY -= arguments[ 0 ];
 		break;
 	}
 
@@ -726,152 +751,7 @@ function heightIsAPercentageOf( item, percentage ) {
 }
 
 
-/************************************************************/
-/************************************************************/
-/*********************OFFSET FUNCTIONS***********************/
-/************************************************************/
-/************************************************************/
-function plusSize( amount ) {
 
-	this._width += amount;
-	this._height += amount;
-}
-
-function minusSize( amount ) {
-
-	this._width -= amount;
-	this._height -= amount;
-}
-
-function minSize( amount ) {
-
-	this._width = Math.max( amount, this._width );
-	this._height = Math.max( amount, this._height );
-}
-
-function maxSize( amount ) {
-
-	this._width = Math.min( amount, this._width );
-	this._height = Math.min( amount, this._height );
-}
-
-
-
-
-function plusWidth( amount ) {
-
-	this._width += amount;
-}
-
-function minusWidth( amount ) {
-
-	this._width -= amount;
-}
-
-function minWidth( amount ) {
-
-	this._width = Math.max( amount, this._width );
-}
-
-function maxWidth( amount ) {
-
-	this._width = Math.min( amount, this._width );
-}
-
-
-
-
-function plusHeight( amount ) {
-
-	this._height += amount;
-}
-
-function minusHeight( amount ) {
-
-	this._height -= amount;
-}
-
-function minHeight( amount ) {
-
-	this._height = Math.max( amount, this._height );
-}
-
-function maxHeight( amount ) {
-
-	this._height = Math.min( amount, this._height );
-}
-
-
-
-
-function plusPosition( amount ) {
-
-	this._x += amount;
-	this._y += amount;
-}
-
-function minusPosition( amount ) {
-
-	this._x -= amount;
-	this._y -= amount;
-}
-
-function minPosition( amount ) {
-
-	this._x = Math.max( amount, this._x );
-	this._y = Math.max( amount, this._y );
-}
-
-function maxPosition( amount ) {
-
-	this._x = Math.min( amount, this._x );
-	this._y = Math.min( amount, this._y );
-}
-
-
-
-
-function plusX( amount ) {
-
-	this._x += amount;
-}
-
-function minusX( amount ) {
-
-	this._x -= amount;
-}
-
-function minX( amount ) {
-
-	this._x = Math.max( amount, this._x );
-}
-
-function maxX( amount ) {
-
-	this._x = Math.min( amount, this._x );
-}
-
-
-
-function plusY( amount ) {
-
-	this._y += amount;
-}
-
-function minusY( amount ) {
-
-	this._y -= amount;
-}
-
-function minY( amount ) {
-
-	this._y = Math.max( amount, this._y );
-}
-
-function maxY( amount ) {
-
-	this._y = Math.min( amount, this._y );
-}
 
 
 

@@ -30,4 +30,4 @@ layout.resizeAndPosition( 0, 0, 500, 500 );
 
 console.log( 'LAYDOWN', layout.width, layout.height );
 
-node4.height += 10;
+node4.x += 10;
