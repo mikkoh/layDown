@@ -334,6 +334,7 @@ var LayoutNode = function( layout, item, layoutFunction ) {
 	this.layout = layout;
 	this.item = item;
 	this.layoutFunction = layoutFunction;
+	this.dependencies = [];
 	this.rulesPos = [];
 	this.rulesPosProp = [];
 	this.rulesSize = [];
@@ -353,6 +354,8 @@ LayoutNode.prototype.layout = null;
 LayoutNode.prototype.item = null;
 LayoutNode.prototype.layoutFunction = null;
 LayoutNode.prototype.lastPropTypeEffected = null;
+LayoutNode.prototype.dependencies = null;
+LayoutNode.prototype.hasBeenLayedOut = false;
 LayoutNode.prototype.rulesPos = null;
 LayoutNode.prototype.rulesPosProp = null;
 LayoutNode.prototype.rulesSize = null;
@@ -365,6 +368,14 @@ LayoutNode.prototype.rulesSizeBoundProp = null;
 LayoutNode.prototype.doLayout = function() {
 
 	this.x = this.y = this.width = this.height = 0;
+
+	for( var i = 0, len = this.dependencies.length; i < len; i++ ) {
+
+		if( !this.dependencies[ i ].hasBeenLayedOut ) {
+
+			this.dependencies[ i ].doLayout();
+		}
+	}	
 
 	for( var i = 0, len = this.rulesSize.length; i < len; i++ ) {
 
@@ -387,11 +398,18 @@ LayoutNode.prototype.doLayout = function() {
 	}
 
 	this.layoutFunction( this.item, this );
+
+	this.hasBeenLayedOut = true;
 };
 
 LayoutNode.prototype.setLayoutFunction = function( layoutFunction ) {
 
 	this.layoutFunction = layoutFunction;
+};
+
+LayoutNode.prototype.addDependency = function( item ) {
+
+	this.dependencies.push( item );
 };
 
 
@@ -426,12 +444,16 @@ LayoutNode.prototype.alignedBelow = function( item ) {
 
 	addRule.call( this, alignedBelow, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
 
+	this.addDependency( item );
+
 	return this;
 };
 
 LayoutNode.prototype.alignedAbove = function( item ) {
 
 	addRule.call( this, alignedAbove, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
+
+	this.addDependency( item );
 	
 	return this;
 };
@@ -439,6 +461,8 @@ LayoutNode.prototype.alignedAbove = function( item ) {
 LayoutNode.prototype.alignedLeftOf = function( item ) {
 
 	addRule.call( this, alignedLeftOf, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
+
+	this.addDependency( item );
 	
 	return this;
 };
@@ -446,6 +470,8 @@ LayoutNode.prototype.alignedLeftOf = function( item ) {
 LayoutNode.prototype.alignedRightOf = function( item ) {
 
 	addRule.call( this, alignedRightOf, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
+
+	this.addDependency( item );
 	
 	return this;
 };
@@ -454,12 +480,16 @@ LayoutNode.prototype.alignedWith = function( item ) {
 
 	addRule.call( this, alignedWith, arguments, this.rulesPos, this.rulesPosProp, POSITION );
 
+	this.addDependency( item );
+
 	return this;
 };
 
 LayoutNode.prototype.leftAlignedWith = function( item ) {
 
 	addRule.call( this, leftAlignedWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
+
+	this.addDependency( item );
 
 	return this;
 };
@@ -468,12 +498,16 @@ LayoutNode.prototype.rightAlignedWith = function( item ) {
 
 	addRule.call( this, rightAlignedWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
 
+	this.addDependency( item );
+
 	return this;
 };
 
 LayoutNode.prototype.topAlignedWith = function( item ) {
 
 	addRule.call( this, topAlignedWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
+
+	this.addDependency( item );
 	
 	return this;
 };
@@ -481,6 +515,8 @@ LayoutNode.prototype.topAlignedWith = function( item ) {
 LayoutNode.prototype.bottomAlignedWith = function( item ) {
 
 	addRule.call( this, bottomAlignedWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
+
+	this.addDependency( item );
 	
 	return this;
 };
@@ -489,12 +525,16 @@ LayoutNode.prototype.horizonallyCenteredWith = function( item ) {
 
 	addRule.call( this, horizonallyCenteredWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
 
+	this.addDependency( item );
+
 	return this;
 };
 
 LayoutNode.prototype.verticallyCenteredWith = function( item ) {
 
 	addRule.call( this, verticallyCenteredWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
+
+	this.addDependency( item );
 
 	return this;
 };
@@ -555,12 +595,16 @@ LayoutNode.prototype.matchesSizeOf = function( item ) {
 
 	addRule.call( this, matchesSizeOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE );
 
+	this.addDependency( item );
+
 	return this;
 }
 
 LayoutNode.prototype.matchesWidthOf = function( item ) {
 
 	addRule.call( this, matchesWidthOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE_WIDTH );
+
+	this.addDependency( item );
 
 	return this;
 }
@@ -569,12 +613,16 @@ LayoutNode.prototype.matchesHeightOf = function( item ) {
 
 	addRule.call( this, matchesHeightOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE_HEIGHT );
 
+	this.addDependency( item );
+
 	return this;
 }
 
 LayoutNode.prototype.sizeIsAPercentageOf = function( item, percentage ) {
 
 	addRule.call( this, sizeIsAPercentageOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE );
+
+	this.addDependency( item );
 
 	return this;
 }
@@ -583,12 +631,16 @@ LayoutNode.prototype.widthIsAPercentageOf = function( item, percentage ) {
 
 	addRule.call( this, widthIsAPercentageOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE_WIDTH );
 
+	this.addDependency( item );
+
 	return this;
 }
 
 LayoutNode.prototype.heightIsAPercentageOf = function( item, percentage ) {
 
 	addRule.call( this, heightIsAPercentageOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE_HEIGHT );
+
+	this.addDependency( item );
 
 	return this;
 }
