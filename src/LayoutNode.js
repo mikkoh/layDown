@@ -409,7 +409,10 @@ LayoutNode.prototype.setLayoutFunction = function( layoutFunction ) {
 
 LayoutNode.prototype.addDependency = function( item ) {
 
-	this.dependencies.push( item );
+	if( item != this.layout ) {
+		
+		this.dependencies.push( item );
+	}
 };
 
 
