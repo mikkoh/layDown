@@ -4,12 +4,14 @@ console.log( 'HEY THERE SUNSHINE' );
 
 function layoutFunction( item, node ) { 
 
-	item.style.backgroundColor = node.color;
-	item.style.position = 'absolute';
-	item.style.left = node.x + 'px';
-	item.style.top = node.y + 'px';
-	item.style.width = node.width + 'px';
-	item.style.height = node.height + 'px';
+	item.style.left = Math.round( node.x ) + 'px';
+	item.style.top = Math.round( node.y ) + 'px';
+	item.style.width = Math.round( node.width ) + 'px';
+	item.style.height = Math.round( node.height ) + 'px';
+
+	var smaller = Math.min( node.width, node.height );
+
+	item.style[ 'fontSize' ] = ( smaller / 30 * 12 ) + 'px';
 
 	//console.log( node.name, node.x, node.y, node.width, node.height );
 }
@@ -21,9 +23,20 @@ function layoutFunction( item, node ) {
 var layout = new LayDown( layoutFunction );
 
 var elem1 = document.getElementById( 'node1' );
+elem1.style.backgroundColor = '#CAFE00';
+elem1.style.position = 'absolute';
+
 var elem2 = document.getElementById( 'node2' );
+elem2.style.backgroundColor = '#FF0000';
+elem2.style.position = 'absolute';
+
 var elem3 = document.getElementById( 'node3' );
+elem3.style.backgroundColor = '#444';
+elem3.style.position = 'absolute';
+
 var elem4 = document.getElementById( 'node4' );
+elem4.style.backgroundColor = '#00F';
+elem4.style.position = 'absolute';
 
 
 var node1 = layout.create( elem1 );
@@ -32,13 +45,9 @@ var node3 = layout.create( elem3 );
 var node4 = layout.create( elem4 );
 
 node1.name = 'node1';
-node1.color = '#CAFE00';
 node2.name = 'node2';
-node2.color = '#FF0000';
 node3.name = 'node3';
-node3.color = '#444';
 node4.name = 'node4';
-node4.color = '#00F';
 
 node1.widthIsAPercentageOf( node4, 0.1 ).heightIsAPercentageOf( node4, 0.1 ).max( 20 ).rightAlignedWith( node4 ).bottomAlignedWith( node4 );
 node2.widthIsAPercentageOf( node4, 0.2 ).matchesHeightOf( node1 ).alignedBelow( node1 ).rightAlignedWith( node1 );
