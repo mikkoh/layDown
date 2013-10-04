@@ -13,10 +13,14 @@ module.exports = function( grunt ) {
 			}
 		},
 
+		nodeunit: {
+			all: ['tests/*.js']
+		},
+
 		watch: {
 			example: {
 				files: [ 'example/main.js', 'src/**/*.js' ],
-				tasks: [ 'browserify:example' ],
+				tasks: [ 'browserify:example', 'nodeunit:all' ],
 				options: { 
 					livereload: true
 				}
