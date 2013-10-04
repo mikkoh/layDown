@@ -164,7 +164,7 @@ LayoutNode.prototype.doLayout = function() {
 
 	for( var i = 0, len = this.rulesSizeBound.length; i < len; i++ ) {
 
-		this.rulesSizeBound[ i ].apply( this, this.rulesPosBoundProp[ i ] );
+		this.rulesSizeBound[ i ].apply( this, this.rulesSizeBoundProp[ i ] );
 	}
 
 
@@ -795,6 +795,91 @@ function heightIsAPercentageOf( item, percentage ) {
 
 	this._height += item.height * percentage;
 }
+
+
+
+
+
+
+
+/************************************************************/
+/************************************************************/
+/*********************MINMAX FUNCTIONS***********************/
+/************************************************************/
+/************************************************************/
+function minSize( value ) {
+
+	this._width = Math.max( this._width, value );
+	this._height = Math.max( this._height, value );
+}
+
+function minWidth( value ) {
+
+	this._width = Math.max( this._width, value );
+}
+
+function minHeight( value ) {
+
+	this._height = Math.max( this._height, value );
+}
+
+function minPosition( value ) {
+
+	this._x = Math.max( this._x, value );
+	this._y = Math.max( this._y, value );
+}
+
+function minX( value ) {
+
+	this._x = Math.max( this._x, value );
+}
+
+function minY( value ) {
+
+	this._y = Math.max( this._y, value );
+}
+
+
+
+
+
+function maxSize( value ) {
+
+	this._width = Math.min( this._width, value );
+	this._height = Math.min( this._height, value );
+
+	console.log( this.width, this._height, value );
+}
+
+function maxWidth( value ) {
+
+	this._width = Math.min( this._width, value );
+}
+
+function maxHeight( value ) {
+
+	this._height = Math.min( this._height, value );
+}
+
+function maxPosition( value ) {
+
+	this._x = Math.min( this._x, value );
+	this._y = Math.min( this._y, value );
+}
+
+function maxX( value ) {
+
+	this._x = Math.min( this._x, value );
+}
+
+function maxY( value ) {
+
+	this._y = Math.min( this._y, value );
+}
+
+
+
+
 
 
 
