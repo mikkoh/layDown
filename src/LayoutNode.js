@@ -18,7 +18,8 @@ var LayoutNode = function( layout, item, layoutFunction ) {
 	this.layout = layout;
 	this.item = item;
 	this.layoutFunction = layoutFunction;
-	this.dependencies = [];
+	this.sizeDependencies = [];
+	this.positionDependencies = [];
 	this.rulesPos = [];
 	this.rulesPosProp = [];
 	this.rulesSize = [];
@@ -42,7 +43,8 @@ LayoutNode.prototype.layout = null;
 LayoutNode.prototype.item = null;
 LayoutNode.prototype.layoutFunction = null;
 LayoutNode.prototype.lastPropTypeEffected = null;
-LayoutNode.prototype.dependencies = null;
+LayoutNode.prototype.sizeDependencies = null;
+LayoutNode.prototype.positionDependencies = null;
 LayoutNode.prototype.hasBeenLayedOut = false;
 LayoutNode.prototype.rulesPos = null;
 LayoutNode.prototype.rulesPosProp = null;
@@ -134,11 +136,19 @@ LayoutNode.prototype.doLayout = function() {
 
 	this._x = this._y = this._width = this._height = 0;
 
-	for( var i = 0, len = this.dependencies.length; i < len; i++ ) {
+	for( var i = 0, len = this.sizeDependencies.length; i < len; i++ ) {
 
-		if( !this.dependencies[ i ].hasBeenLayedOut ) {
+		if( !this.sizeDependencies[ i ].hasBeenLayedOut ) {
 
-			this.dependencies[ i ].doLayout();
+			this.sizeDependencies[ i ].doLayout();
+		}
+	}	
+
+	for( var i = 0, len = this.positionDependencies.length; i < len; i++ ) {
+
+		if( !this.positionDependencies[ i ].hasBeenLayedOut ) {
+
+			this.positionDependencies[ i ].doLayout();
 		}
 	}	
 
@@ -191,10 +201,50 @@ LayoutNode.prototype.addDependency = function( item ) {
 
 	if( item != this.layout ) {
 		
-		this.dependencies.push( item );
+		if( this.lastPropTypeEffected == SIZE || 
+			this.lastPropTypeEffected == SIZE_WIDTH ||
+			this.lastPropTypeEffected == SIZE_HEIGHT ) {
+
+			this.sizeDependencies.push( item );
+		} else {
+
+			this.positionDependencies.push( item );
+		}
 	}
 
 	return this;
+};
+
+LayoutNode.prototype.resetRules = function() {
+
+	this.resetPositionRules();
+	this.resetSizeRules();
+};
+
+LayoutNode.prototype.resetPositionRules = function() {
+
+	this.positionDependencies = [];
+	this._offX = this._offY = 0;
+	this.rulesPos = [];
+	this.rulesPosProp = [];
+
+	if( this.hasBeenLayedOut ) {
+			
+		this.layout.nodeChanged( this );
+	}
+};
+
+LayoutNode.prototype.resetSizeRules = function() {
+
+	this.sizeDependencies = [];
+	this._offWidth = this._offHeight = 0;
+	this.rulesSize = [];
+	this.rulesSizeProp = [];
+
+	if( this.hasBeenLayedOut ) {
+			
+		this.layout.nodeChanged( this );
+	}
 };
 
 
@@ -451,34 +501,28 @@ LayoutNode.prototype.plus = function() {
 	switch( this.lastPropTypeEffected ) {
 
 		case SIZE:
-			this.lastPropTypeEffected = SIZE;
 			this._offWidth += arguments[ 0 ];
 			this._offHeight += arguments[ 0 ];
 		break;
 
 		case SIZE_WIDTH:
-			this.lastPropTypeEffected = SIZE_WIDTH;
 			this._offWidth += arguments[ 0 ];
 		break;
 
 		case SIZE_HEIGHT:
-			this.lastPropTypeEffected = SIZE_HEIGHT;
 			this._offHeight += arguments[ 0 ];
 		break;
 
 		case POSITION:
-			this.lastPropTypeEffected = POSITION;
 			this._offX += arguments[ 0 ];
 			this._offY += arguments[ 0 ];
 		break;
 
 		case POSITION_X:
-			this.lastPropTypeEffected = POSITION_X;
 			this._offX += arguments[ 0 ];
 		break;
 
 		case POSITION_Y:
-			athis.lastPropTypeEffected = POSITION_Y;
 			this._offY += arguments[ 0 ];
 		break;
 	}
@@ -491,34 +535,28 @@ LayoutNode.prototype.minus = function() {
 	switch( this.lastPropTypeEffected ) {
 
 		case SIZE:
-			this.lastPropTypeEffected = SIZE;
 			this._offWidth -= arguments[ 0 ];
 			this._offHeight -= arguments[ 0 ];
 		break;
 
 		case SIZE_WIDTH:
-			this.lastPropTypeEffected = SIZE_WIDTH;
 			this._offWidth -= arguments[ 0 ];
 		break;
 
 		case SIZE_HEIGHT:
-			this.lastPropTypeEffected = SIZE_HEIGHT;
 			this._offHeight -= arguments[ 0 ];
 		break;
 
 		case POSITION:
-			this.lastPropTypeEffected = POSITION;
 			this._offX -= arguments[ 0 ];
 			this._offY -= arguments[ 0 ];
 		break;
 
 		case POSITION_X:
-			this.lastPropTypeEffected = POSITION_X;
 			this._offX -= arguments[ 0 ];
 		break;
 
 		case POSITION_Y:
-			athis.lastPropTypeEffected = POSITION_Y;
 			this._offY -= arguments[ 0 ];
 		break;
 	}

@@ -24,6 +24,7 @@ module.exports = function( grunt ) {
 		}
 	});
 
+	grunt.loadNpmTasks( 'grunt-contrib-nodeunit' );
 	grunt.loadNpmTasks( 'grunt-contrib-watch' );
 	grunt.loadNpmTasks( 'grunt-browserify' );
 

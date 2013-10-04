@@ -8,6 +8,8 @@
     "grunt": "~0.4.1",
     "grunt-contrib-watch": "~0.5.3",
     "grunt-browserify": "~1.2.8",
-    "browserify": "~2.33.1"
+    "browserify": "~2.33.1",
+    "grunt-contrib-nodeunit": "~0.2.1",
+    "nodeunit": "~0.8.1"
   }
 }

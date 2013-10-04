@@ -34,7 +34,7 @@ node3.color = '#444';
 node4.name = 'node4';
 node4.color = '#00F';
 
-node1.heightIs( 30 ).widthIsProportional( 20, 10 ).alignedWith( node4 ).plus( 10 );
+node1.heightIs( 30 ).widthIsProportional( 20, 10 ).rightAlignedWith( node4 );
 node2.matchesSizeOf( node1 ).alignedBelow( node1 ).leftAlignedWith( node1 );
 node3.sizeIsAPercentageOf( layout, 0.1 ).topAlignedWith( node2 ).alignedRightOf( node2 );
 node4.matchesSizeOf( layout ).minus( 300 ).centeredWith( layout );
