@@ -1,3 +1,56 @@
+///POSITION FUNCTIONS
+var alignedAbove = require( './layoutPosition/alignedAbove' );
+var alignedBelow = require( './layoutPosition/alignedBelow' );
+var alignedLeftOf = require( './layoutPosition/alignedLeftOf' );
+var alignedRightOf = require( './layoutPosition/alignedRightOf' );
+var alignedWith = require( './layoutPosition/alignedWith' );
+var bottomAlignedWith = require( './layoutPosition/bottomAlignedWith' );
+var centeredWith = require( './layoutPosition/centeredWith' );
+var horizonallyCenteredWith = require( './layoutPosition/horizonallyCenteredWith' );
+var leftAlignedWith = require( './layoutPosition/leftAlignedWith' );
+var positionIs = require( './layoutPosition/positionIs' );
+var rightAlignedWith = require( './layoutPosition/rightAlignedWith' );
+var topAlignedWith = require( './layoutPosition/topAlignedWith' );
+var verticallyCenteredWith = require( './layoutPosition/verticallyCenteredWith' );
+var xIs = require( './layoutPosition/xIs' );
+var yIs = require( './layoutPosition/yIs' );
+
+//POSITION BOUND FUNCTIONS
+var maxPosition = require( './layoutBoundPosition/maxPosition' );
+var maxX = require( './layoutBoundPosition/maxX' );
+var maxY = require( './layoutBoundPosition/maxY' );
+var minPosition = require( './layoutBoundPosition/minPosition' );
+var minX = require( './layoutBoundPosition/minX' );
+var minY = require( './layoutBoundPosition/minY' );
+
+///SIZE FUNCTIONS
+var heightIs = require( './layoutSize/heightIs' );
+var heightIsAPercentageOf = require( './layoutSize/heightIsAPercentageOf' );
+var heightIsProportional = require( './layoutSize/heightIsProportional' );
+var matchesHeightOf = require( './layoutSize/matchesHeightOf' );
+var matchesSizeOf = require( './layoutSize/matchesSizeOf' );
+var matchesWidthOf = require( './layoutSize/matchesWidthOf' );
+var sizeIs = require( './layoutSize/sizeIs' );
+var sizeIsAPercentageOf = require( './layoutSize/sizeIsAPercentageOf' );
+var sizeIsProportional = require( './layoutSize/sizeIsProportional' );
+var widthIs = require( './layoutSize/widthIs' );
+var widthIsAPercentageOf = require( './layoutSize/widthIsAPercentageOf' );
+var widthIsProportional = require( './layoutSize/widthIsProportional' );
+
+
+//SIZE BOUND FUNCTIONS
+var maxHeight = require( './layoutBoundSize/maxHeight' );
+var maxSize = require( './layoutBoundSize/maxSize' );
+var maxWidth = require( './layoutBoundSize/maxWidth' );
+var minHeight = require( './layoutBoundSize/minHeight' );
+var minSize = require( './layoutBoundSize/minSize' );
+var minWidth = require( './layoutBoundSize/minWidth' );
+
+
+
+
+
+
 /************************************************************/
 /************************************************************/
 /**********************PROPS TO EFFECT***********************/
@@ -383,11 +436,6 @@ LayoutNode.prototype.verticallyCenteredWith = function( item ) {
 	return this;
 };
 
-
-
-
-
-
 /************************************************************/
 /************************************************************/
 /**********************SIZE FUNCTIONS************************/
@@ -627,265 +675,6 @@ LayoutNode.prototype.max = function() {
 
 	return this;
 };
-
-
-
-
-
-
-
-
-
-
-
-/************************************************************/
-/************************************************************/
-/********************POSITION FUNCTIONS**********************/
-/************************************************************/
-/************************************************************/
-function positionIs( x, y ) {
-
-	this._x += x;
-	this._y += y;
-}
-
-function xIs( x ) {
-
-	this._x += x;
-}
-
-function yIs( y ) {
-
-	this._y += y;
-}
-
-function alignedBelow( item ) {
-
-	this._y += item.y + item.height;
-}
-
-function alignedAbove( item ) {
-
-	this._y += item.y - this._height;
-}
-
-function alignedLeftOf( item ) {
-
-	this._x += item.x - this._width;
-}
-
-function alignedRightOf( item ) {
-
-	this._x += item.x + item.width;
-}
-
-function alignedWith( item ) {
-
-	this._x += item.x;
-	this._y += item.y;
-}
-
-function leftAlignedWith( item ) {
-
-	this._x += item.x;
-}
-
-function rightAlignedWith( item ) {
-
-	this._x += item.x + item.width - this._width;
-}
-
-function topAlignedWith( item ) {
-
-	this._y += item.y;
-}
-
-function bottomAlignedWith( item ) {
-
-	this._y += item.y + item.height - this._height;
-}
-
-function centeredWith( item ) {
-
-	this._x += item.x + ( item.width - this._width ) * 0.5;	
-	this._y += item.y + ( item.height - this._height ) * 0.5;
-}
-
-function horizonallyCenteredWith( item ) {
-
-	this._x += item.x + ( item.width - this._width ) * 0.5;
-}
-
-function verticallyCenteredWith( item ) {
-
-	this._y += item.y + ( item.height - this._height ) * 0.5;
-}
-
-
-/************************************************************/
-/************************************************************/
-/**********************SIZE FUNCTIONS************************/
-/************************************************************/
-/************************************************************/
-function sizeIs( width, height ) {
-
-	this._width += width;
-	this._height += height;
-}
-
-function widthIs( width ) {
-
-	this._width += width;
-}
-
-function heightIs( height ) {
-
-	this._height += height;
-}
-
-function sizeIsProportional( originalWidth, originalHeight ) {
-
-	if( this._width == 0 ) {
-
-		this._width += this._height / originalHeight * originalWidth;
-	} else if( this._height == 0 ) {
-
-		this._height += this._width / originalWidth * originalHeight;
-	}
-}
-
-function widthIsProportional( originalWidth, originalHeight ) {
-
-	this._width += this._height / originalHeight * originalWidth;
-}
-
-function heightIsProportional( originalWidth, originalHeight ) {
-
-	this._height += this._width / originalWidth * originalHeight;
-}
-
-function matchesSizeOf( item ) {
-
-	this._width += item.width;
-	this._height += item.height;
-}
-
-function matchesWidthOf( item ) {
-
-	this._width += item.width;
-}
-
-function matchesHeightOf( item ) {
-
-	this._height += item.height;
-}
-
-function sizeIsAPercentageOf( item, percentage ) {
-
-	this._width += item.width * percentage;	
-	this._height += item.height * percentage;
-}
-
-function widthIsAPercentageOf( item, percentage ) {
-
-	this._width += item.width * percentage;
-}
-
-function heightIsAPercentageOf( item, percentage ) {
-
-	this._height += item.height * percentage;
-}
-
-
-
-
-
-
-
-/************************************************************/
-/************************************************************/
-/*********************MINMAX FUNCTIONS***********************/
-/************************************************************/
-/************************************************************/
-function minSize( value ) {
-
-	this._width = Math.max( this._width, value );
-	this._height = Math.max( this._height, value );
-}
-
-function minWidth( value ) {
-
-	this._width = Math.max( this._width, value );
-}
-
-function minHeight( value ) {
-
-	this._height = Math.max( this._height, value );
-}
-
-function minPosition( value ) {
-
-	this._x = Math.max( this._x, value );
-	this._y = Math.max( this._y, value );
-}
-
-function minX( value ) {
-
-	this._x = Math.max( this._x, value );
-}
-
-function minY( value ) {
-
-	this._y = Math.max( this._y, value );
-}
-
-
-
-
-
-function maxSize( value ) {
-
-	this._width = Math.min( this._width, value );
-	this._height = Math.min( this._height, value );
-
-	console.log( this.width, this._height, value );
-}
-
-function maxWidth( value ) {
-
-	this._width = Math.min( this._width, value );
-}
-
-function maxHeight( value ) {
-
-	this._height = Math.min( this._height, value );
-}
-
-function maxPosition( value ) {
-
-	this._x = Math.min( this._x, value );
-	this._y = Math.min( this._y, value );
-}
-
-function maxX( value ) {
-
-	this._x = Math.min( this._x, value );
-}
-
-function maxY( value ) {
-
-	this._y = Math.min( this._y, value );
-}
-
-
-
-
-
-
-
-
-
-
 
 function addRule( rule, ruleArguments, ruleArr, rulePropArr, type ) {
 
