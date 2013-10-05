@@ -1,3 +1,4 @@
+
 ///POSITION FUNCTIONS
 var alignedAbove = require( './layoutPosition/alignedAbove' );
 var alignedBelow = require( './layoutPosition/alignedBelow' );
@@ -384,6 +385,8 @@ LayoutNode.prototype.addCustomRule = function( ruleFunction, ruleType ) {
 	};
 
 	addRule.call( this, ruleFunction, arguments, ruleArr, rulePropArr, effectsProperties );
+
+	return this;
 };
 
 LayoutNode.prototype.resetRules = function() {
@@ -738,6 +741,11 @@ LayoutNode.prototype.minus = function() {
 
 LayoutNode.prototype.min = function() {
 
+	if( arguments[ 0 ] instanceof LayoutNode ) {
+
+		this.addDependency( arguments[ 0 ] );
+	}
+
 	switch( this.lastPropTypeEffected ) {
 
 		case SIZE:
@@ -769,6 +777,11 @@ LayoutNode.prototype.min = function() {
 };
 
 LayoutNode.prototype.max = function() {
+
+	if( arguments[ 0 ] instanceof LayoutNode ) {
+
+		this.addDependency( arguments[ 0 ] );
+	}
 
 	switch( this.lastPropTypeEffected ) {
 

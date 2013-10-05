@@ -57,9 +57,7 @@ node3.addCustomRule( function( x, y ) {
 
 	this._x += x;
 	this._y += y;
-	this._width += 100;
-	this._height += 100;
-}, node3.POSITION_LAYOUT, 30, 30 );
+}, node3.POSITION_LAYOUT, 30, 30 ).matchesHeightOf( node1 ).min( node4 ).matchesWidthOf( node1 );
 
 
 

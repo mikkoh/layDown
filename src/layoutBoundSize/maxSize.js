@@ -1,7 +1,19 @@
-module.exports = function( value ) {
+module.exports = function() {
 
-	this._width = Math.min( this._width, value );
-	this._height = Math.min( this._height, value );
+	if( arguments.length == 1 ) {
 
-	console.log( this.width, this._height, value );
+		if( typeof arguments[ 0 ] == 'number' ) {
+
+			this._width = Math.min( this._width, arguments[ 0 ] );
+			this._height = Math.min( this._height, arguments[ 0 ] );
+		} else {
+
+			this._width = Math.min( this._width, arguments[ 0 ].width );
+			this._height = Math.min( this._height, arguments[ 0 ].height ); 
+		}
+	} else if( typeof arguments[ 0 ] == 'number' && typeof arguments[ 1 ] == 'number' ) {
+
+		this._width = Math.min( this._width, arguments[ 0 ] );
+		this._height = Math.min( this._height, arguments[ 1 ] );
+	}
 };

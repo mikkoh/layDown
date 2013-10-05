@@ -1,4 +1,10 @@
 module.exports = function( value ) {
 
-	this._width = Math.min( this._width, value );
+	if( typeof value == 'number' ) {
+
+		this._width = Math.min( this._width, value );
+	} else {
+
+		this._width = Math.min( this._width, value.width ); 
+	}
 };
