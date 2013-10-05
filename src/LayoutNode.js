@@ -83,7 +83,34 @@ var LayoutNode = function( layout, item, layoutFunction ) {
 	this.rulesSizeBoundProp = [];
 };
 
+LayoutNode.SIZE_LAYOUT = 'SIZE_LAYOUT';
+LayoutNode.SIZE_BOUND = 'SIZE_BOUND';
+LayoutNode.SIZE_WIDTH_LAYOUT = 'SIZE_WIDTH_LAYOUT';
+LayoutNode.SIZE_WIDTH_BOUND = 'SIZE_WIDTH_BOUND';
+LayoutNode.SIZE_HEIGHT_LAYOUT = 'SIZE_HEIGHT_LAYOUT';
+LayoutNode.SIZE_HEIGHT_BOUND = 'SIZE_HEIGHT_BOUND';
 
+LayoutNode.POSITION_LAYOUT = 'POSITION_LAYOUT';
+LayoutNode.POSITION_BOUND = 'POSITION_BOUND';
+LayoutNode.POSITION_X_LAYOUT = 'POSITION_X_LAYOUT';
+LayoutNode.POSITION_X_BOUND = 'POSITION_X_BOUND';
+LayoutNode.POSITION_Y_LAYOUT = 'POSITION_Y_LAYOUT';
+LayoutNode.POSITION_Y_BOUND = 'POSITION_Y_BOUND';
+
+
+LayoutNode.prototype.SIZE_LAYOUT = LayoutNode.SIZE_LAYOUT;
+LayoutNode.prototype.SIZE_BOUND = LayoutNode.SIZE_BOUND;
+LayoutNode.prototype.SIZE_WIDTH_LAYOUT = LayoutNode.SIZE_WIDTH_LAYOUT;
+LayoutNode.prototype.SIZE_WIDTH_BOUND = LayoutNode.SIZE_WIDTH_BOUND;
+LayoutNode.prototype.SIZE_HEIGHT_LAYOUT = LayoutNode.SIZE_HEIGHT_LAYOUT;
+LayoutNode.prototype.SIZE_HEIGHT_BOUND = LayoutNode.SIZE_HEIGHT_BOUND;
+
+LayoutNode.prototype.POSITION_LAYOUT = LayoutNode.POSITION_LAYOUT;
+LayoutNode.prototype.POSITION_BOUND = LayoutNode.POSITION_BOUND;
+LayoutNode.prototype.POSITION_X_LAYOUT = LayoutNode.POSITION_X_LAYOUT;
+LayoutNode.prototype.POSITION_X_BOUND = LayoutNode.POSITION_X_BOUND;
+LayoutNode.prototype.POSITION_Y_LAYOUT = LayoutNode.POSITION_Y_LAYOUT;
+LayoutNode.prototype.POSITION_Y_BOUND = LayoutNode.POSITION_Y_BOUND;
 LayoutNode.prototype._x = 0;
 LayoutNode.prototype._y = 0;
 LayoutNode.prototype._width = 0;
@@ -268,10 +295,103 @@ LayoutNode.prototype.addDependency = function( item ) {
 	return this;
 };
 
+LayoutNode.prototype.addCustomRule = function( ruleFunction, ruleType ) {
+
+	arguments = Array.prototype.slice.call( arguments, 2 );
+
+	var effectsProperties = null;
+	var ruleArr = null;
+	var rulePropArr = null;
+
+	switch( ruleType ) {
+
+		case LayoutNode.SIZE_LAYOUT:
+			effectsProperties = SIZE;
+			ruleArr = this.rulesSize;
+			rulePropArr = this.rulesSizeProp;
+		break;
+
+		case LayoutNode.SIZE_BOUND:
+			effectsProperties = SIZE;
+			ruleArr = this.rulesSizeBound;
+			rulePropArr = this.rulesSizeBoundProp;
+		break;
+
+		case LayoutNode.SIZE_WIDTH_LAYOUT:
+			effectsProperties = SIZE_WIDTH;
+			ruleArr = this.rulesSize;
+			rulePropArr = this.rulesSizeProp;
+		break;
+
+		case LayoutNode.SIZE_WIDTH_BOUND:
+			effectsProperties = SIZE_WIDTH;
+			ruleArr = this.rulesSizeBound;
+			rulePropArr = this.rulesSizeBoundProp;
+		break;		
+
+		case LayoutNode.SIZE_HEIGHT_LAYOUT:
+			effectsProperties = SIZE_HEIGHT;
+			ruleArr = this.rulesSize;
+			rulePropArr = this.rulesSizeProp;
+		break;
+
+		case LayoutNode.SIZE_HEIGHT_BOUND:
+			effectsProperties = SIZE_HEIGHT;
+			ruleArr = this.rulesSizeBound;
+			rulePropArr = this.rulesSizeBoundProp;
+		break;
+
+		case LayoutNode.POSITION_LAYOUT:
+			effectsProperties = POSITION;
+			ruleArr = this.rulesPos;
+			rulePropArr = this.rulesPosProp;
+		break;
+
+		case LayoutNode.POSITION_BOUND:
+
+			effectsProperties = POSITION;
+			ruleArr = this.rulesPosBound;
+			rulePropArr = this.rulesPosBoundProp;
+		break;
+
+		case LayoutNode.POSITION_X_LAYOUT:
+			effectsProperties = POSITION_X;
+			ruleArr = this.rulesPos;
+			rulePropArr = this.rulesPosProp;
+		break;
+
+		case LayoutNode.POSITION_X_BOUND:
+			effectsProperties = POSITION_X;
+			ruleArr = this.rulesPosBound;
+			rulePropArr = this.rulesPosBoundProp;
+		break;		
+
+		case LayoutNode.POSITION_Y_LAYOUT:
+			effectsProperties = POSITION_Y;
+			ruleArr = this.rulesPos;
+			rulePropArr = this.rulesPosProp;
+		break;
+
+		case LayoutNode.POSITION_Y_BOUND:
+			effectsProperties = POSITION_Y;
+			ruleArr = this.rulesPosBound;
+			rulePropArr = this.rulesPosBoundProp;
+		break;
+
+		default: 
+			throw 'Uknown rule type';
+		break;
+	};
+
+	addRule.call( this, ruleFunction, arguments, ruleArr, rulePropArr, effectsProperties );
+};
+
 LayoutNode.prototype.resetRules = function() {
 
 	this.resetPositionRules();
 	this.resetSizeRules();
+
+	return this;
 };
 
 LayoutNode.prototype.resetPositionRules = function() {
@@ -285,6 +405,8 @@ LayoutNode.prototype.resetPositionRules = function() {
 			
 		this.layout.nodeChanged( this );
 	}
+
+	return this;
 };
 
 LayoutNode.prototype.resetSizeRules = function() {
@@ -298,6 +420,8 @@ LayoutNode.prototype.resetSizeRules = function() {
 			
 		this.layout.nodeChanged( this );
 	}
+
+	return this;
 };
 
 
