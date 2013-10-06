@@ -51,13 +51,13 @@ node4.name = 'node4';
 
 node1.widthIsAPercentageOf( node4, 0.1 ).heightIsAPercentageOf( node4, 0.1 ).max( 20 ).rightAlignedWith( node4 ).bottomAlignedWith( node4 );
 node2.widthIsAPercentageOf( node4, 0.2 ).matchesHeightOf( node1 ).alignedBelow( node1 ).rightAlignedWith( node1 );
-node4.matchesSizeOf( layout ).minus( 300 ).centeredWith( layout );
+node4.matchesSizeOf( layout ).minus( 300 ).rightAlignedWith( layout );
 
-node3.addCustomRule( function( x, y ) {
+node3.addCustomRule( function() {
 
-	this._x += x;
-	this._y += y;
-}, node3.POSITION_LAYOUT, 30, 30 ).matchesHeightOf( node1 ).min( node4 ).matchesWidthOf( node1 );
+	this._x += layout.width * 0.5;
+	this._y += layout.height * 0.5;
+}, node3.POSITION_LAYOUT, 30, 30 ).max( node4 ).matchesHeightOf( node1 ).min( node4 ).widthIs( 60 );
 
 
 
