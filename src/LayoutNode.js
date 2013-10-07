@@ -224,7 +224,6 @@ Object.defineProperty( LayoutNode.prototype, 'height', {
 	}
 });
 
-
 LayoutNode.prototype.doLayout = function() {
 
 	this._x = this._y = this._width = this._height = 0;
@@ -438,6 +437,11 @@ LayoutNode.prototype.resetSizeRules = function() {
 	}
 
 	return this;
+};
+
+LayoutNode.prototype.create = function( itemToLayDown ) {
+
+	return this.layout.create( itemToLayDown );
 };
 
 
