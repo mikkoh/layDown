@@ -275,10 +275,11 @@ LayoutNode.prototype.doLayout = function() {
 		this.rulesPosBound[ i ].apply( this, this.rulesPosBoundProp[ i ] );
 	}
 
-	
-	
-
-	this.layoutFunction( this.item, this );
+	//check if this is just a utility LayoutNode (it doesn't actually position and resize anything)
+	if( this.item ) {
+		
+		this.layoutFunction( this.item, this );
+	}
 
 	this.hasBeenLayedOut = true;
 };
