@@ -247,7 +247,6 @@ Object.defineProperty( LayoutNode.prototype, 'height', {
 	}
 });
 
-
 LayoutNode.prototype.doLayout = function() {
 
 	this.hasBeenLayedOut = true;
@@ -355,8 +354,12 @@ function doLayoutWork() {
 		this.conditionalParent._height = this._height;
 	}
 
-	this.layoutFunction( this.item, this );
-}
+	//check if this is just a utility LayoutNode (it doesn't actually position and resize anything)
+	if( this.item ) {
+		
+		this.layoutFunction( this.item, this );
+	}
+};
 
 LayoutNode.prototype.setLayoutFunction = function( layoutFunction ) {
 
@@ -512,7 +515,10 @@ LayoutNode.prototype.resetSizeRules = function() {
 	return this;
 };
 
+LayoutNode.prototype.create = function( itemToLayDown ) {
 
+	return this.layout.create( itemToLayDown );
+};
 
 //This is not a part of prototype cause it's more just a utility function to add rules quickly
 //don't want people to get confused if there's an add rule function on the proto
@@ -580,8 +586,6 @@ function addRule( rule, ruleArguments, ruleArr, rulePropArr, type ) {
 
 	return this;
 }
-
-
 
 
 /************************************************************/
