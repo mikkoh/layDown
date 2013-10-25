@@ -540,7 +540,25 @@ LayoutNode.prototype.create = function( itemToLayDown ) {
 //don't want people to get confused if there's an add rule function on the proto
 function addRule( rule, ruleArguments, ruleArr, rulePropArr, type ) {
 
-	if( this._isDoingWhen && !this._hasConditional ) {
+	//if we're in a child conditional and this is a bound function it should be added to the parent
+	if( this.conditionalParent && 
+		( type == BOUND_SIZE ||
+		  type == BOUND_SIZE_WIDTH ||
+		  type == BOUND_SIZE_HEIGHT) ) {
+
+		ruleArr = this.conditionalParent.rulesSizeBound;
+		rulePropArr = this.conditionalParent.rulesSizeBoundProp;
+
+	//if we're in a child conditional and this is a bound function it should be added to the parent
+	} else if( this.conditionalParent && 
+			   ( type == BOUND_POSITION ||
+		  		 type == BOUND_POSITION_X ||
+		  		 type == BOUND_POSITION_Y )) {
+
+		ruleArr = this.conditionalParent.rulesPosBound;
+		rulePropArr = this.conditionalParent.rulesPosBoundProp;
+	//just check if we've started writing a conditional but didnt add a case
+	} else if( this._isDoingWhen && !this._hasConditional ) {
 
 		throw 'You should add a conditional such as "widthGreaterThan" before adding a rule';
 
@@ -580,22 +598,6 @@ function addRule( rule, ruleArguments, ruleArr, rulePropArr, type ) {
 
 				ruleArr = nNode.rulesSize;
 				ruleArr  = nNode.rulesSizeProp;
-			break;
-
-			case BOUND_SIZE:
-			case BOUND_SIZE_WIDTH:
-			case BOUND_SIZE_HEIGHT:
-
-				ruleArr = nNode.rulesSizeBound;
-				rulePropArr = nNode.rulesSizeBoundProp;
-			break;
-
-			case BOUND_POSITION:
-			case BOUND_POSITION_X:
-			case BOUND_POSITION_Y:
-
-				ruleArr = nNode.rulesPosBound;
-				ruleArr  = nNode.rulesPosBoundProp;
 			break;
 		}
 

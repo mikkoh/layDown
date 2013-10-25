@@ -59,7 +59,7 @@ node2.widthIsAPercentageOf( node4, 0.2 ).matchesHeightOf( node1 ).alignedBelow( 
 
 node4.verticallyCenteredWith( layout )
 .when( layout ).widthGreaterThan( 900 ).andWhen( layout ).heightGreaterThan( 600 ).sizeIs( 400, 300 ).rightAlignedWith( layout )
-.default().matchesSizeOf( layout ).minus( 300 ).horizontallyCenteredWith( layout );
+.default().matchesSizeOf( layout ).minus( 300 ).min( 0 ).horizontallyCenteredWith( layout );
 
 node3.addCustomRule( function() {
 
