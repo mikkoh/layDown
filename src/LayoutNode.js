@@ -61,6 +61,7 @@ var minWidthFrom = require( './layoutBoundSize/minWidthFrom' );
 
 //CONDITIONAL FUNCTIONS
 var widthGreaterThan = require( './conditionals/widthGreaterThan' );
+var heightGreaterThan = require( './conditionals/heightGreaterThan' );
 
 
 
@@ -1071,6 +1072,11 @@ LayoutNode.prototype.when = function( node ) {
 LayoutNode.prototype.widthGreaterThan = function( value ) {
 
 	return addConditional.call( this, widthGreaterThan, arguments );
+};
+
+LayoutNode.prototype.heightGreaterThan = function( value ) {
+
+	return addConditional.call( this, heightGreaterThan, arguments );
 };
 
 
