@@ -58,7 +58,7 @@ node1.widthIsAPercentageOf( node4, 0.1 ).heightIsAPercentageOf( node4, 0.1 ).max
 node2.widthIsAPercentageOf( node4, 0.2 ).matchesHeightOf( node1 ).alignedBelow( node1 ).rightAlignedWith( node1 );
 
 node4.matchesSizeOf( layout ).minus( 300 ).centeredWith( layout )
-.when( layout ).widthGreaterThan( 900 ).sizeIs( 400, 300 ).rightAlignedWith( layout );
+.when( layout ).widthGreaterThan( 900 ).andWhen( layout ).heightGreaterThan( 400 ).sizeIs( 400, 300 ).rightAlignedWith( layout );
 
 node3.addCustomRule( function() {
 

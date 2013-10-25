@@ -256,19 +256,18 @@ LayoutNode.prototype.doLayout = function() {
 
 		for( var i = 0, lenI = this.itemsToCompare.length; i < lenI; i++ ) {
 
-			var itemToCompareTo = this.itemsToCompare[ i ];
-			var conditionals = this.conditionalsForItem[ i ];
-			var argumentsForConditionals = this.conditionalsArgumentsForItem[ i ];
 			var layoutNode = this.layoutNodeForConditional[ i ];
+			var itemsToCompareTo = this.itemsToCompare[ i ];
 			var isConditionalValid = true;
 
-			for( var j = 0, lenJ = conditionals.length; j < lenJ; j++ ) {
+			for( var j = 0, lenJ = itemsToCompareTo.length; isConditionalValid && j < lenJ; j++ ) {
 
-				isConditionalValid = conditionals[ j ].apply( itemToCompareTo, argumentsForConditionals[ j ] );
+				var conditionals = this.conditionalsForItem[ i ][ j ];
+				var argumentsForConditionals = this.conditionalsArgumentsForItem[ i ][ j ];
+				
+				for( var k = 0, lenK = conditionals.length; isConditionalValid && k < lenK; k++ ) {
 
-				if( !isConditionalValid ) {
-
-					break;
+					isConditionalValid = conditionals[ k ].apply( itemsToCompareTo[ k ], argumentsForConditionals[ k ] );
 				}
 			}
 
@@ -297,6 +296,11 @@ LayoutNode.prototype.doLayout = function() {
 function doLayoutWork() {
 
 	this._x = this._y = this._width = this._height = 0;
+
+	if( !( this instanceof LayoutNode ) ) {
+
+		debugger;
+	}
 
 	for( var i = 0, len = this.sizeDependencies.length; i < len; i++ ) {
 
@@ -371,7 +375,7 @@ LayoutNode.prototype.setLayoutFunction = function( layoutFunction ) {
 
 LayoutNode.prototype.addDependency = function( item ) {
 
-	if( item != this.layout ) {
+	if( item instanceof LayoutNode ) {
 		
 		if( this.lastPropTypeEffected == SIZE || 
 			this.lastPropTypeEffected == SIZE_WIDTH ||
@@ -577,6 +581,7 @@ function addRule( rule, ruleArguments, ruleArr, rulePropArr, type ) {
 			break;
 		}
 
+		//this will return the new node
 		return addRule.call( nNode, rule, ruleArguments, ruleArr, rulePropArr, type );
 	}
 
@@ -1025,18 +1030,30 @@ function addConditional( cFunction, cArguments ) {
 		throw 'Before adding a conditional such as "widthGreaterThan" you should call the "when" function to declare which item we\'ll be comparing to';
 	}
 
-	var idx = this.itemsToCompare.length - 1;
-
 	this._hasConditional = true;
 
-	if( this.itemsToCompare.length != this.conditionalsForItem.length ) {
+	var idx1 = this.itemsToCompare.length - 1;
 
-		this.conditionalsForItem.push( [] );
-		this.conditionalsArgumentsForItem.push( [] );
+	//we don't has many conditionals to compare against as we have items to compare against
+	if( this.conditionalsForItem[ idx1 ] == undefined ) {
+
+		this.conditionalsForItem[ idx1 ] = [];
+		this.conditionalsArgumentsForItem[ idx1 ] = [];
+
+		this.conditionalsForItem[ idx1 ].push( [] );
+		this.conditionalsArgumentsForItem[ idx1 ].push( [] );
+
+	} else if( this.itemsToCompare[ idx1 ].length != this.conditionalsForItem[ idx1 ].length ) {
+
+		this.conditionalsForItem[ idx1 ].push( [] );
+		this.conditionalsArgumentsForItem[ idx1 ].push( [] );
 	}
 
-	this.conditionalsForItem[ idx ].push( cFunction );
-	this.conditionalsArgumentsForItem[ idx ].push( cArguments );
+
+	var idx2 = this.conditionalsForItem[ idx1 ].length - 1;
+
+	this.conditionalsForItem[ idx1 ][ idx2 ].push( cFunction );
+	this.conditionalsArgumentsForItem[ idx1 ][ idx2 ].push( cArguments );
 
 	return this;
 }
@@ -1052,19 +1069,31 @@ LayoutNode.prototype.when = function( node ) {
 	}
 
 	//Check if they've called when and tried to call it again
-	if( this._isDoingWhen ) {
+	if( this._isDoingWhen && !this._hasConditional ) {
 
-		throw 'Tisk tisk you shouldn\'t call when twice in a row';
-
-	//Check if they called when after adding a conditional and not rule
-	} else if( this._hasConditional ) {
-
-		throw 'Please don\'t call when after adding a conditional such as widthGreaterThan';
+		throw 'You should call when or andWhen after adding conditionals such "widthGreaterThan"';
 	}
 
 	this._isDoingWhen = true;
 
-	this.itemsToCompare.push( node );
+	var itemArray = [];
+	this.itemsToCompare.push( itemArray );
+	itemArray.push( node );
+
+	return this;
+};
+
+LayoutNode.prototype.andWhen = function( node ) {
+
+	if( this.conditionalParent ) {
+
+		this.conditionalParent.andWhen( node );
+	}
+
+	this._isDoingWhen = true;
+
+	var idx = this.itemsToCompare.length - 1;
+	this.itemsToCompare[ idx ].push( node );
 
 	return this;
 };
