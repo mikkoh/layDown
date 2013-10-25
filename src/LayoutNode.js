@@ -92,11 +92,12 @@ var BOUND_POSITION_Y = 'BOUND_POSITION_Y';
 
 
 
-var LayoutNode = function( layout, item, layoutFunction ) {
+var LayoutNode = function( layout, item, layoutFunction, readFunction ) {
 
 	this.layout = layout;
 	this.item = item;
 	this.layoutFunction = layoutFunction;
+	this.readFunction = readFunction;
 	this.sizeDependencies = [];
 	this.positionDependencies = [];
 	this.rulesPos = [];
@@ -155,6 +156,7 @@ LayoutNode.prototype._isDoingDefault = false;
 LayoutNode.prototype.layout = null;
 LayoutNode.prototype.item = null;
 LayoutNode.prototype.layoutFunction = null;
+LayoutNode.prototype.readFunction = null;
 LayoutNode.prototype.lastPropTypeEffected = null;
 LayoutNode.prototype.sizeDependencies = null;
 LayoutNode.prototype.positionDependencies = null;
@@ -173,6 +175,8 @@ LayoutNode.prototype.conditionalsArgumentsForItem = null;
 LayoutNode.prototype.layoutNodeForConditional = null;
 LayoutNode.prototype.layoutNodeForDefault = null;
 LayoutNode.prototype.conditionalParent = null; //this is the parent LayoutNode that this conditional LayoutNode was created from
+LayoutNode.prototype.doNotReadWidth = false;
+LayoutNode.prototype.doNotReadHeight = false;
 
 Object.defineProperty( LayoutNode.prototype, 'x', {
 
@@ -375,6 +379,22 @@ function doLayoutWork() {
 		this.conditionalParent._width += this._width;
 		this.conditionalParent._height += this._height;
 	}
+
+	//check if we should read in a size for an item
+	if( this.item ) {
+
+		if( !this.doNotReadWidth && !this.doNotReadWidth ) {
+
+			this._width += this.readFunction( this.item, 'width' );
+			this._height += this.readFunction( this.item, 'height' );
+		} else if( !this.doNotReadWidth ) {
+
+			this._width += this.readFunction( this.item, 'width' );
+		} else if( !this.doNotReadHeight ) {
+
+			this._height += this.readFunction( this.item, 'height' );
+		}	
+	}
 };
 
 LayoutNode.prototype.setLayoutFunction = function( layoutFunction ) {
@@ -540,25 +560,50 @@ LayoutNode.prototype.create = function( itemToLayDown ) {
 //don't want people to get confused if there's an add rule function on the proto
 function addRule( rule, ruleArguments, ruleArr, rulePropArr, type ) {
 
-	//if we're in a child conditional and this is a bound function it should be added to the parent
-	if( this.conditionalParent && 
-		( type == BOUND_SIZE ||
-		  type == BOUND_SIZE_WIDTH ||
-		  type == BOUND_SIZE_HEIGHT) ) {
+	
+	if( this.conditionalParent ) { 
 
-		ruleArr = this.conditionalParent.rulesSizeBound;
-		rulePropArr = this.conditionalParent.rulesSizeBoundProp;
+		//check wheter width is being effected
+		this.conditionalParent.doNotReadWidth = this.conditionalParent.doNotReadWidth || 
+		type == SIZE ||
+		type == SIZE_WIDTH;
 
-	//if we're in a child conditional and this is a bound function it should be added to the parent
-	} else if( this.conditionalParent && 
-			   ( type == BOUND_POSITION ||
-		  		 type == BOUND_POSITION_X ||
-		  		 type == BOUND_POSITION_Y )) {
+		this.conditionalParent.doNotReadHeight = this.conditionalParent.doNotReadHeight || 
+		type == SIZE ||
+		type == SIZE_HEIGHT;
 
-		ruleArr = this.conditionalParent.rulesPosBound;
-		rulePropArr = this.conditionalParent.rulesPosBoundProp;
+
+		//if we're in a child conditional and this is a bound function it should be added to the parent
+		if( type == BOUND_SIZE ||
+		    type == BOUND_SIZE_WIDTH ||
+		    type == BOUND_SIZE_HEIGHT ) {
+
+			ruleArr = this.conditionalParent.rulesSizeBound;
+			rulePropArr = this.conditionalParent.rulesSizeBoundProp;
+
+		//if we're in a child conditional and this is a bound function it should be added to the parent
+		} else if( type == BOUND_POSITION ||
+				   type == BOUND_POSITION_X ||
+				   type == BOUND_POSITION_Y ) {
+
+			ruleArr = this.conditionalParent.rulesPosBound;
+			rulePropArr = this.conditionalParent.rulesPosBoundProp;
+		}
+	} else {
+
+		//check wheter width is being effected
+		this.doNotReadWidth = this.doNotReadWidth || 
+		type == SIZE ||
+		type == SIZE_WIDTH;
+
+		this.doNotReadHeight = this.doNotReadHeight || 
+		type == SIZE ||
+		type == SIZE_HEIGHT;
+	}
+
+
 	//just check if we've started writing a conditional but didnt add a case
-	} else if( this._isDoingWhen && !this._hasConditional ) {
+	if( this._isDoingWhen && !this._hasConditional ) {
 
 		throw 'You should add a conditional such as "widthGreaterThan" before adding a rule';
 
@@ -566,7 +611,7 @@ function addRule( rule, ruleArguments, ruleArr, rulePropArr, type ) {
 	//has been added so we should create a new layout node for the conditionals
 	} else if( ( this._isDoingWhen && this._hasConditional ) || this._isDoingDefault ) {
 
-		var nNode = new LayoutNode( this.layout, this.item );
+		var nNode = new LayoutNode( this.layout );
 		nNode.conditionalParent = this;
 
 		if( !this._isDoingDefault ) {

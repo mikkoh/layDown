@@ -16,11 +16,21 @@ function layoutFunction( item, node ) {
 	//console.log( node.name, node.x, node.y, node.width, node.height );
 }
 
+function readFunction( item, name ) {
+
+	if( name == 'width' ) {
+
+		return item.clientWidth;
+	} else {
+
+		return item.clientHeight;
+	}
+}
 
 
 
 
-var layout = new LayDown( layoutFunction );
+var layout = new LayDown( layoutFunction, readFunction );
 
 var elem1 = document.getElementById( 'node1' );
 elem1.style.backgroundColor = '#CAFE00';
@@ -54,7 +64,7 @@ node4.name = 'node4';
 
 
 
-node1.sizeIs( 200, 40 ).leftAlignedWith( node4 ).bottomAlignedWith( node4 );
+node1.widthIs( 200 ).leftAlignedWith( node4 ).bottomAlignedWith( node4 );
 node2.widthIsAPercentageOf( node4, 0.2 ).matchesHeightOf( node1 ).alignedBelow( node1 ).rightAlignedWith( node1 );
 
 node4.verticallyCenteredWith( layout )
