@@ -59,6 +59,9 @@ var minSizeFrom = require( './layoutBoundSize/minSizeFrom' );
 var minWidth = require( './layoutBoundSize/minWidth' );
 var minWidthFrom = require( './layoutBoundSize/minWidthFrom' );
 
+//CONDITIONAL FUNCTIONS
+var widthGreaterThan = require( './conditionals/widthGreaterThan' );
+
 
 
 
@@ -75,6 +78,15 @@ var SIZE_HEIGHT = 'SIZE_HEIGHT';
 var POSITION = 'POSITION';
 var POSITION_X = 'POSITION_X';
 var POSITION_Y = 'POSITION_Y';
+
+var BOUND_SIZE = 'BOUND_SIZE';
+var BOUND_SIZE_WIDTH = 'BOUND_SIZE_WIDTH';
+var BOUND_SIZE_HEIGHT = 'BOUND_SIZE_HEIGHT';
+var BOUND_POSITION = 'BOUND_POSITION';
+var BOUND_POSITION_X = 'BOUND_POSITION_X';
+var BOUND_POSITION_Y = 'BOUND_POSITION_Y';
+
+
 
 
 
@@ -94,6 +106,10 @@ var LayoutNode = function( layout, item, layoutFunction ) {
 	this.rulesPosBoundProp = [];
 	this.rulesSizeBound = [];
 	this.rulesSizeBoundProp = [];
+	this.itemsToCompare = [];
+	this.conditionalsForItem = [];
+	this.conditionalsArgumentsForItem = [];
+	this.layoutNodeForConditional = [];
 };
 
 LayoutNode.SIZE_LAYOUT = 'SIZE_LAYOUT';
@@ -132,6 +148,8 @@ LayoutNode.prototype._offX = 0;
 LayoutNode.prototype._offY = 0;
 LayoutNode.prototype._offWidth = 0;
 LayoutNode.prototype._offHeight = 0;
+LayoutNode.prototype._isDoingWhen = false;
+LayoutNode.prototype._hasConditional = false;
 LayoutNode.prototype.layout = null;
 LayoutNode.prototype.item = null;
 LayoutNode.prototype.layoutFunction = null;
@@ -147,6 +165,11 @@ LayoutNode.prototype.rulesPosBound = null;
 LayoutNode.prototype.rulesPosBoundProp = null;
 LayoutNode.prototype.rulesSizeBound = null;
 LayoutNode.prototype.rulesSizeBoundProp = null;
+LayoutNode.prototype.itemsToCompare = null;
+LayoutNode.prototype.conditionalsForItem = null;
+LayoutNode.prototype.conditionalsArgumentsForItem = null;
+LayoutNode.prototype.layoutNodeForConditional = null;
+LayoutNode.prototype.conditionalParent = null; //this is the parent LayoutNode that this conditional LayoutNode was created from
 
 Object.defineProperty( LayoutNode.prototype, 'x', {
 
@@ -227,6 +250,52 @@ Object.defineProperty( LayoutNode.prototype, 'height', {
 
 LayoutNode.prototype.doLayout = function() {
 
+	this.hasBeenLayedOut = true;
+
+	if( this.itemsToCompare.length > 0 ) {
+
+		for( var i = 0, lenI = this.itemsToCompare.length; i < lenI; i++ ) {
+
+			var itemToCompareTo = this.itemsToCompare[ i ];
+			var conditionals = this.conditionalsForItem[ i ];
+			var argumentsForConditionals = this.conditionalsArgumentsForItem[ i ];
+			var layoutNode = this.layoutNodeForConditional[ i ];
+			var isConditionalValid = true;
+
+			for( var j = 0, lenJ = conditionals.length; j < lenJ; j++ ) {
+
+				isConditionalValid = conditionals[ j ].apply( itemToCompareTo, argumentsForConditionals[ j ] );
+
+				if( !isConditionalValid ) {
+
+					break;
+				}
+			}
+
+			//if the conditional is still valid after
+			//all the tests then we should do layout with this other node
+			//instead of "this" which is now considered the default value
+			if( isConditionalValid ) {
+
+				doLayoutWork.call( layoutNode );
+
+				//since layout is performed we'll just exit this function
+				return;
+			}
+		}
+	}
+
+	//since none of the above conditionals validated properly 
+	//or there were no conditionals
+	//then we'll just do layout on boring old this
+	doLayoutWork.call( this );
+};
+
+
+//this is not a property of the prototype cause there's no need to have two functions
+//on prototype that have similar names and in theory the other always uses the other
+function doLayoutWork() {
+
 	this._x = this._y = this._width = this._height = 0;
 
 	for( var i = 0, len = this.sizeDependencies.length; i < len; i++ ) {
@@ -275,13 +344,19 @@ LayoutNode.prototype.doLayout = function() {
 		this.rulesPosBound[ i ].apply( this, this.rulesPosBoundProp[ i ] );
 	}
 
-	
-	
+	//because other items will actually rely on the values of the
+	//parent node of a conditional node then we need to set the _x, _y, _width, _height
+	//for the parent also
+	if( this.conditionalParent != null ) {
+
+		this.conditionalParent._x = this._x;
+		this.conditionalParent._y = this._y;
+		this.conditionalParent._width = this._width;
+		this.conditionalParent._height = this._height;
+	}
 
 	this.layoutFunction( this.item, this );
-
-	this.hasBeenLayedOut = true;
-};
+}
 
 LayoutNode.prototype.setLayoutFunction = function( layoutFunction ) {
 
@@ -396,9 +471,7 @@ LayoutNode.prototype.addCustomRule = function( ruleFunction, ruleType ) {
 		break;
 	};
 
-	addRule.call( this, ruleFunction, arguments, ruleArr, rulePropArr, effectsProperties );
-
-	return this;
+	return addRule.call( this, ruleFunction, arguments, ruleArr, rulePropArr, effectsProperties );
 };
 
 LayoutNode.prototype.resetRules = function() {
@@ -440,6 +513,77 @@ LayoutNode.prototype.resetSizeRules = function() {
 };
 
 
+
+//This is not a part of prototype cause it's more just a utility function to add rules quickly
+//don't want people to get confused if there's an add rule function on the proto
+function addRule( rule, ruleArguments, ruleArr, rulePropArr, type ) {
+
+	if( this._isDoingWhen && !this._hasConditional ) {
+
+		throw 'You should add a conditional such as "widthGreaterThan" before adding a rule';
+
+	//if these are both true then when has been called and a conditional
+	//has been added so we should create a new layout node for the conditionals
+	} else if( this._isDoingWhen && this._hasConditional ) {
+
+		this._isDoingWhen = false;
+		this._hasConditional = false;
+
+		var nNode = new LayoutNode( this.layout, this.item, this.layoutFunction );
+		nNode.conditionalParent = this;
+
+		this.layoutNodeForConditional.push( nNode );
+
+		//need to figure out which ruleArr and rulePropArr to use
+		switch( type ) {
+
+			case SIZE:
+			case SIZE_WIDTH:
+			case SIZE_HEIGHT:
+
+				ruleArr = nNode.rulesPos;
+				rulePropArr = nNode.rulesPosProp;
+			break;
+
+			case POSITION:
+			case POSITION_X:
+			case POSITION_Y:
+
+				ruleArr = nNode.rulesSize;
+				ruleArr  = nNode.rulesSizeProp;
+			break;
+
+			case BOUND_SIZE:
+			case BOUND_SIZE_WIDTH:
+			case BOUND_SIZE_HEIGHT:
+
+				ruleArr = nNode.rulesSizeBound;
+				rulePropArr = nNode.rulesSizeBoundProp;
+			break;
+
+			case BOUND_POSITION:
+			case BOUND_POSITION_X:
+			case BOUND_POSITION_Y:
+
+				ruleArr = nNode.rulesPosBound;
+				ruleArr  = nNode.rulesPosBoundProp;
+			break;
+		}
+
+		return addRule.call( nNode, rule, ruleArguments, ruleArr, rulePropArr, type );
+	}
+
+	ruleArr.push( rule );
+	rulePropArr.push( ruleArguments );
+
+	this.lastPropTypeEffected = type;
+
+	return this;
+}
+
+
+
+
 /************************************************************/
 /************************************************************/
 /********************POSITION FUNCTIONS**********************/
@@ -448,131 +592,103 @@ LayoutNode.prototype.resetSizeRules = function() {
 
 LayoutNode.prototype.positionIs = function( x, y ) {
 
-	addRule.call( this, positionIs, arguments, this.rulesPos, this.rulesPosProp, POSITION );
-
-	return this;
+	return addRule.call( this, positionIs, arguments, this.rulesPos, this.rulesPosProp, POSITION );
 };
 
 LayoutNode.prototype.xIs = function( x ) {
 
-	addRule.call( this, xIs, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
-
-	return this;
+	return addRule.call( this, xIs, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
 };
 
 LayoutNode.prototype.yIs = function( y ) {
 
-	addRule.call( this, yIs, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
-
-	return this;
+	return addRule.call( this, yIs, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
 };
 
 LayoutNode.prototype.alignedBelow = function( item ) {
 
-	addRule.call( this, alignedBelow, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
-
 	this.addDependency( item );
 
-	return this;
+	return addRule.call( this, alignedBelow, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
 };
 
 LayoutNode.prototype.alignedAbove = function( item ) {
 
-	addRule.call( this, alignedAbove, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
-
 	this.addDependency( item );
-	
-	return this;
+
+	return addRule.call( this, alignedAbove, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
+
 };
 
 LayoutNode.prototype.alignedLeftOf = function( item ) {
 
-	addRule.call( this, alignedLeftOf, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
-
 	this.addDependency( item );
-	
-	return this;
+
+	return addRule.call( this, alignedLeftOf, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
 };
 
 LayoutNode.prototype.alignedRightOf = function( item ) {
 
-	addRule.call( this, alignedRightOf, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
-
 	this.addDependency( item );
-	
-	return this;
+
+	return addRule.call( this, alignedRightOf, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
 };
 
 LayoutNode.prototype.alignedWith = function( item ) {
 
-	addRule.call( this, alignedWith, arguments, this.rulesPos, this.rulesPosProp, POSITION );
-
 	this.addDependency( item );
 
-	return this;
+	return addRule.call( this, alignedWith, arguments, this.rulesPos, this.rulesPosProp, POSITION );
 };
 
 LayoutNode.prototype.leftAlignedWith = function( item ) {
 
-	addRule.call( this, leftAlignedWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
-
 	this.addDependency( item );
 
-	return this;
+	return addRule.call( this, leftAlignedWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
 };
 
 LayoutNode.prototype.rightAlignedWith = function( item ) {
 
-	addRule.call( this, rightAlignedWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
-
 	this.addDependency( item );
 
-	return this;
+	return addRule.call( this, rightAlignedWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
 };
 
 LayoutNode.prototype.topAlignedWith = function( item ) {
 
-	addRule.call( this, topAlignedWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
-
 	this.addDependency( item );
-	
-	return this;
+
+	return addRule.call( this, topAlignedWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
+
 };
 
 LayoutNode.prototype.bottomAlignedWith = function( item ) {
 
-	addRule.call( this, bottomAlignedWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
-
 	this.addDependency( item );
-	
-	return this;
+
+	return addRule.call( this, bottomAlignedWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
 };
 
 LayoutNode.prototype.centeredWith = function( item ) {
 
-	addRule.call( this, centeredWith, arguments, this.rulesPos, this.rulesPosProp, POSITION );
-
 	this.addDependency( item );
 
-	return this;
+	return addRule.call( this, centeredWith, arguments, this.rulesPos, this.rulesPosProp, POSITION );
 };
 
 LayoutNode.prototype.horizonallyCenteredWith = function( item ) {
 
-	addRule.call( this, horizonallyCenteredWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
-
 	this.addDependency( item );
 
-	return this;
+	return addRule.call( this, horizonallyCenteredWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
 };
 
 LayoutNode.prototype.verticallyCenteredWith = function( item ) {
 
-	addRule.call( this, verticallyCenteredWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
-
 	this.addDependency( item );
 
-	return this;
+	return addRule.call( this, verticallyCenteredWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
 };
 
 /************************************************************/
@@ -582,98 +698,76 @@ LayoutNode.prototype.verticallyCenteredWith = function( item ) {
 /************************************************************/
 LayoutNode.prototype.sizeIs = function( width, height ) {
 
-	addRule.call( this, sizeIs, arguments, this.rulesSize, this.rulesSizeProp, SIZE );
-
-	return this;
+	return addRule.call( this, sizeIs, arguments, this.rulesSize, this.rulesSizeProp, SIZE );
 }
 
 LayoutNode.prototype.widthIs = function( width ) {
 
-	addRule.call( this, widthIs, arguments, this.rulesSize, this.rulesSizeProp, SIZE_WIDTH );
-
-	return this;
+	return addRule.call( this, widthIs, arguments, this.rulesSize, this.rulesSizeProp, SIZE_WIDTH );
 }
 
 LayoutNode.prototype.heightIs = function( height ) {
 
-	addRule.call( this, heightIs, arguments, this.rulesSize, this.rulesSizeProp, SIZE_HEIGHT );
-	
-	return this;
+	return addRule.call( this, heightIs, arguments, this.rulesSize, this.rulesSizeProp, SIZE_HEIGHT );
+
 }
 
 LayoutNode.prototype.sizeIsProportional = function( originalWidth, originalHeight ) {
 
-	addRule.call( this, sizeIsProportional, arguments, this.rulesSize, this.rulesSizeProp, SIZE );
-	
-	return this;
+	return addRule.call( this, sizeIsProportional, arguments, this.rulesSize, this.rulesSizeProp, SIZE );
+
 }
 
 LayoutNode.prototype.widthIsProportional = function( originalWidth, originalHeight ) {
 
-	addRule.call( this, widthIsProportional, arguments, this.rulesSize, this.rulesSizeProp, SIZE_WIDTH );
-
-	return this;
+	return addRule.call( this, widthIsProportional, arguments, this.rulesSize, this.rulesSizeProp, SIZE_WIDTH );
 }
 
 LayoutNode.prototype.heightIsProportional = function( originalWidth, originalHeight ) {
 
-	addRule.call( this, heightIsProportional, arguments, this.rulesSize, this.rulesSizeProp, SIZE_HEIGHT );
-
-	return this;
+	return addRule.call( this, heightIsProportional, arguments, this.rulesSize, this.rulesSizeProp, SIZE_HEIGHT );
 }
 
 LayoutNode.prototype.matchesSizeOf = function( item ) {
 
-	addRule.call( this, matchesSizeOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE );
-
 	this.addDependency( item );
 
-	return this;
+	return addRule.call( this, matchesSizeOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE );
 }
 
 LayoutNode.prototype.matchesWidthOf = function( item ) {
 
-	addRule.call( this, matchesWidthOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE_WIDTH );
-
 	this.addDependency( item );
 
-	return this;
+	return addRule.call( this, matchesWidthOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE_WIDTH );
 }
 
 LayoutNode.prototype.matchesHeightOf = function( item ) {
 
-	addRule.call( this, matchesHeightOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE_HEIGHT );
-
 	this.addDependency( item );
 
-	return this;
+	return addRule.call( this, matchesHeightOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE_HEIGHT );
 }
 
 LayoutNode.prototype.sizeIsAPercentageOf = function( item, percentage ) {
 
-	addRule.call( this, sizeIsAPercentageOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE );
-
 	this.addDependency( item );
 
-	return this;
+	return addRule.call( this, sizeIsAPercentageOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE );
 }
 
 LayoutNode.prototype.widthIsAPercentageOf = function( item, percentage ) {
 
-	addRule.call( this, widthIsAPercentageOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE_WIDTH );
-
 	this.addDependency( item );
 
-	return this;
+	return addRule.call( this, widthIsAPercentageOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE_WIDTH );
 }
 
 LayoutNode.prototype.heightIsAPercentageOf = function( item, percentage ) {
 
-	addRule.call( this, heightIsAPercentageOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE_HEIGHT );
-
 	this.addDependency( item );
 
-	return this;
+	return addRule.call( this, heightIsAPercentageOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE_HEIGHT );
 }
 
 
@@ -688,28 +782,34 @@ LayoutNode.prototype.plus = function() {
 	switch( this.lastPropTypeEffected ) {
 
 		case SIZE:
+		case BOUND_SIZE:
 			this._offWidth += arguments[ 0 ];
 			this._offHeight += arguments[ 0 ];
 		break;
 
 		case SIZE_WIDTH:
+		case BOUND_SIZE_WIDTH:
 			this._offWidth += arguments[ 0 ];
 		break;
 
 		case SIZE_HEIGHT:
+		case BOUND_SIZE_HEIGHT:
 			this._offHeight += arguments[ 0 ];
 		break;
 
 		case POSITION:
+		case BOUND_POSITION:
 			this._offX += arguments[ 0 ];
 			this._offY += arguments[ 0 ];
 		break;
 
 		case POSITION_X:
+		case BOUND_POSITION_X:
 			this._offX += arguments[ 0 ];
 		break;
 
 		case POSITION_Y:
+		case BOUND_POSITION_Y:
 			this._offY += arguments[ 0 ];
 		break;
 	}
@@ -722,28 +822,34 @@ LayoutNode.prototype.minus = function() {
 	switch( this.lastPropTypeEffected ) {
 
 		case SIZE:
+		case BOUND_SIZE:
 			this._offWidth -= arguments[ 0 ];
 			this._offHeight -= arguments[ 0 ];
 		break;
 
 		case SIZE_WIDTH:
+		case BOUND_SIZE_WIDTH:
 			this._offWidth -= arguments[ 0 ];
 		break;
 
 		case SIZE_HEIGHT:
+		case BOUND_SIZE_HEIGHT:
 			this._offHeight -= arguments[ 0 ];
 		break;
 
 		case POSITION:
+		case BOUND_POSITION:
 			this._offX -= arguments[ 0 ];
 			this._offY -= arguments[ 0 ];
 		break;
 
 		case POSITION_X:
+		case BOUND_POSITION_X:
 			this._offX -= arguments[ 0 ];
 		break;
 
 		case POSITION_Y:
+		case BOUND_POSITION_Y:
 			this._offY -= arguments[ 0 ];
 		break;
 	}
@@ -760,60 +866,70 @@ LayoutNode.prototype.min = function() {
 		switch( this.lastPropTypeEffected ) {
 
 			case SIZE:
-				addRule.call( this, minSizeFrom, arguments, this.rulesSizeBound, this.rulesSizeBoundProp, SIZE );
-			break;
+			case BOUND_SIZE:
+				return addRule.call( this, minSizeFrom, arguments, this.rulesSizeBound, this.rulesSizeBoundProp, BOUND_SIZE );
+			
 
 			case SIZE_WIDTH:
-				addRule.call( this, minWidthFrom, arguments, this.rulesSizeBound, this.rulesSizeBoundProp, SIZE_WIDTH );
-			break;
+			case BOUND_SIZE_WIDTH:
+				return addRule.call( this, minWidthFrom, arguments, this.rulesSizeBound, this.rulesSizeBoundProp, BOUND_SIZE_WIDTH );
+			
 
 			case SIZE_HEIGHT:
-				addRule.call( this, minHeightFrom, arguments, this.rulesSizeBound, this.rulesSizeBoundProp, SIZE_HEIGHT );
-			break;
+			case BOUND_SIZE_HEIGHT:
+				return addRule.call( this, minHeightFrom, arguments, this.rulesSizeBound, this.rulesSizeBoundProp, BOUND_SIZE_HEIGHT );
+			
 
 			case POSITION:
-				addRule.call( this, minPositionFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, POSITION );
-			break;
+			case BOUND_POSITION:
+				return addRule.call( this, minPositionFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION );
+			
 
 			case POSITION_X:
-				addRule.call( this, minXFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, POSITION_X );
-			break;
+			case BOUND_POSITION_X:
+				return addRule.call( this, minXFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION_X );
+			
 
 			case POSITION_Y:
-				addRule.call( this, minYFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, POSITION_Y );
-			break;
+			case BOUND_POSITION_Y:
+				return addRule.call( this, minYFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION_Y );
+			
 		}		
 	} else {
 
 		switch( this.lastPropTypeEffected ) {
 
 			case SIZE:
-				addRule.call( this, minSize, arguments, this.rulesSizeBound, this.rulesSizeBoundProp, SIZE );
-			break;
+			case BOUND_SIZE:
+				return addRule.call( this, minSize, arguments, this.rulesSizeBound, this.rulesSizeBoundProp, BOUND_SIZE );
+			
 
 			case SIZE_WIDTH:
-				addRule.call( this, minWidth, arguments, this.rulesSizeBound, this.rulesSizeBoundProp, SIZE_WIDTH );
-			break;
+			case BOUND_SIZE_WIDTH:
+				return addRule.call( this, minWidth, arguments, this.rulesSizeBound, this.rulesSizeBoundProp, BOUND_SIZE_WIDTH );
+			
 
 			case SIZE_HEIGHT:
-				addRule.call( this, minHeight, arguments, this.rulesSizeBound, this.rulesSizeBoundProp, SIZE_HEIGHT );
-			break;
+			case BOUND_SIZE_HEIGHT:
+				return addRule.call( this, minHeight, arguments, this.rulesSizeBound, this.rulesSizeBoundProp, BOUND_SIZE_HEIGHT );
+			
 
 			case POSITION:
-				addRule.call( this, minPosition, arguments, this.rulesPosBound, this.rulesPosBoundProp, POSITION );
-			break;
+			case BOUND_POSITION:
+				return addRule.call( this, minPosition, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION );
+			
 
 			case POSITION_X:
-				addRule.call( this, minX, arguments, this.rulesPosBound, this.rulesPosBoundProp, POSITION_X );
-			break;
+			case BOUND_POSITION_X:
+				return addRule.call( this, minX, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION_X );
+			
 
 			case POSITION_Y:
-				addRule.call( this, minY, arguments, this.rulesPosBound, this.rulesPosBoundProp, POSITION_Y );
-			break;
+			case BOUND_POSITION_Y:
+				return addRule.call( this, minY, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION_Y );
+			
 		}
 	}
-
-	return this;
 };
 
 LayoutNode.prototype.max = function() {
@@ -825,69 +941,133 @@ LayoutNode.prototype.max = function() {
 		switch( this.lastPropTypeEffected ) {
 
 			case SIZE:
-				addRule.call( this, maxSizeFrom, arguments, this.rulesSizeBound, this.rulesSizeBoundProp, SIZE );
-			break;
+			case BOUND_SIZE:
+				return addRule.call( this, maxSizeFrom, arguments, this.rulesSizeBound, this.rulesSizeBoundProp, BOUND_SIZE );
+			
 
 			case SIZE_WIDTH:
-				addRule.call( this, maxWidthFrom, arguments, this.rulesSizeBound, this.rulesSizeBoundProp, SIZE_WIDTH );
-			break;
+			case BOUND_SIZE_WIDTH:
+				return addRule.call( this, maxWidthFrom, arguments, this.rulesSizeBound, this.rulesSizeBoundProp, BOUND_SIZE_WIDTH );
+			
 
 			case SIZE_HEIGHT:
-				addRule.call( this, maxHeightFrom, arguments, this.rulesSizeBound, this.rulesSizeBoundProp, SIZE_HEIGHT );
-			break;
+			case BOUND_SIZE_HEIGHT:
+				return addRule.call( this, maxHeightFrom, arguments, this.rulesSizeBound, this.rulesSizeBoundProp, BOUND_SIZE_HEIGHT );
+			
 
 			case POSITION:
-				addRule.call( this, maxPositionFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, POSITION );
-			break;
+			case BOUND_POSITION:
+				return addRule.call( this, maxPositionFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION );
+			
 
 			case POSITION_X:
-				addRule.call( this, maxXFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, POSITION_X );
-			break;
+			case BOUND_POSITION_X:
+				return addRule.call( this, maxXFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION_X );
+			
 
 			case POSITION_Y:
-				addRule.call( this, maxYFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, POSITION_Y );
-			break;
+			case BOUND_POSITION_Y:
+				return addRule.call( this, maxYFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION_Y );
+			
 		}
 	} else {
 
 		switch( this.lastPropTypeEffected ) {
 
 			case SIZE:
-				addRule.call( this, maxSize, arguments, this.rulesSizeBound, this.rulesSizeBoundProp, SIZE );
-			break;
+			case BOUND_SIZE:
+				return addRule.call( this, maxSize, arguments, this.rulesSizeBound, this.rulesSizeBoundProp, BOUND_SIZE );
+			
 
 			case SIZE_WIDTH:
-				addRule.call( this, maxWidth, arguments, this.rulesSizeBound, this.rulesSizeBoundProp, SIZE_WIDTH );
-			break;
+			case BOUND_SIZE_WIDTH:
+				return addRule.call( this, maxWidth, arguments, this.rulesSizeBound, this.rulesSizeBoundProp, BOUND_SIZE_WIDTH );
+			
 
 			case SIZE_HEIGHT:
-				addRule.call( this, maxHeight, arguments, this.rulesSizeBound, this.rulesSizeBoundProp, SIZE_HEIGHT );
-			break;
+			case BOUND_SIZE_HEIGHT:
+				return addRule.call( this, maxHeight, arguments, this.rulesSizeBound, this.rulesSizeBoundProp, BOUND_SIZE_HEIGHT );
+			
 
 			case POSITION:
-				addRule.call( this, maxPosition, arguments, this.rulesPosBound, this.rulesPosBoundProp, POSITION );
-			break;
+			case BOUND_POSITION:
+				return addRule.call( this, maxPosition, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION );
+			
 
 			case POSITION_X:
-				addRule.call( this, maxX, arguments, this.rulesPosBound, this.rulesPosBoundProp, POSITION_X );
-			break;
+			case BOUND_POSITION_X:
+				return addRule.call( this, maxX, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION_X );
+			
 
 			case POSITION_Y:
-				addRule.call( this, maxY, arguments, this.rulesPosBound, this.rulesPosBoundProp, POSITION_Y );
-			break;
+			case BOUND_POSITION_Y:
+				return addRule.call( this, maxY, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION_Y );
+			
 		}
 	}
+};
+
+
+/************************************************************/
+/************************************************************/
+/*********************CONDITIONALS***************************/
+/************************************************************/
+/************************************************************/
+function addConditional( cFunction, cArguments ) {
+
+	if( !this._isDoingWhen ) {
+
+		throw 'Before adding a conditional such as "widthGreaterThan" you should call the "when" function to declare which item we\'ll be comparing to';
+	}
+
+	var idx = this.itemsToCompare.length - 1;
+
+	this._hasConditional = true;
+
+	if( this.itemsToCompare.length != this.conditionalsForItem.length ) {
+
+		this.conditionalsForItem.push( [] );
+		this.conditionalsArgumentsForItem.push( [] );
+	}
+
+	this.conditionalsForItem[ idx ].push( cFunction );
+	this.conditionalsArgumentsForItem[ idx ].push( cArguments );
+
+	return this;
+}
+
+
+LayoutNode.prototype.when = function( node ) {
+
+	//we're checking of this is layout node created based on conditionals
+	//if when is called we should kick back to the parent nodes when function and call when there
+	if( this.conditionalParent !== null ) {
+
+		return this.conditionalParent.when( node );
+	}
+
+	//Check if they've called when and tried to call it again
+	if( this._isDoingWhen ) {
+
+		throw 'Tisk tisk you shouldn\'t call when twice in a row';
+
+	//Check if they called when after adding a conditional and not rule
+	} else if( this._hasConditional ) {
+
+		throw 'Please don\'t call when after adding a conditional such as widthGreaterThan';
+	}
+
+	this._isDoingWhen = true;
+
+	this.itemsToCompare.push( node );
 
 	return this;
 };
 
-function addRule( rule, ruleArguments, ruleArr, rulePropArr, type ) {
+LayoutNode.prototype.widthGreaterThan = function( value ) {
 
-	ruleArr.push( rule );
-	rulePropArr.push( ruleArguments );
-
-	this.lastPropTypeEffected = type;
-}
+	return addConditional.call( this, widthGreaterThan, arguments );
+};
 
 
 

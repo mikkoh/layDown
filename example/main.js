@@ -49,9 +49,16 @@ node2.name = 'node2';
 node3.name = 'node3';
 node4.name = 'node4';
 
+
+
+
+
+
 node1.widthIsAPercentageOf( node4, 0.1 ).heightIsAPercentageOf( node4, 0.1 ).max( 20 ).rightAlignedWith( node4 ).bottomAlignedWith( node4 );
 node2.widthIsAPercentageOf( node4, 0.2 ).matchesHeightOf( node1 ).alignedBelow( node1 ).rightAlignedWith( node1 );
-node4.matchesSizeOf( layout ).minus( 300 ).rightAlignedWith( layout );
+
+node4.matchesSizeOf( layout ).minus( 300 ).centeredWith( layout )
+.when( layout ).widthGreaterThan( 900 ).sizeIs( 400, 300 ).rightAlignedWith( layout );
 
 node3.addCustomRule( function() {
 
