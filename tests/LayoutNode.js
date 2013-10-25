@@ -216,12 +216,12 @@ function basicTests() {
 		test.equal( node2.y, 5, 'centeredWith y minus value was not correct' );
 		node2.resetRules();
 
-		node2.sizeIs( 110, 110 ).horizonallyCenteredWith( node1 ).doLayout();
-		test.equal( node2.x, 5, 'horizonallyCenteredWith value was not correct' );
+		node2.sizeIs( 110, 110 ).horizontallyCenteredWith( node1 ).doLayout();
+		test.equal( node2.x, 5, 'horizontallyCenteredWith value was not correct' );
 		node2.plus( 10 ).doLayout();
-		test.equal( node2.x, 15, 'horizonallyCenteredWith plus value was not correct' );
+		test.equal( node2.x, 15, 'horizontallyCenteredWith plus value was not correct' );
 		node2.minus( 10 ).doLayout();
-		test.equal( node2.x, 5, 'horizonallyCenteredWith minus value was not correct' );
+		test.equal( node2.x, 5, 'horizontallyCenteredWith minus value was not correct' );
 		node2.resetRules();
 
 		node2.sizeIs( 110, 110 ).verticallyCenteredWith( node1 ).doLayout();

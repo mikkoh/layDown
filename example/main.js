@@ -54,11 +54,12 @@ node4.name = 'node4';
 
 
 
-node1.widthIsAPercentageOf( node4, 0.1 ).heightIsAPercentageOf( node4, 0.1 ).max( 20 ).rightAlignedWith( node4 ).bottomAlignedWith( node4 );
+node1.sizeIs( 200, 40 ).leftAlignedWith( node4 ).bottomAlignedWith( node4 );
 node2.widthIsAPercentageOf( node4, 0.2 ).matchesHeightOf( node1 ).alignedBelow( node1 ).rightAlignedWith( node1 );
 
-node4.matchesSizeOf( layout ).minus( 300 ).centeredWith( layout )
-.when( layout ).widthGreaterThan( 900 ).andWhen( layout ).heightGreaterThan( 400 ).sizeIs( 400, 300 ).rightAlignedWith( layout );
+node4.verticallyCenteredWith( layout )
+.when( layout ).widthGreaterThan( 900 ).andWhen( layout ).heightGreaterThan( 600 ).sizeIs( 400, 300 ).rightAlignedWith( layout )
+.default().matchesSizeOf( layout ).minus( 300 ).horizontallyCenteredWith( layout );
 
 node3.addCustomRule( function() {
 
@@ -68,19 +69,19 @@ node3.addCustomRule( function() {
 
 
 
-elem1.onmousedown = function() {
+// elem1.onmousedown = function() {
 
-	window.onmousemove = function( ev ) {
+// 	window.onmousemove = function( ev ) {
 
-		node1.x = ev.pageX;
-		node1.y = ev.pageY;
-	};
-};
+// 		node1.x = ev.pageX;
+// 		node1.y = ev.pageY;
+// 	};
+// };
 
-elem1.onmouseup = function() {
+// elem1.onmouseup = function() {
 
-	window.onmousemove = undefined;
-};
+// 	window.onmousemove = undefined;
+// };
 
 
 

@@ -7,7 +7,7 @@ var alignedRightOf = require( './layoutPosition/alignedRightOf' );
 var alignedWith = require( './layoutPosition/alignedWith' );
 var bottomAlignedWith = require( './layoutPosition/bottomAlignedWith' );
 var centeredWith = require( './layoutPosition/centeredWith' );
-var horizonallyCenteredWith = require( './layoutPosition/horizonallyCenteredWith' );
+var horizontallyCenteredWith = require( './layoutPosition/horizontallyCenteredWith' );
 var leftAlignedWith = require( './layoutPosition/leftAlignedWith' );
 var positionIs = require( './layoutPosition/positionIs' );
 var rightAlignedWith = require( './layoutPosition/rightAlignedWith' );
@@ -151,6 +151,7 @@ LayoutNode.prototype._offWidth = 0;
 LayoutNode.prototype._offHeight = 0;
 LayoutNode.prototype._isDoingWhen = false;
 LayoutNode.prototype._hasConditional = false;
+LayoutNode.prototype._isDoingDefault = false;
 LayoutNode.prototype.layout = null;
 LayoutNode.prototype.item = null;
 LayoutNode.prototype.layoutFunction = null;
@@ -170,6 +171,7 @@ LayoutNode.prototype.itemsToCompare = null;
 LayoutNode.prototype.conditionalsForItem = null;
 LayoutNode.prototype.conditionalsArgumentsForItem = null;
 LayoutNode.prototype.layoutNodeForConditional = null;
+LayoutNode.prototype.layoutNodeForDefault = null;
 LayoutNode.prototype.conditionalParent = null; //this is the parent LayoutNode that this conditional LayoutNode was created from
 
 Object.defineProperty( LayoutNode.prototype, 'x', {
@@ -252,7 +254,11 @@ LayoutNode.prototype.doLayout = function() {
 
 	this.hasBeenLayedOut = true;
 
+	this._x = this._y = this._width = this._height = 0;
+
 	if( this.itemsToCompare.length > 0 ) {
+
+		var conditionalLayedOut = false;
 
 		for( var i = 0, lenI = this.itemsToCompare.length; i < lenI; i++ ) {
 
@@ -276,26 +282,37 @@ LayoutNode.prototype.doLayout = function() {
 			//instead of "this" which is now considered the default value
 			if( isConditionalValid ) {
 
-				doLayoutWork.call( layoutNode );
+				layoutNode.doLayout();
 
+				conditionalLayedOut = true;
 				//since layout is performed we'll just exit this function
-				return;
+				break;
 			}
+		}
+
+		//if all of the above evaluated false then we'll get here
+		//in which case we should check if theres a default
+		if( !conditionalLayedOut ) {
+
+			this.layoutNodeForDefault.doLayout();
 		}
 	}
 
-	//since none of the above conditionals validated properly 
-	//or there were no conditionals
-	//then we'll just do layout on boring old this
+	//after conditionals have evaluated we may want to run
+	//items that we will ALWAYS RUN
 	doLayoutWork.call( this );
+
+	//If this layoyt node has something to position and size and has a layout function run it
+	if( this.item && this.layoutFunction ) {
+		
+		this.layoutFunction( this.item, this );
+	}
 };
 
 
 //this is not a property of the prototype cause there's no need to have two functions
 //on prototype that have similar names and in theory the other always uses the other
 function doLayoutWork() {
-
-	this._x = this._y = this._width = this._height = 0;
 
 	if( !( this instanceof LayoutNode ) ) {
 
@@ -353,16 +370,10 @@ function doLayoutWork() {
 	//for the parent also
 	if( this.conditionalParent != null ) {
 
-		this.conditionalParent._x = this._x;
-		this.conditionalParent._y = this._y;
-		this.conditionalParent._width = this._width;
-		this.conditionalParent._height = this._height;
-	}
-
-	//check if this is just a utility LayoutNode (it doesn't actually position and resize anything)
-	if( this.item ) {
-		
-		this.layoutFunction( this.item, this );
+		this.conditionalParent._x += this._x;
+		this.conditionalParent._y += this._y;
+		this.conditionalParent._width += this._width;
+		this.conditionalParent._height += this._height;
 	}
 };
 
@@ -535,15 +546,22 @@ function addRule( rule, ruleArguments, ruleArr, rulePropArr, type ) {
 
 	//if these are both true then when has been called and a conditional
 	//has been added so we should create a new layout node for the conditionals
-	} else if( this._isDoingWhen && this._hasConditional ) {
+	} else if( ( this._isDoingWhen && this._hasConditional ) || this._isDoingDefault ) {
+
+		var nNode = new LayoutNode( this.layout, this.item );
+		nNode.conditionalParent = this;
+
+		if( !this._isDoingDefault ) {
+
+			this.layoutNodeForConditional.push( nNode );
+		} else {
+
+			this.layoutNodeForDefault = nNode;
+		}
 
 		this._isDoingWhen = false;
 		this._hasConditional = false;
-
-		var nNode = new LayoutNode( this.layout, this.item, this.layoutFunction );
-		nNode.conditionalParent = this;
-
-		this.layoutNodeForConditional.push( nNode );
+		this._isDoingDefault = false;
 
 		//need to figure out which ruleArr and rulePropArr to use
 		switch( type ) {
@@ -687,11 +705,11 @@ LayoutNode.prototype.centeredWith = function( item ) {
 	return addRule.call( this, centeredWith, arguments, this.rulesPos, this.rulesPosProp, POSITION );
 };
 
-LayoutNode.prototype.horizonallyCenteredWith = function( item ) {
+LayoutNode.prototype.horizontallyCenteredWith = function( item ) {
 
 	this.addDependency( item );
 
-	return addRule.call( this, horizonallyCenteredWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
+	return addRule.call( this, horizontallyCenteredWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
 };
 
 LayoutNode.prototype.verticallyCenteredWith = function( item ) {
@@ -1094,6 +1112,18 @@ LayoutNode.prototype.andWhen = function( node ) {
 
 	var idx = this.itemsToCompare.length - 1;
 	this.itemsToCompare[ idx ].push( node );
+
+	return this;
+};
+
+LayoutNode.prototype.default = function() {
+
+	this._isDoingDefault = true;
+
+	if( this.conditionalParent ) {
+
+		return this.conditionalParent.default();
+	}
 
 	return this;
 };
