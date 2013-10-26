@@ -70,7 +70,7 @@ node1.height += 10;
 node2.widthIsAPercentageOf( node4, 0.2 ).matchesHeightOf( node1 ).alignedBelow( node1 ).rightAlignedWith( node1 );
 
 node4.verticallyCenteredWith( layout )
-.when( layout ).widthGreaterThan( 900 ).andWhen( layout ).heightGreaterThan( 600 ).sizeIs( 400, 300 ).rightAlignedWith( layout )
+.when( layout ).widthGreaterThan( 900 ).andWhen( layout ).heightGreaterThan( 600 ).sizeIs( 400, 300 ).maxX( 550 ).rightAlignedWith( layout )
 .default().matchesSizeOf( layout ).minus( 300 ).min( 0 ).horizontallyCenteredWith( layout );
 
 node3.addCustomRule( function() {
