@@ -860,16 +860,20 @@ LayoutNode.prototype.plus = function() {
 		case BOUND_SIZE:
 			this._offWidth += arguments[ 0 ];
 			this._offHeight += arguments[ 0 ];
+			this.doNotReadWidth = true;
+			this.doNotReadHeight = true;
 		break;
 
 		case SIZE_WIDTH:
 		case BOUND_SIZE_WIDTH:
 			this._offWidth += arguments[ 0 ];
+			this.doNotReadWidth = true;
 		break;
 
 		case SIZE_HEIGHT:
 		case BOUND_SIZE_HEIGHT:
 			this._offHeight += arguments[ 0 ];
+			this.doNotReadHeight = true;
 		break;
 
 		case POSITION:
@@ -900,16 +904,20 @@ LayoutNode.prototype.minus = function() {
 		case BOUND_SIZE:
 			this._offWidth -= arguments[ 0 ];
 			this._offHeight -= arguments[ 0 ];
+			this.doNotReadWidth = true;
+			this.doNotReadHeight = true;
 		break;
 
 		case SIZE_WIDTH:
 		case BOUND_SIZE_WIDTH:
 			this._offWidth -= arguments[ 0 ];
+			this.doNotReadWidth = true;
 		break;
 
 		case SIZE_HEIGHT:
 		case BOUND_SIZE_HEIGHT:
 			this._offHeight -= arguments[ 0 ];
+			this.doNotReadHeight = true;
 		break;
 
 		case POSITION:

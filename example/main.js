@@ -65,6 +65,8 @@ node4.name = 'node4';
 
 
 node1.widthIs( 200 ).leftAlignedWith( node4 ).bottomAlignedWith( node4 );
+node1.height += 10;
+
 node2.widthIsAPercentageOf( node4, 0.2 ).matchesHeightOf( node1 ).alignedBelow( node1 ).rightAlignedWith( node1 );
 
 node4.verticallyCenteredWith( layout )
