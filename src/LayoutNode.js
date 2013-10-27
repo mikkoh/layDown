@@ -349,6 +349,27 @@ function doLayoutWork() {
 	this._width += this._offWidth;
 	this._height += this._offHeight;
 
+
+
+	//check if we should read in a size for an item
+	if( this.item ) {
+
+		if( !this.doNotReadWidth && !this.doNotReadWidth ) {
+
+			this._width += this.readFunction( this.item, 'width' );
+			this._height += this.readFunction( this.item, 'height' );
+		} else if( !this.doNotReadWidth ) {
+
+			this._width += this.readFunction( this.item, 'width' );
+		} else if( !this.doNotReadHeight ) {
+
+			this._height += this.readFunction( this.item, 'height' );
+		}	
+	}
+
+
+
+
 	for( var i = 0, len = this.rulesSizeBound.length; i < len; i++ ) {
 
 		this.rulesSizeBound[ i ].apply( this, this.rulesSizeBoundProp[ i ] );
@@ -378,22 +399,6 @@ function doLayoutWork() {
 		this.conditionalParent._y += this._y;
 		this.conditionalParent._width += this._width;
 		this.conditionalParent._height += this._height;
-	}
-
-	//check if we should read in a size for an item
-	if( this.item ) {
-
-		if( !this.doNotReadWidth && !this.doNotReadWidth ) {
-
-			this._width += this.readFunction( this.item, 'width' );
-			this._height += this.readFunction( this.item, 'height' );
-		} else if( !this.doNotReadWidth ) {
-
-			this._width += this.readFunction( this.item, 'width' );
-		} else if( !this.doNotReadHeight ) {
-
-			this._height += this.readFunction( this.item, 'height' );
-		}	
 	}
 };
 
