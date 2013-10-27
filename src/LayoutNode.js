@@ -369,13 +369,13 @@ function doLayoutWork() {
 		}	
 	}
 
-
-
-
+	//HANDLE BOUNDING SIZE
 	for( var i = 0, len = this.rulesSizeBound.length; i < len; i++ ) {
 
 		this.rulesSizeBound[ i ].apply( this, this.rulesSizeBoundProp[ i ] );
 	}
+
+
 
 
 	//HANDLE POSITION
@@ -387,10 +387,14 @@ function doLayoutWork() {
 	this._x += this._offX;
 	this._y += this._offY;
 
+
+	//HANDLE BOUNDING POSITION
 	for( var i = 0, len = this.rulesPosBound.length; i < len; i++ ) {
 
 		this.rulesPosBound[ i ].apply( this, this.rulesPosBoundProp[ i ] );
 	}
+
+
 
 	//because other items will actually rely on the values of the
 	//parent node of a conditional node then we need to set the _x, _y, _width, _height
