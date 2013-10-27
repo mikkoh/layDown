@@ -62,6 +62,8 @@ var minWidthFrom = require( './layoutBoundSize/minWidthFrom' );
 //CONDITIONAL FUNCTIONS
 var widthGreaterThan = require( './conditionals/widthGreaterThan' );
 var heightGreaterThan = require( './conditionals/heightGreaterThan' );
+var widthSmallerThan = require( './conditionals/widthSmallerThan' );
+var heightSmallerThan = require( './conditionals/heightSmallerThan' );
 
 
 
@@ -296,7 +298,7 @@ LayoutNode.prototype.doLayout = function() {
 
 		//if all of the above evaluated false then we'll get here
 		//in which case we should check if theres a default
-		if( !conditionalLayedOut ) {
+		if( !conditionalLayedOut && this.layoutNodeForDefault ) {
 
 			this.layoutNodeForDefault.doLayout();
 		}
@@ -565,7 +567,6 @@ LayoutNode.prototype.create = function( itemToLayDown ) {
 //don't want people to get confused if there's an add rule function on the proto
 function addRule( rule, ruleArguments, ruleArr, rulePropArr, type ) {
 
-	
 	if( this.conditionalParent ) { 
 
 		//check wheter width is being effected
@@ -638,16 +639,16 @@ function addRule( rule, ruleArguments, ruleArr, rulePropArr, type ) {
 			case SIZE_WIDTH:
 			case SIZE_HEIGHT:
 
-				ruleArr = nNode.rulesPos;
-				rulePropArr = nNode.rulesPosProp;
+				ruleArr = nNode.rulesSize;
+				rulePropArr = nNode.rulesSizeProp;
 			break;
 
 			case POSITION:
 			case POSITION_X:
 			case POSITION_Y:
 
-				ruleArr = nNode.rulesSize;
-				ruleArr  = nNode.rulesSizeProp;
+				ruleArr = nNode.rulesPos;
+				rulePropArr  = nNode.rulesPosProp;
 			break;
 		}
 
@@ -1340,6 +1341,15 @@ LayoutNode.prototype.heightGreaterThan = function( value ) {
 	return addConditional.call( this, heightGreaterThan, arguments );
 };
 
+LayoutNode.prototype.widthSmallerThan = function( value ) {
+
+	return addConditional.call( this, widthSmallerThan, arguments );
+};
+
+LayoutNode.prototype.heightSmallerThan = function( value ) {
+
+	return addConditional.call( this, heightSmallerThan, arguments );
+};
 
 
 
