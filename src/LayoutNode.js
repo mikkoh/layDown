@@ -346,12 +346,23 @@ function doLayoutWork() {
 	for( var i = 0, len = this.rulesSize.length; i < len; i++ ) {
 
 		this.rulesSize[ i ].apply( this, this.rulesSizeProp[ i ] );
+
+		//HANDLE BOUNDING SIZE
+		for( var j = 0, lenJ = this.rulesSizeBound.length; j < lenJ; j++ ) {
+
+			this.rulesSizeBound[ j ].apply( this, this.rulesSizeBoundProp[ j ] );
+		}
 	}
 
 	this._width += this._offWidth;
 	this._height += this._offHeight;
 
+	//HANDLE BOUNDING SIZE
+	for( var j = 0, lenJ = this.rulesSizeBound.length; j < lenJ; j++ ) {
 
+		this.rulesSizeBound[ j ].apply( this, this.rulesSizeBoundProp[ j ] );
+	}
+	
 
 	//check if we should read in a size for an item
 	if( this.item ) {
@@ -369,12 +380,6 @@ function doLayoutWork() {
 		}	
 	}
 
-	//HANDLE BOUNDING SIZE
-	for( var i = 0, len = this.rulesSizeBound.length; i < len; i++ ) {
-
-		this.rulesSizeBound[ i ].apply( this, this.rulesSizeBoundProp[ i ] );
-	}
-
 
 
 
@@ -382,17 +387,24 @@ function doLayoutWork() {
 	for( var i = 0, len = this.rulesPos.length; i < len; i++ ) {
 
 		this.rulesPos[ i ].apply( this, this.rulesPosProp[ i ] );
+
+		//HANDLE BOUNDING POSITION
+		for( var j = 0, lenJ = this.rulesPosBound.length; j < lenJ; j++ ) {
+
+			this.rulesPosBound[ j ].apply( this, this.rulesPosBoundProp[ j ] );
+		}
 	}
 
 	this._x += this._offX;
 	this._y += this._offY;
 
+	for( var j = 0, lenJ = this.rulesPosBound.length; j < lenJ; j++ ) {
 
-	//HANDLE BOUNDING POSITION
-	for( var i = 0, len = this.rulesPosBound.length; i < len; i++ ) {
-
-		this.rulesPosBound[ i ].apply( this, this.rulesPosBoundProp[ i ] );
+		this.rulesPosBound[ j ].apply( this, this.rulesPosBoundProp[ j ] );
 	}
+
+
+	
 
 
 
@@ -800,7 +812,6 @@ LayoutNode.prototype.heightIs = function( height ) {
 LayoutNode.prototype.sizeIsProportional = function( originalWidth, originalHeight ) {
 
 	return addRule.call( this, sizeIsProportional, arguments, this.rulesSize, this.rulesSizeProp, SIZE );
-
 }
 
 LayoutNode.prototype.widthIsProportional = function( originalWidth, originalHeight ) {
