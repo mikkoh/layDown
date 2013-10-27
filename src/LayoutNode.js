@@ -311,7 +311,7 @@ LayoutNode.prototype.doLayout = function() {
 	//If this layoyt node has something to position and size and has a layout function run it
 	if( this.item && this.layoutFunction ) {
 		
-		this.layoutFunction( this.item, this );
+		this.layoutFunction( this.item, this, this.doNotReadWidth, this.doNotReadHeight );
 	}
 };
 
@@ -358,14 +358,14 @@ function doLayoutWork() {
 
 		if( !this.doNotReadWidth && !this.doNotReadWidth ) {
 
-			this._width += this.readFunction( this.item, 'width' );
-			this._height += this.readFunction( this.item, 'height' );
+			this._width = this.readFunction( this.item, 'width' );
+			this._height = this.readFunction( this.item, 'height' );
 		} else if( !this.doNotReadWidth ) {
 
-			this._width += this.readFunction( this.item, 'width' );
+			this._width = this.readFunction( this.item, 'width' );
 		} else if( !this.doNotReadHeight ) {
 
-			this._height += this.readFunction( this.item, 'height' );
+			this._height = this.readFunction( this.item, 'height' );
 		}	
 	}
 
