@@ -1,8 +1,13 @@
 *, *:before, *:after {
 
-  -moz-box-sizing: border-box; 
-  -webkit-box-sizing: border-box; 
-  box-sizing: border-box;
+	-moz-box-sizing: border-box; 
+	-webkit-box-sizing: border-box; 
+	box-sizing: border-box;	
+}
+
+div, img {
+
+	position: absolute;
 }
 
 body {
@@ -10,18 +15,9 @@ body {
 	font-family: 'Oxygen', sans-serif;
 }
 
-div {
-	position: absolute;
-}
-
-img#logo {
-
-	position: absolute;	
-}
-
 div.menuItem {
 
-	background-color: #EEE;
+	background-color: #A4A4A4;
 	text-align: center;
 	padding: 20px;
 }
