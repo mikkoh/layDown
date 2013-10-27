@@ -1,0 +1,33 @@
+*, *:before, *:after {
+
+  -moz-box-sizing: border-box; 
+  -webkit-box-sizing: border-box; 
+  box-sizing: border-box;
+}
+
+body {
+
+	font-family: 'Oxygen', sans-serif;
+}
+
+div {
+	position: absolute;
+}
+
+img#logo {
+
+	position: absolute;	
+}
+
+div.menuItem {
+
+	background-color: #EEE;
+	text-align: center;
+	padding: 20px;
+}
+
+div.content {
+
+	background-color: #F00;
+	padding: 100px;
+}

@@ -2,18 +2,20 @@ var LayDown = require( '../src/LayDown' );
 
 console.log( 'HEY THERE SUNSHINE' );
 
-function layoutFunction( item, node ) { 
+function layoutFunction( item, node, setWidth, setHeight ) { 
 
-	item.style.left = Math.round( node.x ) + 'px';
-	item.style.top = Math.round( node.y ) + 'px';
-	item.style.width = Math.round( node.width ) + 'px';
-	item.style.height = Math.round( node.height ) + 'px';
+	item.style.left = Math.floor( node.x ) + 'px';
+	item.style.top = Math.floor( node.y ) + 'px';
 
-	var smaller = Math.min( node.width, node.height );
+	if( setWidth ) {
 
-	item.style[ 'fontSize' ] = ( smaller / 30 * 12 ) + 'px';
+		item.style.width = Math.floor( node.width ) + 'px';
+	}
 
-	//console.log( node.name, node.x, node.y, node.width, node.height );
+	if( setHeight ) {
+
+		item.style.height = Math.floor( node.height ) + 'px';
+	}
 }
 
 function readFunction( item, name ) {
@@ -32,69 +34,41 @@ function readFunction( item, name ) {
 
 var layout = new LayDown( layoutFunction, readFunction );
 
-var elem1 = document.getElementById( 'node1' );
-elem1.style.backgroundColor = '#CAFE00';
-elem1.style.position = 'absolute';
+var logo = layout.create( document.getElementById( 'logo' ) );
 
-var elem2 = document.getElementById( 'node2' );
-elem2.style.backgroundColor = '#FF0000';
-elem2.style.position = 'absolute';
+var menu = layout.create();
+var menu1 = layout.create( document.getElementById( 'menu1' ) );
+var menu2 = layout.create( document.getElementById( 'menu2' ) );
+var menu3 = layout.create( document.getElementById( 'menu3' ) );
+var content1 = layout.create( document.getElementById( 'content1' ) );
+var content2 = layout.create( document.getElementById( 'content2' ) );
 
-var elem3 = document.getElementById( 'node3' );
-elem3.style.backgroundColor = '#444';
-elem3.style.position = 'absolute';
+logo.name = 'logo';
+menu.name = 'menu';
+menu1.name = 'menu1';
+menu2.name = 'menu2';
+menu3.name = 'menu3';
 
-var elem4 = document.getElementById( 'node4' );
-elem4.style.backgroundColor = '#00F';
-elem4.style.position = 'absolute';
+logo.horizontallyCenteredWith( layout ).topAlignedWith( layout )
+.when( layout ).heightSmallerThan( 282 ).matchesHeightOf( layout ).minus( 60 ).widthIsProportional( 200, 282 )
+.default().sizeIs( 200, 282 );
 
+menu.matchesWidthOf( layout ).horizontallyCenteredWith( layout ).alignedBelow( logo ).plus( 20 );
 
-var node1 = layout.create( elem1 );
-var node2 = layout.create( elem2 );
-var node3 = layout.create( elem3 );
-var node4 = layout.create( elem4 );
+menu1.alignedWith( menu )
+.when( menu ).widthSmallerThan( 600 ).matchesWidthOf( menu )
+.default().widthIsAPercentageOf( menu, 0.33333 ).minus( 1 );
 
-node1.name = 'node1';
-node2.name = 'node2';
-node3.name = 'node3';
-node4.name = 'node4';
+menu2.matchesSizeOf( menu1 )
+.when( menu ).widthSmallerThan( 600 ).alignedBelow( menu1 ).plus( 3 ).leftAlignedWith( menu1 )
+.default().topAlignedWith( menu ).alignedRightOf( menu1 ).plus( 3 );
 
+menu3.matchesSizeOf( menu1 )
+.when( menu ).widthSmallerThan( 600 ).alignedBelow( menu2 ).plus( 3 ).leftAlignedWith( menu1 )
+.default().topAlignedWith( menu ).alignedRightOf( menu2 ).plus( 3 );
 
-
-
-
-
-node1.widthIs( 200 ).leftAlignedWith( node4 ).bottomAlignedWith( node4 );
-node1.height += 10;
-
-node2.widthIsAPercentageOf( node4, 0.2 ).matchesHeightOf( node1 ).alignedBelow( node1 ).rightAlignedWith( node1 );
-
-node4.verticallyCenteredWith( layout )
-.when( layout ).widthGreaterThan( 900 ).andWhen( layout ).heightGreaterThan( 600 ).sizeIs( 400, 300 ).maxX( 550 ).rightAlignedWith( layout )
-.default().matchesSizeOf( layout ).minus( 300 ).min( 0 ).horizontallyCenteredWith( layout );
-
-node3.addCustomRule( function() {
-
-	this._x += layout.width * 0.5;
-	this._y += layout.height * 0.5;
-}, node3.POSITION_LAYOUT, 30, 30 ).max( node4 ).matchesHeightOf( node1 ).min( node4 ).widthIs( 60 );
-
-
-
-// elem1.onmousedown = function() {
-
-// 	window.onmousemove = function( ev ) {
-
-// 		node1.x = ev.pageX;
-// 		node1.y = ev.pageY;
-// 	};
-// };
-
-// elem1.onmouseup = function() {
-
-// 	window.onmousemove = undefined;
-// };
-
+content1.matchesWidthOf( menu ).heightIs( 200 ).alignedBelow( menu3 ).plus( 3 );
+content2.matchesWidthOf( menu ).heightIs( 200 ).alignedBelow( content1 ).plus( 3 );
 
 
 
