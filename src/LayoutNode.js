@@ -903,8 +903,17 @@ LayoutNode.prototype.plus = function() {
 
 		case SIZE:
 		case BOUND_SIZE:
-			this._offWidth += arguments[ 0 ];
-			this._offHeight += arguments[ 0 ];
+
+			if( arguments.length == 1 ) {
+
+				this._offWidth += arguments[ 0 ];
+				this._offHeight += arguments[ 0 ];	
+			} else if( arguments.length == 2 ) {
+
+				this._offWidth += arguments[ 0 ];
+				this._offHeight += arguments[ 1 ];
+			}
+			
 			this.doNotReadWidth = true;
 			this.doNotReadHeight = true;
 		break;
@@ -923,8 +932,16 @@ LayoutNode.prototype.plus = function() {
 
 		case POSITION:
 		case BOUND_POSITION:
-			this._offX += arguments[ 0 ];
-			this._offY += arguments[ 0 ];
+			if( arguments.length == 1 ) {
+
+				this._offX += arguments[ 0 ];
+				this._offY += arguments[ 0 ];	
+			} else if( arguments.length == 2 ) {
+
+				this._offX += arguments[ 0 ];
+				this._offY += arguments[ 1 ];
+			}
+			
 		break;
 
 		case POSITION_X:
@@ -947,8 +964,17 @@ LayoutNode.prototype.minus = function() {
 
 		case SIZE:
 		case BOUND_SIZE:
-			this._offWidth -= arguments[ 0 ];
-			this._offHeight -= arguments[ 0 ];
+
+			if( arguments.length == 1 ) {
+
+				this._offWidth -= arguments[ 0 ];
+				this._offHeight -= arguments[ 0 ];	
+			} else if( arguments.length == 2 ) {
+
+				this._offWidth -= arguments[ 0 ];
+				this._offHeight -= arguments[ 1 ];
+			}
+			
 			this.doNotReadWidth = true;
 			this.doNotReadHeight = true;
 		break;
@@ -967,8 +993,16 @@ LayoutNode.prototype.minus = function() {
 
 		case POSITION:
 		case BOUND_POSITION:
-			this._offX -= arguments[ 0 ];
-			this._offY -= arguments[ 0 ];
+
+			if( arguments.length == 1 ) {
+
+				this._offX -= arguments[ 0 ];
+				this._offY -= arguments[ 0 ];
+			} else if( arguments.length == 2 ) {
+
+				this._offX -= arguments[ 0 ];
+				this._offY -= arguments[ 1 ];
+			}
 		break;
 
 		case POSITION_X:
