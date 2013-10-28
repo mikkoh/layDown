@@ -69,7 +69,7 @@ menu1.alignedWith( menu )
 .default().widthIsAPercentageOf( menu, 0.33333 ).minus( 1 );
 
 menu2.matchesSizeOf( menu1 )
-.when( menu ).widthSmallerThan( 600 ).alignedBelow( menu1 ).plus( 3 ).leftAlignedWith( menu1 )
+.when( menu ).widthSmallerThan( 600 ).on( onMenu2SmallerThan600 ).alignedBelow( menu1 ).plus( 3 ).leftAlignedWith( menu1 )
 .default().topAlignedWith( menu ).alignedRightOf( menu1 ).plus( 3 );
 
 menu3.matchesSizeOf( menu1 )
@@ -93,4 +93,9 @@ window.onresize = onResize;
 function onResize() {
 
 	layout.resizeAndPosition( 0, 0, window.innerWidth, window.innerHeight );
+}
+
+function onMenu2SmallerThan600( isSmaller ) {
+
+	console.log( 'MENU2 IS SMALLER', isSmaller );
 }

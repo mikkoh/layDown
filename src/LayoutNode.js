@@ -114,6 +114,7 @@ var LayoutNode = function( layout, item, layoutFunction, readFunction ) {
 	this.conditionalsForItem = [];
 	this.conditionalsArgumentsForItem = [];
 	this.layoutNodeForConditional = [];
+	this.conditionalListeners = [];
 };
 
 LayoutNode.SIZE_LAYOUT = 'SIZE_LAYOUT';
@@ -177,6 +178,8 @@ LayoutNode.prototype.conditionalsArgumentsForItem = null;
 LayoutNode.prototype.layoutNodeForConditional = null;
 LayoutNode.prototype.layoutNodeForDefault = null;
 LayoutNode.prototype.conditionalParent = null; //this is the parent LayoutNode that this conditional LayoutNode was created from
+LayoutNode.prototype.conditionalListeners = null;
+LayoutNode.prototype.defaultConditionalListener = null;
 LayoutNode.prototype.doNotReadWidth = false;
 LayoutNode.prototype.doNotReadHeight = false;
 
@@ -262,6 +265,8 @@ LayoutNode.prototype.doLayout = function() {
 
 	this._x = this._y = this._width = this._height = 0;
 
+	var listenerForConditional = null;
+
 	if( this.itemsToCompare.length > 0 ) {
 
 		var conditionalLayedOut = false;
@@ -291,14 +296,25 @@ LayoutNode.prototype.doLayout = function() {
 				layoutNode.doLayout();
 
 				conditionalLayedOut = true;
+
+				listenerForConditional = this.conditionalListeners[ i ];
+
 				//since layout is performed we'll just exit this function
 				break;
+			} else {
+
+				if( this.conditionalListeners[ i ] ) {
+
+					this.conditionalListeners[ i ]( false );
+				}				
 			}
 		}
 
 		//if all of the above evaluated false then we'll get here
 		//in which case we should check if theres a default
 		if( !conditionalLayedOut && this.layoutNodeForDefault ) {
+
+			listenerForConditional = this.defaultConditionalListener;
 
 			this.layoutNodeForDefault.doLayout();
 		}
@@ -312,6 +328,12 @@ LayoutNode.prototype.doLayout = function() {
 	if( this.item && this.layoutFunction ) {
 		
 		this.layoutFunction( this.item, this, this.doNotReadWidth, this.doNotReadHeight );
+	}
+
+	//if a conditional has been validated it should be called now
+	if( listenerForConditional ) {
+
+		listenerForConditional( true );
 	}
 };
 
@@ -1316,6 +1338,8 @@ LayoutNode.prototype.when = function( node ) {
 	this.itemsToCompare.push( itemArray );
 	itemArray.push( node );
 
+	this.conditionalListeners.push( null );
+
 	return this;
 };
 
@@ -1341,6 +1365,25 @@ LayoutNode.prototype.default = function() {
 	if( this.conditionalParent ) {
 
 		return this.conditionalParent.default();
+	}
+
+	return this;
+};
+
+LayoutNode.prototype.on = function( listener ) {
+
+	if( this.conditionalParent ) {
+
+		this.conditionalParent.on( listener );
+	} else if( this._isDoingWhen && this._hasConditional ) {
+
+		if( !this._isDoingDefault ) {
+
+			this.conditionalListeners[ this.conditionalListeners.length - 1 ] = listener;
+		} else {
+
+			this.defaultConditionalListener = listener;
+		}
 	}
 
 	return this;
