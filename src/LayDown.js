@@ -1,10 +1,11 @@
 var LayDownNode = require( './LayoutNode' );
 
 
-var LayDown = function( layoutFunction, readFunction ) {
+var LayDown = function( layoutFunction, readFunction, createFunction ) {
 
 	this.layoutFunction = layoutFunction;
 	this.readFunction = readFunction;
+	this.createFunction = createFunction;
 	this.nodes = [];
 };
 
@@ -14,9 +15,15 @@ LayDown.prototype.width = 0;
 LayDown.prototype.height = 0;
 LayDown.prototype.layoutFunction = null;
 LayDown.prototype.readFunction = null;
+LayDown.prototype.createFunction = null;
 LayDown.prototype.nodes = null;
 
 LayDown.prototype.create = function( itemToLayDown ) {
+
+	if( itemToLayDown && this.createFunction != null ) {
+
+		this.createFunction( itemToLayDown );
+	}
 
 	var nNode = new LayDownNode( this, itemToLayDown, this.layoutFunction, this.readFunction );	
 

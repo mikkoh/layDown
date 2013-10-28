@@ -29,10 +29,19 @@ function readFunction( item, name ) {
 	}
 }
 
+function createFunction( item ) {
+
+	item.style[ 'box-sizing' ] = 'border-box';
+	item.style[ '-moz-box-sizing' ] = 'border-box';
+	item.style[ '-webkit-box-sizing' ] = 'border-box';
+
+	item.style[ 'position' ] = 'absolute';
+}
 
 
 
-var layout = new LayDown( layoutFunction, readFunction );
+
+var layout = new LayDown( layoutFunction, readFunction, createFunction );
 
 var logo = layout.create( document.getElementById( 'logo' ) );
 
