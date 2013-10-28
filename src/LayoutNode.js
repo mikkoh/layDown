@@ -180,6 +180,8 @@ LayoutNode.prototype.layoutNodeForDefault = null;
 LayoutNode.prototype.conditionalParent = null; //this is the parent LayoutNode that this conditional LayoutNode was created from
 LayoutNode.prototype.conditionalListeners = null;
 LayoutNode.prototype.defaultConditionalListener = null;
+LayoutNode.prototype.lastConditionalListnerIdx = -1;
+LayoutNode.prototype.lastConditionalListenerIsDefault = false;
 LayoutNode.prototype.doNotReadWidth = false;
 LayoutNode.prototype.doNotReadHeight = false;
 
@@ -1339,6 +1341,8 @@ LayoutNode.prototype.when = function( node ) {
 	itemArray.push( node );
 
 	this.conditionalListeners.push( null );
+	this.lastConditionalListnerIdx = this.conditionalListeners.length - 1;
+	this.lastConditionalListenerIsDefault = false;
 
 	return this;
 };
@@ -1367,19 +1371,26 @@ LayoutNode.prototype.default = function() {
 		return this.conditionalParent.default();
 	}
 
+	this.lastConditionalListnerIdx = -1;
+	this.lastConditionalListenerIsDefault = true;
+
 	return this;
 };
 
 LayoutNode.prototype.on = function( listener ) {
 
+
 	if( this.conditionalParent ) {
 
 		this.conditionalParent.on( listener );
-	} else if( this._isDoingWhen && this._hasConditional ) {
+	} else {
 
-		if( !this._isDoingDefault ) {
+		if( !this.lastConditionalListenerIsDefault ) {
 
-			this.conditionalListeners[ this.conditionalListeners.length - 1 ] = listener;
+			if( this.lastConditionalListnerIdx > -1 ) {
+
+				this.conditionalListeners[ this.lastConditionalListnerIdx ] = listener;
+			}
 		} else {
 
 			this.defaultConditionalListener = listener;
