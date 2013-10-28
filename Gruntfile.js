@@ -34,4 +34,5 @@ module.exports = function( grunt ) {
 
 	grunt.registerTask( 'test', [ 'nodeunit' ] );
 	grunt.registerTask( 'default', [ 'watch:example' ] );
+	grunt.registerTask( 'buildExample', [ 'browserify:example' ] );
 };
