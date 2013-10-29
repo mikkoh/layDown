@@ -79,7 +79,6 @@ menu3.matchesSizeOf( menu1 )
 .default().topAlignedWith( menu ).alignedRightOf( menu2 ).plus( 3 );
 
 content1.matchesWidthOf( menu ).min( 900 ).heightIsProportional( 2700, 652 ).alignedBelow( menu3 ).plus( 3 ).horizontallyCenteredWith( menu );
-
 content2.matchesWidthOf( menu ).heightIs( 200 ).alignedBelow( content1 ).plus( 3 );
 
 

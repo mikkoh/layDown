@@ -174,6 +174,10 @@ LayoutNode.prototype._x = 0;
 LayoutNode.prototype._y = 0;
 LayoutNode.prototype._width = 0;
 LayoutNode.prototype._height = 0;
+LayoutNode.prototype._offX = 0;
+LayoutNode.prototype._offY = 0;
+LayoutNode.prototype._offWidth = 0;
+LayoutNode.prototype._offHeight = 0;
 LayoutNode.prototype._isDoingWhen = false;
 LayoutNode.prototype._hasConditional = false;
 LayoutNode.prototype._isDoingDefault = false;
@@ -206,6 +210,7 @@ LayoutNode.prototype.lastConditionalListenerIsDefault = false;
 LayoutNode.prototype.doNotReadWidth = false;
 LayoutNode.prototype.doNotReadHeight = false;
 
+
 Object.defineProperty( LayoutNode.prototype, 'x', {
 
 	get: function() {
@@ -216,8 +221,9 @@ Object.defineProperty( LayoutNode.prototype, 'x', {
 	set: function( value ) {
 
 		this.lastPropTypeEffected = POSITION_X;
-		this.plus( value - this._x );
 
+		this._offX += value - this._x;
+		
 		if( this.hasBeenLayedOut ) {
 			
 			this.layout.nodeChanged( this );
@@ -235,7 +241,8 @@ Object.defineProperty( LayoutNode.prototype, 'y', {
 	set: function( value ) {
 
 		this.lastPropTypeEffected = POSITION_Y;
-		this.plus( value - this._y );
+		
+		this._offY += value - this._x;
 
 		if( this.hasBeenLayedOut ) {
 
@@ -254,7 +261,8 @@ Object.defineProperty( LayoutNode.prototype, 'width', {
 	set: function( value ) {
 
 		this.lastPropTypeEffected = SIZE_WIDTH;
-		this.plus( value - this._width );
+
+		this._offWidth += value - this._width;
 
 		if( this.hasBeenLayedOut ) {
 			
@@ -273,7 +281,8 @@ Object.defineProperty( LayoutNode.prototype, 'height', {
 	set: function( value ) {
 
 		this.lastPropTypeEffected = SIZE_HEIGHT;
-		this.plus( value - this._height );
+
+		this._offHeight += value - this._height;
 
 		if( this.hasBeenLayedOut ) {
 			
@@ -393,6 +402,15 @@ function doLayoutWork() {
 			this.rulesSizeBound[ j ].apply( this, this.rulesSizeBoundProp[ j ] );
 		}
 	}
+
+	this._width += this._offWidth;
+	this._height += this._offHeight;
+
+	for( var j = 0, lenJ = this.rulesSizeBound.length; j < lenJ; j++ ) {
+
+		this.rulesSizeBound[ j ].apply( this, this.rulesSizeBoundProp[ j ] );
+	}
+
 	
 	//check if we should read in a size for an item
 	if( this.item ) {
@@ -423,6 +441,14 @@ function doLayoutWork() {
 
 			this.rulesPosBound[ j ].apply( this, this.rulesPosBoundProp[ j ] );
 		}
+	}
+
+	this._x += this._offX;
+	this._y += this._offY;
+
+	for( var j = 0, lenJ = this.rulesPosBound.length; j < lenJ; j++ ) {
+
+		this.rulesPosBound[ j ].apply( this, this.rulesPosBoundProp[ j ] );
 	}
 
 	//because other items will actually rely on the values of the
@@ -575,10 +601,9 @@ LayoutNode.prototype.resetPositionRules = function() {
 
 	this.lastPropTypeEffected = null;
 	this.positionDependencies = [];
-	this.offFunctionsPosition = [];
-	this.offFunctionsPositionArgs = [];
 	this.rulesPos = [];
 	this.rulesPosProp = [];
+	this._offX = this._offY = 0;
 
 	if( this.hasBeenLayedOut ) {
 			
@@ -594,6 +619,7 @@ LayoutNode.prototype.resetSizeRules = function() {
 	this.sizeDependencies = [];
 	this.rulesSize = [];
 	this.rulesSizeProp = [];
+	this._offWidth = this._offHeight = 0;
 
 	if( this.hasBeenLayedOut ) {
 			
