@@ -366,11 +366,6 @@ LayoutNode.prototype.doLayout = function() {
 //on prototype that have similar names and in theory the other always uses the other
 function doLayoutWork() {
 
-	if( !( this instanceof LayoutNode ) ) {
-
-		debugger;
-	}
-
 	for( var i = 0, len = this.sizeDependencies.length; i < len; i++ ) {
 
 		if( !this.sizeDependencies[ i ].hasBeenLayedOut ) {
@@ -489,17 +484,27 @@ LayoutNode.prototype.setLayoutFunction = function( layoutFunction ) {
 
 LayoutNode.prototype.addDependency = function( item ) {
 
-	if( item instanceof LayoutNode ) {
-		
-		if( this.lastPropTypeEffected == SIZE || 
-			this.lastPropTypeEffected == SIZE_WIDTH ||
-			this.lastPropTypeEffected == SIZE_HEIGHT ) {
+	switch( this.lastPropTypeEffected ) {
+
+		case SIZE:
+		case BOUND_SIZE:
+		case SIZE_WIDTH:
+		case BOUND_SIZE_WIDTH:
+		case SIZE_HEIGHT:
+		case BOUND_SIZE_HEIGHT:
 
 			this.sizeDependencies.push( item );
-		} else {
+		break;
+
+		case POSITION:
+		case BOUND_POSITION:
+		case POSITION_X:
+		case BOUND_POSITION_X:
+		case POSITION_Y:
+		case BOUND_POSITION_Y:
 
 			this.positionDependencies.push( item );
-		}
+		break;
 	}
 
 	return this;
@@ -598,16 +603,19 @@ LayoutNode.prototype.addCustomRule = function( ruleFunction, ruleType ) {
 
 LayoutNode.prototype.resetRules = function() {
 
-	this.resetPositionRules();
 	this.resetSizeRules();
+	this.resetPositionRules();
 
 	return this;
 };
 
 LayoutNode.prototype.resetPositionRules = function() {
 
+	this.lastPropTypeEffected = null;
 	this.positionDependencies = [];
 	this._offX = this._offY = 0;
+	this.offFunctionsPosition = [];
+	this.offFunctionsPositionArgs = [];
 	this.rulesPos = [];
 	this.rulesPosProp = [];
 
@@ -621,8 +629,11 @@ LayoutNode.prototype.resetPositionRules = function() {
 
 LayoutNode.prototype.resetSizeRules = function() {
 
+	this.lastPropTypeEffected = null;
 	this.sizeDependencies = [];
 	this._offWidth = this._offHeight = 0;
+	this.offFunctionsSize = [];
+	this.offFunctionsSizeArgs = [];
 	this.rulesSize = [];
 	this.rulesSizeProp = [];
 
@@ -737,6 +748,11 @@ function addRule( rule, ruleArguments, ruleArr, rulePropArr, type ) {
 
 	this.lastPropTypeEffected = type;
 
+	if( ruleArguments[ 0 ] instanceof LayoutNode ) {
+
+		this.addDependency( ruleArguments[ 0 ] );
+	}
+
 	return this;
 }
 
@@ -764,14 +780,10 @@ LayoutNode.prototype.yIs = function( y ) {
 
 LayoutNode.prototype.alignedBelow = function( item ) {
 
-	this.addDependency( item );
-
 	return addRule.call( this, alignedBelow, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
 };
 
 LayoutNode.prototype.alignedAbove = function( item ) {
-
-	this.addDependency( item );
 
 	return addRule.call( this, alignedAbove, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
 
@@ -779,71 +791,50 @@ LayoutNode.prototype.alignedAbove = function( item ) {
 
 LayoutNode.prototype.alignedLeftOf = function( item ) {
 
-	this.addDependency( item );
-
 	return addRule.call( this, alignedLeftOf, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
 };
 
 LayoutNode.prototype.alignedRightOf = function( item ) {
-
-	this.addDependency( item );
 
 	return addRule.call( this, alignedRightOf, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
 };
 
 LayoutNode.prototype.alignedWith = function( item ) {
 
-	this.addDependency( item );
-
 	return addRule.call( this, alignedWith, arguments, this.rulesPos, this.rulesPosProp, POSITION );
 };
 
 LayoutNode.prototype.leftAlignedWith = function( item ) {
-
-	this.addDependency( item );
 
 	return addRule.call( this, leftAlignedWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
 };
 
 LayoutNode.prototype.rightAlignedWith = function( item ) {
 
-	this.addDependency( item );
-
 	return addRule.call( this, rightAlignedWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
 };
 
 LayoutNode.prototype.topAlignedWith = function( item ) {
 
-	this.addDependency( item );
-
 	return addRule.call( this, topAlignedWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
-
 };
 
 LayoutNode.prototype.bottomAlignedWith = function( item ) {
-
-	this.addDependency( item );
 
 	return addRule.call( this, bottomAlignedWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
 };
 
 LayoutNode.prototype.centeredWith = function( item ) {
 
-	this.addDependency( item );
-
 	return addRule.call( this, centeredWith, arguments, this.rulesPos, this.rulesPosProp, POSITION );
 };
 
 LayoutNode.prototype.horizontallyCenteredWith = function( item ) {
 
-	this.addDependency( item );
-
 	return addRule.call( this, horizontallyCenteredWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
 };
 
 LayoutNode.prototype.verticallyCenteredWith = function( item ) {
-
-	this.addDependency( item );
 
 	return addRule.call( this, verticallyCenteredWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
 };
@@ -886,42 +877,30 @@ LayoutNode.prototype.heightIsProportional = function( originalWidth, originalHei
 
 LayoutNode.prototype.matchesSizeOf = function( item ) {
 
-	this.addDependency( item );
-
 	return addRule.call( this, matchesSizeOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE );
 }
 
 LayoutNode.prototype.matchesWidthOf = function( item ) {
-
-	this.addDependency( item );
 
 	return addRule.call( this, matchesWidthOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE_WIDTH );
 }
 
 LayoutNode.prototype.matchesHeightOf = function( item ) {
 
-	this.addDependency( item );
-
 	return addRule.call( this, matchesHeightOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE_HEIGHT );
 }
 
 LayoutNode.prototype.sizeIsAPercentageOf = function( item, percentage ) {
-
-	this.addDependency( item );
 
 	return addRule.call( this, sizeIsAPercentageOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE );
 }
 
 LayoutNode.prototype.widthIsAPercentageOf = function( item, percentage ) {
 
-	this.addDependency( item );
-
 	return addRule.call( this, widthIsAPercentageOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE_WIDTH );
 }
 
 LayoutNode.prototype.heightIsAPercentageOf = function( item, percentage ) {
-
-	this.addDependency( item );
 
 	return addRule.call( this, heightIsAPercentageOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE_HEIGHT );
 }
@@ -1057,6 +1036,27 @@ LayoutNode.prototype.plus = function() {
 				this._offY += arguments[ 0 ];
 			}
 		break;
+
+		case null:
+
+			if( arguments[ 0 ] instanceof LayoutNode ) {
+
+				this.lastPropTypeEffected = POSITION;
+				addOffFunction.call( this, plusPosition, arguments );
+
+				this.lastPropTypeEffected = SIZE;
+				addOffFunction.call( this, plusSize, arguments );	
+
+				this.lastPropTypeEffected = null;
+			} else if( arguments.length == 1 ) {
+
+				this._offX += arguments[ 0 ];
+			} else if( arguments.length == 2 ) {
+
+				this._offX += arguments[ 0 ];
+				this._offY += arguments[ 1 ];
+			}
+		break;
 	}
 
 	return this;
@@ -1153,6 +1153,27 @@ LayoutNode.prototype.minus = function() {
 			} else {
 
 				this._offY -= arguments[ 0 ];
+			}
+		break;
+
+		case null:
+
+			if( arguments[ 0 ] instanceof LayoutNode ) {
+
+				this.lastPropTypeEffected = POSITION;
+				addOffFunction.call( this, minusPosition, arguments );
+
+				this.lastPropTypeEffected = SIZE;
+				addOffFunction.call( this, plusPosition, arguments );	
+
+				this.lastPropTypeEffected = null;
+			} else if( arguments.length == 1 ) {
+
+				this._offX -= arguments[ 0 ];
+			} else if( arguments.length == 2 ) {
+
+				this._offX -= arguments[ 0 ];
+				this._offY -= arguments[ 1 ];
 			}
 		break;
 	}

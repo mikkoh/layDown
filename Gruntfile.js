@@ -24,6 +24,14 @@ module.exports = function( grunt ) {
 				options: { 
 					livereload: true
 				}
+			},
+
+			test: {
+				files: [ 'src/**/*.js', 'tests/**/*.js' ],
+				tasks: [ 'nodeunit:all' ],
+				options: { 
+					livereload: true
+				}
 			}
 		}
 	});
@@ -32,7 +40,7 @@ module.exports = function( grunt ) {
 	grunt.loadNpmTasks( 'grunt-contrib-watch' );
 	grunt.loadNpmTasks( 'grunt-browserify' );
 
-	grunt.registerTask( 'test', [ 'nodeunit' ] );
+	grunt.registerTask( 'test', [ 'watch:test' ] );
 	grunt.registerTask( 'default', [ 'watch:example' ] );
 	grunt.registerTask( 'buildExample', [ 'browserify:example' ] );
 };

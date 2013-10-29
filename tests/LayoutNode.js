@@ -9,6 +9,9 @@ function basicTests() {
 	var node1 = layout.create( null );
 	var node2 = layout.create( null );
 
+	node1.name = 'node1';
+	node2.name = 'node2';
+
 	layout.resizeAndPosition( 10, 10, 510, 410 );
 
 	exports.layoutPositionAndWidthCorrect = function( test ) {
@@ -49,6 +52,29 @@ function basicTests() {
 		node1.minus( 10 ).doLayout();
 		test.equal( node1.y, 10, 'yIs minus value was not correct' );
 		node1.resetRules();
+
+		node1.hasBeenLayedOut = false;
+		node2.hasBeenLayedOut = false;
+		node2.positionIs( 20, 20 ).sizeIs( 20, 20 );
+		node1.plus( node2 ).doLayout();
+		test.equal( node1.x, 20, 'After plus node1.x was not correct' );
+		test.equal( node1.y, 20, 'After plus node1.y was not correct' );
+		test.equal( node1.width, 20, 'After plus node1.width was not correct' );
+		test.equal( node1.height, 20, 'After plus node1.height was not correct' );
+		node1.resetRules();
+		node2.resetRules();
+
+		node1.hasBeenLayedOut = false;
+		node2.hasBeenLayedOut = false;
+		node2.positionIs( 20, 20 ).sizeIs( 20, 20 );
+		node1.minus( node2 ).doLayout();
+		test.equal( node1.x, 0, 'After minus node1.x was not correct' );
+		test.equal( node1.y, 0, 'After minus node1.y was not correct' );
+		test.equal( node1.width, 0, 'After minus node1.width was not correct' );
+		test.equal( node1.height, 0, 'After minus node1.height was not correct' );
+		node1.resetRules();
+		node2.resetRules();
+
 
 		node1.positionIs( 22, 33 ).doLayout();
 		test.equal( node1.x, 22, 'positionIs x was not correct' );
