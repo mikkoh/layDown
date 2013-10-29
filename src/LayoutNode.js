@@ -65,6 +65,20 @@ var heightGreaterThan = require( './conditionals/heightGreaterThan' );
 var widthSmallerThan = require( './conditionals/widthSmallerThan' );
 var heightSmallerThan = require( './conditionals/heightSmallerThan' );
 
+//OFFSET FUNCTIONS
+var minusHeight = require( './offsets/minusHeight' );
+var minusPosition = require( './offsets/minusPosition' );
+var minusSize = require( './offsets/minusSize' );
+var minusWidth = require( './offsets/minusWidth' );
+var minusX = require( './offsets/minusX' );
+var minusY = require( './offsets/minusY' );
+var plusHeight = require( './offsets/plusHeight' );
+var plusPosition = require( './offsets/plusPosition' );
+var plusSize = require( './offsets/plusSize' );
+var plusWidth = require( './offsets/plusWidth' );
+var plusX = require( './offsets/plusX' );
+var plusY = require( './offsets/plusY' );
+
 
 
 
@@ -115,6 +129,10 @@ var LayoutNode = function( layout, item, layoutFunction, readFunction ) {
 	this.conditionalsArgumentsForItem = [];
 	this.layoutNodeForConditional = [];
 	this.conditionalListeners = [];
+	this.offFunctionsSize = [];
+	this.offFunctionsSizeArgs = [];
+	this.offFunctionsPosition = [];
+	this.offFunctionsPositionArgs = [];
 };
 
 LayoutNode.SIZE_LAYOUT = 'SIZE_LAYOUT';
@@ -184,6 +202,10 @@ LayoutNode.prototype.lastConditionalListnerIdx = -1;
 LayoutNode.prototype.lastConditionalListenerIsDefault = false;
 LayoutNode.prototype.doNotReadWidth = false;
 LayoutNode.prototype.doNotReadHeight = false;
+LayoutNode.prototype.offFunctionsSize = null;
+LayoutNode.prototype.offFunctionsSizeArgs = null;
+LayoutNode.prototype.offFunctionsPosition = null;
+LayoutNode.prototype.offFunctionsPositionArgs = null;
 
 Object.defineProperty( LayoutNode.prototype, 'x', {
 
@@ -381,6 +403,14 @@ function doLayoutWork() {
 	this._width += this._offWidth;
 	this._height += this._offHeight;
 
+
+	for( var i = 0, lenI = this.offFunctionsSize.length; i < lenI; i++ ) {
+
+		this.offFunctionsSize[ i ].apply( this, this.offFunctionsSizeArgs[ i ] );
+	}
+
+
+
 	//HANDLE BOUNDING SIZE
 	for( var j = 0, lenJ = this.rulesSizeBound.length; j < lenJ; j++ ) {
 
@@ -422,6 +452,12 @@ function doLayoutWork() {
 	this._x += this._offX;
 	this._y += this._offY;
 
+	for( var i = 0, lenI = this.offFunctionsPosition.length; i < lenI; i++ ) {
+
+		this.offFunctionsPosition[ i ].apply( this, this.offFunctionsPositionArgs[ i ] );
+	}
+
+	//BOUND POSITION
 	for( var j = 0, lenJ = this.rulesPosBound.length; j < lenJ; j++ ) {
 
 		this.rulesPosBound[ j ].apply( this, this.rulesPosBoundProp[ j ] );
@@ -897,6 +933,36 @@ LayoutNode.prototype.heightIsAPercentageOf = function( item, percentage ) {
 /*********************OFFSET FUNCTIONS***********************/
 /************************************************************/
 /************************************************************/
+function addOffFunction( func, arguments ) {
+
+	this.addDependency( arguments[ 0 ] );
+
+	switch( this.lastPropTypeEffected ) {
+
+		case SIZE:
+		case BOUND_SIZE:
+		case SIZE_WIDTH:
+		case BOUND_SIZE_WIDTH:
+		case SIZE_HEIGHT:
+		case BOUND_SIZE_HEIGHT:
+
+			this.offFunctionsSize.push( func );
+			this.offFunctionsSizeArgs.push( arguments );
+		break;
+
+		case POSITION:
+		case BOUND_POSITION:
+		case POSITION_X:
+		case BOUND_POSITION_X:
+		case POSITION_Y:
+		case BOUND_POSITION_Y:
+
+			this.offFunctionsPosition.push( func );
+			this.offFunctionsPositionArgs.push( arguments );
+		break;
+	}
+}
+
 LayoutNode.prototype.plus = function() {
 
 	switch( this.lastPropTypeEffected ) {
@@ -906,8 +972,14 @@ LayoutNode.prototype.plus = function() {
 
 			if( arguments.length == 1 ) {
 
-				this._offWidth += arguments[ 0 ];
-				this._offHeight += arguments[ 0 ];	
+				if( arguments[ 0 ] instanceof LayoutNode ) {
+
+					addOffFunction.call( this, plusSize, arguments );
+				} else {
+
+					this._offWidth += arguments[ 0 ];
+					this._offHeight += arguments[ 0 ];		
+				}
 			} else if( arguments.length == 2 ) {
 
 				this._offWidth += arguments[ 0 ];
@@ -920,13 +992,27 @@ LayoutNode.prototype.plus = function() {
 
 		case SIZE_WIDTH:
 		case BOUND_SIZE_WIDTH:
-			this._offWidth += arguments[ 0 ];
+			if( arguments[ 0 ] instanceof LayoutNode ) {
+
+				addOffFunction.call( this, plusWidth, arguments );
+			} else {
+
+				this._offWidth += arguments[ 0 ];
+			}
+
 			this.doNotReadWidth = true;
 		break;
 
 		case SIZE_HEIGHT:
 		case BOUND_SIZE_HEIGHT:
-			this._offHeight += arguments[ 0 ];
+			if( arguments[ 0 ] instanceof LayoutNode ) {
+
+				addOffFunction.call( this, plusHeight, arguments );
+			} else {
+
+				this._offHeight += arguments[ 0 ];
+			}
+
 			this.doNotReadHeight = true;
 		break;
 
@@ -934,8 +1020,14 @@ LayoutNode.prototype.plus = function() {
 		case BOUND_POSITION:
 			if( arguments.length == 1 ) {
 
-				this._offX += arguments[ 0 ];
-				this._offY += arguments[ 0 ];	
+				if( arguments[ 0 ] instanceof LayoutNode ) {
+
+					addOffFunction.call( this, plusPosition, arguments );
+				} else {
+
+					this._offX += arguments[ 0 ];
+					this._offY += arguments[ 0 ];	
+				}
 			} else if( arguments.length == 2 ) {
 
 				this._offX += arguments[ 0 ];
@@ -946,12 +1038,24 @@ LayoutNode.prototype.plus = function() {
 
 		case POSITION_X:
 		case BOUND_POSITION_X:
-			this._offX += arguments[ 0 ];
+			if( arguments[ 0 ] instanceof LayoutNode ) {
+
+				addOffFunction.call( this, plusX, arguments );
+			} else {
+
+				this._offX += arguments[ 0 ];
+			}
 		break;
 
 		case POSITION_Y:
 		case BOUND_POSITION_Y:
-			this._offY += arguments[ 0 ];
+			if( arguments[ 0 ] instanceof LayoutNode ) {
+
+				addOffFunction.call( this, plusY, arguments );
+			} else {
+
+				this._offY += arguments[ 0 ];
+			}
 		break;
 	}
 
@@ -967,8 +1071,14 @@ LayoutNode.prototype.minus = function() {
 
 			if( arguments.length == 1 ) {
 
-				this._offWidth -= arguments[ 0 ];
-				this._offHeight -= arguments[ 0 ];	
+				if( arguments[ 0 ] instanceof LayoutNode ) {
+
+					addOffFunction.call( this, minusSize, arguments );
+				} else {
+
+					this._offWidth -= arguments[ 0 ];
+					this._offHeight -= arguments[ 0 ];	
+				}
 			} else if( arguments.length == 2 ) {
 
 				this._offWidth -= arguments[ 0 ];
@@ -981,13 +1091,26 @@ LayoutNode.prototype.minus = function() {
 
 		case SIZE_WIDTH:
 		case BOUND_SIZE_WIDTH:
-			this._offWidth -= arguments[ 0 ];
+			if( arguments[ 0 ] instanceof LayoutNode ) {
+
+				addOffFunction.call( this, minusWidth, arguments );
+			} else {
+
+				this._offWidth -= arguments[ 0 ];
+			}
+
 			this.doNotReadWidth = true;
 		break;
 
 		case SIZE_HEIGHT:
 		case BOUND_SIZE_HEIGHT:
-			this._offHeight -= arguments[ 0 ];
+			if( arguments[ 0 ] instanceof LayoutNode ) {
+
+				addOffFunction.call( this, minusHeight, arguments );
+			} else {
+
+				this._offHeight -= arguments[ 0 ];
+			}
 			this.doNotReadHeight = true;
 		break;
 
@@ -996,8 +1119,14 @@ LayoutNode.prototype.minus = function() {
 
 			if( arguments.length == 1 ) {
 
-				this._offX -= arguments[ 0 ];
-				this._offY -= arguments[ 0 ];
+				if( arguments[ 0 ] instanceof LayoutNode ) {
+
+					addOffFunction.call( this, minusPosition, arguments );
+				} else {
+
+					this._offX -= arguments[ 0 ];
+					this._offY -= arguments[ 0 ];
+				}
 			} else if( arguments.length == 2 ) {
 
 				this._offX -= arguments[ 0 ];
@@ -1007,12 +1136,24 @@ LayoutNode.prototype.minus = function() {
 
 		case POSITION_X:
 		case BOUND_POSITION_X:
-			this._offX -= arguments[ 0 ];
+			if( arguments[ 0 ] instanceof LayoutNode ) {
+
+				addOffFunction.call( this, minusX, arguments );
+			} else {
+
+				this._offX -= arguments[ 0 ];
+			}
 		break;
 
 		case POSITION_Y:
 		case BOUND_POSITION_Y:
-			this._offY -= arguments[ 0 ];
+			if( arguments[ 0 ] instanceof LayoutNode ) {
+
+				addOffFunction.call( this, minusY, arguments );
+			} else {
+
+				this._offY -= arguments[ 0 ];
+			}
 		break;
 	}
 
