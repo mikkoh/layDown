@@ -57,6 +57,8 @@ menu.name = 'menu';
 menu1.name = 'menu1';
 menu2.name = 'menu2';
 menu3.name = 'menu3';
+content1.name = 'content1';
+content2.name = 'content2';
 
 logo.horizontallyCenteredWith( layout ).topAlignedWith( layout )
 .when( layout ).heightSmallerThan( 342 ).matchesHeightOf( layout ).minus( 60 ).widthIsProportional( 200, 282 )
@@ -77,11 +79,6 @@ menu3.matchesSizeOf( menu1 )
 .default().topAlignedWith( menu ).alignedRightOf( menu2 ).plus( 3 );
 
 content1.matchesWidthOf( menu ).min( 900 ).heightIsProportional( 2700, 652 ).alignedBelow( menu3 ).plus( 3 ).horizontallyCenteredWith( menu );
-
-//This does the same thing as the code above
-// content1.alignedBelow( menu3 ).plus( 3 ).horizontallyCenteredWith( menu )
-// .when( menu ).widthGreaterThan( 900 ).matchesWidthOf( menu ).heightIsProportional( 2700, 652 )
-// .default().widthIs( 900 ).heightIsProportional( 2700, 652 );
 
 content2.matchesWidthOf( menu ).heightIs( 200 ).alignedBelow( content1 ).plus( 3 );
 
