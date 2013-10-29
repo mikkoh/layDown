@@ -68,10 +68,10 @@ function basicTests() {
 		node2.hasBeenLayedOut = false;
 		node2.positionIs( 20, 20 ).sizeIs( 20, 20 );
 		node1.minus( node2 ).doLayout();
-		test.equal( node1.x, 0, 'After minus node1.x was not correct' );
-		test.equal( node1.y, 0, 'After minus node1.y was not correct' );
-		test.equal( node1.width, 0, 'After minus node1.width was not correct' );
-		test.equal( node1.height, 0, 'After minus node1.height was not correct' );
+		test.equal( node1.x, -20, 'After minus node1.x was not correct' );
+		test.equal( node1.y, -20, 'After minus node1.y was not correct' );
+		test.equal( node1.width, -20, 'After minus node1.width was not correct' );
+		test.equal( node1.height, -20, 'After minus node1.height was not correct' );
 		node1.resetRules();
 		node2.resetRules();
 

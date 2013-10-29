@@ -78,7 +78,18 @@ var plusSize = require( './offsets/plusSize' );
 var plusWidth = require( './offsets/plusWidth' );
 var plusX = require( './offsets/plusX' );
 var plusY = require( './offsets/plusY' );
-
+var vMinusHeight = require( './offsets/vMinusHeight' );
+var vMinusPosition = require( './offsets/vMinusPosition' );
+var vMinusSize = require( './offsets/vMinusSize' );
+var vMinusWidth = require( './offsets/vMinusWidth' );
+var vMinusX = require( './offsets/vMinusX' );
+var vMinusY = require( './offsets/vMinusY' );
+var vPlusHeight = require( './offsets/vPlusHeight' );
+var vPlusPosition = require( './offsets/vPlusPosition' );
+var vPlusSize = require( './offsets/vPlusSize' );
+var vPlusWidth = require( './offsets/vPlusWidth' );
+var vPlusX = require( './offsets/vPlusX' );
+var vPlusY = require( './offsets/vPlusY' );
 
 
 
@@ -129,10 +140,6 @@ var LayoutNode = function( layout, item, layoutFunction, readFunction ) {
 	this.conditionalsArgumentsForItem = [];
 	this.layoutNodeForConditional = [];
 	this.conditionalListeners = [];
-	this.offFunctionsSize = [];
-	this.offFunctionsSizeArgs = [];
-	this.offFunctionsPosition = [];
-	this.offFunctionsPositionArgs = [];
 };
 
 LayoutNode.SIZE_LAYOUT = 'SIZE_LAYOUT';
@@ -167,10 +174,6 @@ LayoutNode.prototype._x = 0;
 LayoutNode.prototype._y = 0;
 LayoutNode.prototype._width = 0;
 LayoutNode.prototype._height = 0;
-LayoutNode.prototype._offX = 0;
-LayoutNode.prototype._offY = 0;
-LayoutNode.prototype._offWidth = 0;
-LayoutNode.prototype._offHeight = 0;
 LayoutNode.prototype._isDoingWhen = false;
 LayoutNode.prototype._hasConditional = false;
 LayoutNode.prototype._isDoingDefault = false;
@@ -202,10 +205,6 @@ LayoutNode.prototype.lastConditionalListnerIdx = -1;
 LayoutNode.prototype.lastConditionalListenerIsDefault = false;
 LayoutNode.prototype.doNotReadWidth = false;
 LayoutNode.prototype.doNotReadHeight = false;
-LayoutNode.prototype.offFunctionsSize = null;
-LayoutNode.prototype.offFunctionsSizeArgs = null;
-LayoutNode.prototype.offFunctionsPosition = null;
-LayoutNode.prototype.offFunctionsPositionArgs = null;
 
 Object.defineProperty( LayoutNode.prototype, 'x', {
 
@@ -394,25 +393,7 @@ function doLayoutWork() {
 			this.rulesSizeBound[ j ].apply( this, this.rulesSizeBoundProp[ j ] );
 		}
 	}
-
-	this._width += this._offWidth;
-	this._height += this._offHeight;
-
-
-	for( var i = 0, lenI = this.offFunctionsSize.length; i < lenI; i++ ) {
-
-		this.offFunctionsSize[ i ].apply( this, this.offFunctionsSizeArgs[ i ] );
-	}
-
-
-
-	//HANDLE BOUNDING SIZE
-	for( var j = 0, lenJ = this.rulesSizeBound.length; j < lenJ; j++ ) {
-
-		this.rulesSizeBound[ j ].apply( this, this.rulesSizeBoundProp[ j ] );
-	}
 	
-
 	//check if we should read in a size for an item
 	if( this.item ) {
 
@@ -443,25 +424,6 @@ function doLayoutWork() {
 			this.rulesPosBound[ j ].apply( this, this.rulesPosBoundProp[ j ] );
 		}
 	}
-
-	this._x += this._offX;
-	this._y += this._offY;
-
-	for( var i = 0, lenI = this.offFunctionsPosition.length; i < lenI; i++ ) {
-
-		this.offFunctionsPosition[ i ].apply( this, this.offFunctionsPositionArgs[ i ] );
-	}
-
-	//BOUND POSITION
-	for( var j = 0, lenJ = this.rulesPosBound.length; j < lenJ; j++ ) {
-
-		this.rulesPosBound[ j ].apply( this, this.rulesPosBoundProp[ j ] );
-	}
-
-
-	
-
-
 
 	//because other items will actually rely on the values of the
 	//parent node of a conditional node then we need to set the _x, _y, _width, _height
@@ -613,7 +575,6 @@ LayoutNode.prototype.resetPositionRules = function() {
 
 	this.lastPropTypeEffected = null;
 	this.positionDependencies = [];
-	this._offX = this._offY = 0;
 	this.offFunctionsPosition = [];
 	this.offFunctionsPositionArgs = [];
 	this.rulesPos = [];
@@ -631,9 +592,6 @@ LayoutNode.prototype.resetSizeRules = function() {
 
 	this.lastPropTypeEffected = null;
 	this.sizeDependencies = [];
-	this._offWidth = this._offHeight = 0;
-	this.offFunctionsSize = [];
-	this.offFunctionsSizeArgs = [];
 	this.rulesSize = [];
 	this.rulesSizeProp = [];
 
@@ -912,36 +870,6 @@ LayoutNode.prototype.heightIsAPercentageOf = function( item, percentage ) {
 /*********************OFFSET FUNCTIONS***********************/
 /************************************************************/
 /************************************************************/
-function addOffFunction( func, arguments ) {
-
-	this.addDependency( arguments[ 0 ] );
-
-	switch( this.lastPropTypeEffected ) {
-
-		case SIZE:
-		case BOUND_SIZE:
-		case SIZE_WIDTH:
-		case BOUND_SIZE_WIDTH:
-		case SIZE_HEIGHT:
-		case BOUND_SIZE_HEIGHT:
-
-			this.offFunctionsSize.push( func );
-			this.offFunctionsSizeArgs.push( arguments );
-		break;
-
-		case POSITION:
-		case BOUND_POSITION:
-		case POSITION_X:
-		case BOUND_POSITION_X:
-		case POSITION_Y:
-		case BOUND_POSITION_Y:
-
-			this.offFunctionsPosition.push( func );
-			this.offFunctionsPositionArgs.push( arguments );
-		break;
-	}
-}
-
 LayoutNode.prototype.plus = function() {
 
 	switch( this.lastPropTypeEffected ) {
@@ -953,16 +881,14 @@ LayoutNode.prototype.plus = function() {
 
 				if( arguments[ 0 ] instanceof LayoutNode ) {
 
-					addOffFunction.call( this, plusSize, arguments );
+					addRule.call( this, plusSize, arguments, this.rulesSize, this.rulesSizeProp, SIZE );	
 				} else {
 
-					this._offWidth += arguments[ 0 ];
-					this._offHeight += arguments[ 0 ];		
+					addRule.call( this, vPlusSize, [ arguments[ 0 ], arguments[ 0 ] ], this.rulesSize, this.rulesSizeProp, SIZE );	
 				}
 			} else if( arguments.length == 2 ) {
 
-				this._offWidth += arguments[ 0 ];
-				this._offHeight += arguments[ 1 ];
+				addRule.call( this, vPlusSize, arguments, this.rulesSize, this.rulesSizeProp, SIZE );	
 			}
 			
 			this.doNotReadWidth = true;
@@ -973,10 +899,10 @@ LayoutNode.prototype.plus = function() {
 		case BOUND_SIZE_WIDTH:
 			if( arguments[ 0 ] instanceof LayoutNode ) {
 
-				addOffFunction.call( this, plusWidth, arguments );
+				addRule.call( this, plusWidth, arguments, this.rulesSize, this.rulesSizeProp, SIZE_WIDTH );
 			} else {
 
-				this._offWidth += arguments[ 0 ];
+				addRule.call( this, vPlusWidth, arguments, this.rulesSize, this.rulesSizeProp, SIZE_WIDTH );
 			}
 
 			this.doNotReadWidth = true;
@@ -986,10 +912,10 @@ LayoutNode.prototype.plus = function() {
 		case BOUND_SIZE_HEIGHT:
 			if( arguments[ 0 ] instanceof LayoutNode ) {
 
-				addOffFunction.call( this, plusHeight, arguments );
+				addRule.call( this, plusHeight, arguments, this.rulesSize, this.rulesSizeProp, SIZE_HEIGHT );
 			} else {
 
-				this._offHeight += arguments[ 0 ];
+				addRule.call( this, vPlusHeight, arguments, this.rulesSize, this.rulesSizeProp, SIZE_HEIGHT );
 			}
 
 			this.doNotReadHeight = true;
@@ -1001,16 +927,14 @@ LayoutNode.prototype.plus = function() {
 
 				if( arguments[ 0 ] instanceof LayoutNode ) {
 
-					addOffFunction.call( this, plusPosition, arguments );
+					addRule.call( this, plusPosition, arguments, this.rulesPos, this.rulesPosProp, POSITION );
 				} else {
 
-					this._offX += arguments[ 0 ];
-					this._offY += arguments[ 0 ];	
+					addRule.call( this, vPlusPosition, [ arguments[ 0 ], arguments[ 0 ] ], this.rulesPos, this.rulesPosProp, POSITION );
 				}
 			} else if( arguments.length == 2 ) {
 
-				this._offX += arguments[ 0 ];
-				this._offY += arguments[ 1 ];
+				addRule.call( this, vPlusPosition, arguments, this.rulesPos, this.rulesPosProp, POSITION );
 			}
 			
 		break;
@@ -1019,10 +943,10 @@ LayoutNode.prototype.plus = function() {
 		case BOUND_POSITION_X:
 			if( arguments[ 0 ] instanceof LayoutNode ) {
 
-				addOffFunction.call( this, plusX, arguments );
+				addRule.call( this, plusX, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
 			} else {
 
-				this._offX += arguments[ 0 ];
+				addRule.call( this, vPlusX, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
 			}
 		break;
 
@@ -1030,10 +954,10 @@ LayoutNode.prototype.plus = function() {
 		case BOUND_POSITION_Y:
 			if( arguments[ 0 ] instanceof LayoutNode ) {
 
-				addOffFunction.call( this, plusY, arguments );
+				addRule.call( this, plusY, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
 			} else {
 
-				this._offY += arguments[ 0 ];
+				addRule.call( this, vPlusY, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
 			}
 		break;
 
@@ -1041,21 +965,11 @@ LayoutNode.prototype.plus = function() {
 
 			if( arguments[ 0 ] instanceof LayoutNode ) {
 
-				this.lastPropTypeEffected = POSITION;
-				addOffFunction.call( this, plusPosition, arguments );
-
-				this.lastPropTypeEffected = SIZE;
-				addOffFunction.call( this, plusSize, arguments );	
-
-				this.lastPropTypeEffected = null;
-			} else if( arguments.length == 1 ) {
-
-				this._offX += arguments[ 0 ];
-			} else if( arguments.length == 2 ) {
-
-				this._offX += arguments[ 0 ];
-				this._offY += arguments[ 1 ];
+				addRule.call( this, plusSize, arguments, this.rulesSize, this.rulesSizeProp, SIZE );
+				addRule.call( this, plusPosition, arguments, this.rulesPos, this.rulesPosProp, POSITION );
 			}
+
+			this.lastPropTypeEffected = null;
 		break;
 	}
 
@@ -1073,16 +987,14 @@ LayoutNode.prototype.minus = function() {
 
 				if( arguments[ 0 ] instanceof LayoutNode ) {
 
-					addOffFunction.call( this, minusSize, arguments );
+					addRule.call( this, minusSize, arguments, this.rulesSize, this.rulesSizeProp, SIZE );
 				} else {
 
-					this._offWidth -= arguments[ 0 ];
-					this._offHeight -= arguments[ 0 ];	
+					addRule.call( this, vMinusSize, [ arguments[ 0 ], arguments[ 0 ] ], this.rulesSize, this.rulesSizeProp, SIZE );
 				}
 			} else if( arguments.length == 2 ) {
 
-				this._offWidth -= arguments[ 0 ];
-				this._offHeight -= arguments[ 1 ];
+				addRule.call( this, vMinusSize, arguments, this.rulesSize, this.rulesSizeProp, SIZE );
 			}
 			
 			this.doNotReadWidth = true;
@@ -1093,10 +1005,10 @@ LayoutNode.prototype.minus = function() {
 		case BOUND_SIZE_WIDTH:
 			if( arguments[ 0 ] instanceof LayoutNode ) {
 
-				addOffFunction.call( this, minusWidth, arguments );
+				addRule.call( this, minusWidth, arguments, this.rulesSize, this.rulesSizeProp, SIZE_WIDTH );
 			} else {
 
-				this._offWidth -= arguments[ 0 ];
+				addRule.call( this, vMinusWidth, arguments, this.rulesSize, this.rulesSizeProp, SIZE_WIDTH );
 			}
 
 			this.doNotReadWidth = true;
@@ -1106,10 +1018,10 @@ LayoutNode.prototype.minus = function() {
 		case BOUND_SIZE_HEIGHT:
 			if( arguments[ 0 ] instanceof LayoutNode ) {
 
-				addOffFunction.call( this, minusHeight, arguments );
+				addRule.call( this, minusHeight, arguments, this.rulesSize, this.rulesSizeProp, SIZE_HEIGHT );
 			} else {
 
-				this._offHeight -= arguments[ 0 ];
+				addRule.call( this, vMinusHeight, arguments, this.rulesSize, this.rulesSizeProp, SIZE_HEIGHT );
 			}
 			this.doNotReadHeight = true;
 		break;
@@ -1121,16 +1033,14 @@ LayoutNode.prototype.minus = function() {
 
 				if( arguments[ 0 ] instanceof LayoutNode ) {
 
-					addOffFunction.call( this, minusPosition, arguments );
+					addRule.call( this, minusPosition, arguments, this.rulesPos, this.rulesPosProp, POSITION );
 				} else {
 
-					this._offX -= arguments[ 0 ];
-					this._offY -= arguments[ 0 ];
+					addRule.call( this, vMinusPosition, [ arguments[ 0 ], arguments[ 0 ] ], this.rulesPos, this.rulesPosProp, POSITION );
 				}
 			} else if( arguments.length == 2 ) {
 
-				this._offX -= arguments[ 0 ];
-				this._offY -= arguments[ 1 ];
+				addRule.call( this, vMinusPosition, arguments, this.rulesPos, this.rulesPosProp, POSITION );
 			}
 		break;
 
@@ -1138,10 +1048,10 @@ LayoutNode.prototype.minus = function() {
 		case BOUND_POSITION_X:
 			if( arguments[ 0 ] instanceof LayoutNode ) {
 
-				addOffFunction.call( this, minusX, arguments );
+				addRule.call( this, minusX, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
 			} else {
 
-				this._offX -= arguments[ 0 ];
+				addRule.call( this, vMinusX, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
 			}
 		break;
 
@@ -1149,10 +1059,10 @@ LayoutNode.prototype.minus = function() {
 		case BOUND_POSITION_Y:
 			if( arguments[ 0 ] instanceof LayoutNode ) {
 
-				addOffFunction.call( this, minusY, arguments );
+				addRule.call( this, minusY, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
 			} else {
 
-				this._offY -= arguments[ 0 ];
+				addRule.call( this, vMinusY, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
 			}
 		break;
 
@@ -1160,21 +1070,11 @@ LayoutNode.prototype.minus = function() {
 
 			if( arguments[ 0 ] instanceof LayoutNode ) {
 
-				this.lastPropTypeEffected = POSITION;
-				addOffFunction.call( this, minusPosition, arguments );
-
-				this.lastPropTypeEffected = SIZE;
-				addOffFunction.call( this, plusPosition, arguments );	
-
-				this.lastPropTypeEffected = null;
-			} else if( arguments.length == 1 ) {
-
-				this._offX -= arguments[ 0 ];
-			} else if( arguments.length == 2 ) {
-
-				this._offX -= arguments[ 0 ];
-				this._offY -= arguments[ 1 ];
+				addRule.call( this, minusSize, arguments, this.rulesSize, this.rulesSizeProp, SIZE );
+				addRule.call( this, minusPosition, arguments, this.rulesPos, this.rulesPosProp, POSITION );
 			}
+
+			this.lastPropTypeEffected = null;
 		break;
 	}
 
