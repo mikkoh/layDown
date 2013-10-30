@@ -10,6 +10,19 @@ module.exports = function( grunt ) {
 				options: {
 					debug: true
 				}
+			},
+
+			standalone: {
+
+				files: {
+
+					'bin/layDown.js': [ 'src/LayDown.js' ]
+				},
+
+				options: {
+
+					standalone: 'LayDown'
+				}
 			}
 		},
 
@@ -41,6 +54,7 @@ module.exports = function( grunt ) {
 	grunt.loadNpmTasks( 'grunt-browserify' );
 
 	grunt.registerTask( 'test', [ 'watch:test' ] );
-	grunt.registerTask( 'default', [ 'watch:example' ] );
 	grunt.registerTask( 'buildExample', [ 'browserify:example' ] );
+	grunt.registerTask( 'build', [ 'browserify:standalone' ] );
+	grunt.registerTask( 'default', [ 'watch:example' ] );
 };
