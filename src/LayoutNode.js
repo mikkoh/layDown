@@ -170,6 +170,7 @@ LayoutNode.prototype.POSITION_X_LAYOUT = LayoutNode.POSITION_X_LAYOUT;
 LayoutNode.prototype.POSITION_X_BOUND = LayoutNode.POSITION_X_BOUND;
 LayoutNode.prototype.POSITION_Y_LAYOUT = LayoutNode.POSITION_Y_LAYOUT;
 LayoutNode.prototype.POSITION_Y_BOUND = LayoutNode.POSITION_Y_BOUND;
+LayoutNode.prototype._inner = null;
 LayoutNode.prototype._x = 0;
 LayoutNode.prototype._y = 0;
 LayoutNode.prototype._width = 0;
@@ -210,6 +211,20 @@ LayoutNode.prototype.lastConditionalListenerIsDefault = false;
 LayoutNode.prototype.doNotReadWidth = false;
 LayoutNode.prototype.doNotReadHeight = false;
 
+
+Object.defineProperty( LayoutNode.prototype, 'inner', {
+
+	get: function() {
+
+		if( this._inner === null ) {
+
+			this._inner = this.layout.create();
+			this._inner.matchesSizeOf( this );
+		}
+
+		return this._inner;
+	}
+});
 
 Object.defineProperty( LayoutNode.prototype, 'x', {
 

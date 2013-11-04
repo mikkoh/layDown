@@ -15,3 +15,8 @@ div.content {
 	background-color: #F00;
 	padding: 100px;
 }
+
+div#imageContainer {
+
+	overflow: hidden;
+}

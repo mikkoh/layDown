@@ -49,6 +49,7 @@ var menu = layout.create();
 var menu1 = layout.create( document.getElementById( 'menu1' ) );
 var menu2 = layout.create( document.getElementById( 'menu2' ) );
 var menu3 = layout.create( document.getElementById( 'menu3' ) );
+var imageContainer = layout.create( document.getElementById( 'imageContainer' ) );
 var content1 = layout.create( document.getElementById( 'content1' ) );
 var content2 = layout.create( document.getElementById( 'content2' ) );
 
@@ -59,6 +60,8 @@ menu2.name = 'menu2';
 menu3.name = 'menu3';
 content1.name = 'content1';
 content2.name = 'content2';
+imageContainer.name= 'imageContainer';
+imageContainer.inner.name = 'imageContainerInner';
 
 logo.horizontallyCenteredWith( layout ).topAlignedWith( layout )
 .when( layout ).heightSmallerThan( 342 ).matchesHeightOf( layout ).minus( 60 ).widthIsProportional( 200, 282 )
@@ -78,8 +81,11 @@ menu3.matchesSizeOf( menu1 )
 .when( menu ).widthSmallerThan( 600 ).alignedBelow( menu2 ).plus( 3 ).leftAlignedWith( menu1 )
 .default().topAlignedWith( menu ).alignedRightOf( menu2 ).plus( 3 );
 
-content1.matchesWidthOf( menu ).min( 900 ).heightIsProportional( 2700, 652 ).alignedBelow( menu3 ).plus( 3 ).horizontallyCenteredWith( menu );
-content2.matchesWidthOf( menu ).heightIs( 200 ).alignedBelow( content1 ).plus( 3 );
+imageContainer.matchesWidthOf( menu ).heightIsProportional( 2700, 652 ).alignedBelow( menu3 ).plus( 3 );
+
+content1.matchesWidthOf( imageContainer.inner ).min( 900 ).heightIsProportional( 2700, 652 ).centeredWith( imageContainer.inner );
+
+content2.matchesWidthOf( menu ).heightIs( 200 ).alignedBelow( imageContainer ).plus( 3 );
 
 
 
