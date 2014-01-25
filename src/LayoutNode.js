@@ -151,9 +151,9 @@ LayoutNode into actual physical screen position. So for instance if we're workin
 CSS properties on the "item" passed in to ensure that the item is on screen at x, y at the correct size.
 
 @param {function} readFunction If you define no sizing rules to set width and height of an "item"/LayoutNode then we will need to read the
-width and height of the object to be able to position dependent layout node's. 
+width and height of the object to be able to position dependent LayoutNode's. 
 
-So for instance if we have layout node Button and layout node Image and we wanted Image to be below Button and
+So for instance if we have LayoutNode Button and LayoutNode Image and we wanted Image to be below Button and
 Button has no layout rules for setting it's height we will need to "read" in Buttons height to be able to correctly
 position Image. So if Button is a DIV element we will read in it's height to be able to postion Image below it.
 
@@ -389,7 +389,7 @@ You can also set the x position of a node by simply setting the x value:
 @example
 	node.x = 10;
 
-What this will do is adjust an offset in this layout node. So in practice what this means is that you can freely move around
+What this will do is adjust an offset in this LayoutNode. So in practice what this means is that you can freely move around
 nodes for instance by dragging but all dependent nodes will still position themselves according to the rules set on them.
 
 So for instance if you had an image that is right aligned to another image. If you grab the image on the left and move it around 
@@ -427,7 +427,7 @@ You can also set the y position of a node by simply setting the y value:
 @example
 	node.y = 10;
 
-What this will do is adjust an offset in this layout node. So in practice what this means is that you can freely move around
+What this will do is adjust an offset in this LayoutNode. So in practice what this means is that you can freely move around
 nodes for instance by dragging but all dependent nodes will still position themselves according to the rules set on them.
 
 So for instance if you had an image that is right aligned to another image. If you grab the image on the left and move it around 
@@ -465,7 +465,7 @@ You can also set the width of a node by simply setting the width value:
 @example
 	node.width = 200;
 
-What this will do is adjust an offset in this layout node. So in practice what this means is that you can set the sizes of nodes
+What this will do is adjust an offset in this LayoutNode. So in practice what this means is that you can set the sizes of nodes
 and still all dependent nodes will follow their dependency rules.
 
 So let's say you had an image called image1 which you wanted to scale up however another image called image2 aligned left of image1.
@@ -503,7 +503,7 @@ You can also set the height of a node by simply setting the height value:
 @example
 	node.height = 333;
 
-What this will do is adjust an offset in this layout node. So in practice what this means is that you can set the sizes of nodes
+What this will do is adjust an offset in this LayoutNode. So in practice what this means is that you can set the sizes of nodes
 and still all dependent nodes will follow their dependency rules.
 
 So let's say you had an image called image1 which you wanted to scale up however another image called image2 aligned below image1.
@@ -537,7 +537,7 @@ Object.defineProperty( LayoutNode.prototype, 'height', {
 Inner is a LayoutNode that is contained by this LayoutNode. Inner will match the size of this node but will have no positonal values.
 
 It is useful when working with the DOM to handle nested content inside html elements. For instance if we have a div with an image inside. You can
-can apply a layout node to the div and use the inner attribute to center the image inside.
+can apply a LayoutNode to the div and use the inner attribute to center the image inside.
 
 @example
 	var ourDiv = layout.create( document.getElementById( 'ourDiv' ) );
@@ -568,7 +568,7 @@ Object.defineProperty( LayoutNode.prototype, 'inner', {
 doLayout will perform the layout of this LayoutNode. This function should never be called directly but be called by the LayDown layout.
 This way dependencies will be handled correctly.
 
-So for instance if you have one layout node which sets it's size according to another node calling doLayout manually could potentially be
+So for instance if you have one LayoutNode which sets it's size according to another node calling doLayout manually could potentially be
 destructive.
 
 Although this is the entry point to perform layouts the actual grunt work is performed in the "doLayoutWork" function. This function will
@@ -779,7 +779,7 @@ For instance if you're working with the DOM the layoutFunction could set CSS wid
 it could perform an animation to position the HTML element.
 
 @method setLayoutFunction
-@param layoutFunction {function} This is the layout function that will position this layout node.
+@param layoutFunction {function} This is the layout function that will position this LayoutNode.
 
 Layout function's should take four properties: item, node, setWidth, setHeight. 
 
@@ -1015,7 +1015,7 @@ LayoutNode.prototype.resetSizeRules = function() {
 };
 
 /**
-This is a utility function to create a new layout node. It will use the parent layout (LayDown) of this node.
+This is a utility function to create a new LayoutNode. It will use the parent layout (LayDown) of this node.
 
 This is basically for those peeps who loves them chainings. (don't get too crazy though)
 
@@ -1078,7 +1078,7 @@ function addRule( rule, ruleArguments, ruleArr, rulePropArr, type ) {
 		throw 'You should add a conditional such as "widthGreaterThan" before adding a rule';
 
 	//if these are both true then when has been called and a conditional
-	//has been added so we should create a new layout node for the conditionals
+	//has been added so we should create a new LayoutNode for the conditionals
 	} else if( ( this._isDoingWhen && this._hasConditional ) || this._isDoingDefault ) {
 
 		var nNode = new LayoutNode( this.layout );
@@ -1217,7 +1217,7 @@ LayoutNode.prototype.alignedLeftOf = function( item ) {
 /**
 This rule will position this LayoutNode right of the item passed.
 
-@method alignedLeftOf
+@method alignedRightOf
 @param item {LayoutNode} item that this LayoutNode should be right of
 @chainable
 **/
@@ -1327,62 +1327,180 @@ LayoutNode.prototype.verticallyCenteredWith = function( item ) {
 /*---------------------SIZE FUNCTIONS-----------------------*/
 /*----------------------------------------------------------*/
 /*----------------------------------------------------------*/
+
+/**
+This rule will size an item to be the exact size value (width and height) passed in
+
+@method sizeIs
+@param width {Number} width of this LayoutNode
+@param height {Number} height of this LayoutNode
+@chainable
+**/
 LayoutNode.prototype.sizeIs = function( width, height ) {
 
 	return addRule.call( this, sizeIs, arguments, this.rulesSize, this.rulesSizeProp, SIZE );
 }
 
+/**
+This rule will set the width of an item to be the exact value passed in
+
+@method widthIs
+@param width {Number} width of this LayoutNode
+@chainable
+**/
 LayoutNode.prototype.widthIs = function( width ) {
 
 	return addRule.call( this, widthIs, arguments, this.rulesSize, this.rulesSizeProp, SIZE_WIDTH );
 }
 
+/**
+This rule will set the height of an item to be the exact value passed in
+
+@method heightIs
+@param height {Number} height of this LayoutNode
+@chainable
+**/
 LayoutNode.prototype.heightIs = function( height ) {
 
 	return addRule.call( this, heightIs, arguments, this.rulesSize, this.rulesSizeProp, SIZE_HEIGHT );
 
 }
 
+/**
+This rule will set the width or height of this LayoutNode to be proportional based on the original width and height passed in.
+It is handy for when you have rules adjusting either width or height only and yet you want the untouched property to be
+proportional.
+
+So if you have an image that is 200px x 100px if there are rules applied to this LayoutNode where the width will become 400px
+this rule will see that height has not been effected at all and will set the height to be proportional to the width based on
+the original height passed in. So in this case our image's size would be 400x200 where this rule sets the height to be 200px
+to stay in proportion to the original width.
+
+@method sizeIsProportional
+@param originalWidth {Number} the original width of the item being layed out before any layout functions are applied
+@param originalHeight {Number} the original height of the item being layed out before any layout functions are applied
+@chainable
+**/
 LayoutNode.prototype.sizeIsProportional = function( originalWidth, originalHeight ) {
 
 	return addRule.call( this, sizeIsProportional, arguments, this.rulesSize, this.rulesSizeProp, SIZE );
 }
 
+/**
+This rule will set the width of the LayoutNode to be proportional to the height based on the originalWidth passed.
+It is handy for when you have rules adjusting height and width should remain proportional to the height.
+
+For instance you have an image which is 200px x 100px. Once rules are applied to it the height becomes 200px. Ideally we'll
+want the width to also be 2x larger. So this rule will set the width to be 400px and our final resolution is 400px x 200px.
+
+@method widthIsProportional
+@param originalWidth {Number} the original width of the item being layed out before any layout functions are applied
+@param originalHeight {Number} the original height of the item being layed out before any layout functions are applied
+@chainable
+**/
 LayoutNode.prototype.widthIsProportional = function( originalWidth, originalHeight ) {
 
 	return addRule.call( this, widthIsProportional, arguments, this.rulesSize, this.rulesSizeProp, SIZE_WIDTH );
 }
 
+/**
+This rule will set the height of the LayoutNode to be proportional to the width based on the originalHeight passed.
+It is handy for when you have rules adjusting width and height should remain proportional to the width.
+
+For instance you have an image which is 200px x 100px. Once rules are applied to it the width becomes 400px. Ideally we'll
+want the height to also be 2x larger. So this rule will set the height to be 200px and our final resolution is 400px x 200px.
+
+@method heightIsProportional
+@param originalWidth {Number} the original width of the item being layed out before any layout functions are applied
+@param originalHeight {Number} the original height of the item being layed out before any layout functions are applied
+@chainable
+**/
 LayoutNode.prototype.heightIsProportional = function( originalWidth, originalHeight ) {
 
 	return addRule.call( this, heightIsProportional, arguments, this.rulesSize, this.rulesSizeProp, SIZE_HEIGHT );
 }
 
+/**
+This rule will set the width and height of this LayoutNode to match the width and height of the LayoutNode passed in.
+
+@method matchesSizeOf
+@param item {LayoutNode} item is a LayoutNode that this LayoutNode will match in size
+@chainable
+**/
 LayoutNode.prototype.matchesSizeOf = function( item ) {
 
 	return addRule.call( this, matchesSizeOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE );
 }
 
+/**
+This rule will set the width of this LayoutNode to match the width of the LayoutNode passed in.
+
+@method matchesWidthOf
+@param item {LayoutNode} item is a LayoutNode that this LayoutNode will match in width
+@chainable
+**/
 LayoutNode.prototype.matchesWidthOf = function( item ) {
 
 	return addRule.call( this, matchesWidthOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE_WIDTH );
 }
 
+/**
+This rule will set the height of this LayoutNode to match the height of the LayoutNode passed in.
+
+@method matchesHeightOf
+@param item {LayoutNode} item is a LayoutNode that this LayoutNode will match in height
+@chainable
+**/
 LayoutNode.prototype.matchesHeightOf = function( item ) {
 
 	return addRule.call( this, matchesHeightOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE_HEIGHT );
 }
 
+/**
+This rule will set the width and height of this LayoutNode to be a percentage of the LayoutNode passed in.
+
+So for instance if the LayoutNode we're passing in is 400px x 200px after all rules have been applied and 
+we say this LayoutNode should be 0.5 of the LayoutNode passed in this LayoutNode's size will be 200px x 100px or 50% of 400px x 200px.
+
+@method sizeIsAPercentageOf
+@param item {LayoutNode} the LayoutNode that this LayoutNode will set it's width and height from
+@param percentage {Number} a percentage value in decimal that states how big this LayoutNode should be based on the LayoutNode passed in
+@chainable
+**/
 LayoutNode.prototype.sizeIsAPercentageOf = function( item, percentage ) {
 
 	return addRule.call( this, sizeIsAPercentageOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE );
 }
 
+/**
+This rule will set the width of this LayoutNode to be a percentage of the LayoutNode passed in.
+
+So for instance if the LayoutNode we're passing in is 400px x 200px after all rules have been applied and 
+we say this LayoutNode's width should be 0.5 of the width of the LayoutNode passed in. This LayoutNode's width will be 
+200px or 50% of 400px.
+
+@method widthIsAPercentageOf
+@param item {LayoutNode} the LayoutNode that this LayoutNode will set it's width from
+@param percentage {Number} a percentage value in decimal that states how wide this LayoutNode should be based on the LayoutNode passed in
+@chainable
+**/
 LayoutNode.prototype.widthIsAPercentageOf = function( item, percentage ) {
 
 	return addRule.call( this, widthIsAPercentageOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE_WIDTH );
 }
 
+/**
+This rule will set the height of this LayoutNode to be a percentage of the LayoutNode passed in.
+
+So for instance if the LayoutNode we're passing in is 400px x 200px after all rules have been applied and 
+we say this LayoutNode's height should be 0.5 of the height of the LayoutNode passed in. This LayoutNode's height will be 
+100px or 50% of 200px.
+
+@method heightIsAPercentageOf
+@param item {LayoutNode} the LayoutNode that this LayoutNode will set it's height from
+@param percentage {Number} a percentage value in decimal that states how tall this LayoutNode should be based on the LayoutNode passed in
+@chainable
+**/
 LayoutNode.prototype.heightIsAPercentageOf = function( item, percentage ) {
 
 	return addRule.call( this, heightIsAPercentageOf, arguments, this.rulesSize, this.rulesSizeProp, SIZE_HEIGHT );
@@ -1942,7 +2060,7 @@ function addConditional( cFunction, cArguments ) {
 
 LayoutNode.prototype.when = function( node ) {
 
-	//we're checking of this is layout node created based on conditionals
+	//we're checking of this is LayoutNode created based on conditionals
 	//if when is called we should kick back to the parent nodes when function and call when there
 	if( this.conditionalParent !== null ) {
 
