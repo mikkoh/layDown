@@ -95,11 +95,11 @@ var vPlusY = require( './offsets/vPlusY' );
 
 
 
-/************************************************************/
-/************************************************************/
-/**********************PROPS TO EFFECT***********************/
-/************************************************************/
-/************************************************************/
+/*----------------------------------------------------------*/
+/*----------------------------------------------------------*/
+/*---------------------PROPS TO EFFECT----------------------*/
+/*----------------------------------------------------------*/
+/*----------------------------------------------------------*/
 var SIZE = 'SIZE';
 var SIZE_WIDTH = 'SIZE_WIDTH';
 var SIZE_HEIGHT = 'SIZE_HEIGHT';
@@ -118,7 +118,46 @@ var BOUND_POSITION_Y = 'BOUND_POSITION_Y';
 
 
 
+/**
+LayoutNode is where all the magic happens. LayoutNode's are created from LayDown. You will never instantiate LayoutNodes 
+directly however you will use the LayDown node to always instantiate them.
 
+LayoutNode's abstract positioning elements on screen using rules.
+
+Basically what that means is if you're using the DOM, LayoutNode's will sit between the DOM and the logic
+to position and resize things on screen.
+
+To do this you add "rules" to the LayoutNode's by calling their rule functions. For ease of use and to keep inline with the
+libraries goal of being very readable, handy to translate designers needs, all rules are chainable and form "sentences".
+
+For example the code:
+
+node.leftAlignedWith( someUI ).alignedBelow( someUI ).plus( 3 );
+
+Would read as:
+
+Our node will be left aligned with Some UI and aligned below Some UI plus 3 pixels.
+
+@class LayoutNode
+@constructor
+@param {LayDown} layout Is the parent LayDown object. The parent LayDown object will manage relationships between all LayoutNode's and will
+						handle circular dependencies and all that fun stuff.
+
+@param {Object} item item will be what will be positioned on screen. For instance an HTML DOM Element or a PIXI DisplayObject. It's
+				whatever you want to layout on screen.
+
+@param {function} layoutFunction The layoutFunction function is a function which will translate the x, y, width, and height properties of a
+LayoutNode into actual physical screen position. So for instance if we're working with the DOM it would set
+CSS properties on the "item" passed in to ensure that the item is on screen at x, y at the correct size.
+
+@param {function} readFunction If you define no sizing rules to set width and height of an "item"/LayoutNode then we will need to read the
+width and height of the object to be able to position dependent layout node's. 
+
+So for instance if we have layout node Button and layout node Image and we wanted Image to be below Button and
+Button has no layout rules for setting it's height we will need to "read" in Buttons height to be able to correctly
+position Image. So if Button is a DIV element we will read in it's height to be able to postion Image below it.
+
+**/
 var LayoutNode = function( layout, item, layoutFunction, readFunction ) {
 
 	this.layout = layout;
@@ -142,11 +181,65 @@ var LayoutNode = function( layout, item, layoutFunction, readFunction ) {
 	this.conditionalListeners = [];
 };
 
+/**
+This constant describes or is a key for size layout rules where both width and height will be effected. 
+
+This is used for instance used when adding custom rules.
+
+@property SIZE_LAYOUT
+@type String
+@static
+@final
+**/
 LayoutNode.SIZE_LAYOUT = 'SIZE_LAYOUT';
+
+/**
+This constant describes or is a key for size bound rules where both width and height will be bound. 
+
+This is used for instance used when adding custom rules.
+
+@property SIZE_BOUND
+@type String
+@static
+@final
+**/
 LayoutNode.SIZE_BOUND = 'SIZE_BOUND';
+
+/**
+This constant describes or is a key for width layout rules where width will be effected. 
+
+This is used for instance used when adding custom rules.
+
+@property SIZE_WIDTH_LAYOUT
+@type String
+@static
+@final
+**/
 LayoutNode.SIZE_WIDTH_LAYOUT = 'SIZE_WIDTH_LAYOUT';
+
+/**
+This constant describes or is a key for width bound rules where width will be bound. 
+
+This is used for instance used when adding custom rules.
+
+@property SIZE_WIDTH_BOUND
+@type String
+@static
+@final
+**/
 LayoutNode.SIZE_WIDTH_BOUND = 'SIZE_WIDTH_BOUND';
 LayoutNode.SIZE_HEIGHT_LAYOUT = 'SIZE_HEIGHT_LAYOUT';
+
+/**
+This constant describes or is a key for height bound rules where height will be bound. 
+
+This is used for instance used when adding custom rules.
+
+@property SIZE_HEIGHT_BOUND
+@type String
+@static
+@final
+**/
 LayoutNode.SIZE_HEIGHT_BOUND = 'SIZE_HEIGHT_BOUND';
 
 LayoutNode.POSITION_LAYOUT = 'POSITION_LAYOUT';
@@ -211,21 +304,24 @@ LayoutNode.prototype.lastConditionalListenerIsDefault = false;
 LayoutNode.prototype.doNotReadWidth = false;
 LayoutNode.prototype.doNotReadHeight = false;
 
+/**
+This is the x position of the LayoutNode on screen. Initially the value of x will be 0 until this node has been layed out.
 
-Object.defineProperty( LayoutNode.prototype, 'inner', {
+Once this node has been layed out the x position will be set from all the rules applied to this node.
 
-	get: function() {
+You can also set the x position of a node by simply setting the x value:
+@example
+	node.x = 10;
 
-		if( this._inner === null ) {
+What this will do is adjust an offset in this layout node. So in practice what this means is that you can freely move around
+nodes for instance by dragging but all dependent nodes will still position themselves according to the rules set on them.
 
-			this._inner = this.layout.create();
-			this._inner.matchesSizeOf( this );
-		}
+So for instance if you had an image that is right aligned to another image. If you grab the image on the left and move it around 
+the image on the right will follow.
 
-		return this._inner;
-	}
-});
-
+@property x
+@type Number
+**/
 Object.defineProperty( LayoutNode.prototype, 'x', {
 
 	get: function() {
@@ -246,6 +342,24 @@ Object.defineProperty( LayoutNode.prototype, 'x', {
 	}
 });
 
+/**
+This is the y position of the LayoutNode on screen. Initially the value of y will be 0 until this node has been layed out.
+
+Once this node has been layed out the y position will be set from all the rules applied to this node.
+
+You can also set the y position of a node by simply setting the y value:
+@example
+	node.y = 10;
+
+What this will do is adjust an offset in this layout node. So in practice what this means is that you can freely move around
+nodes for instance by dragging but all dependent nodes will still position themselves according to the rules set on them.
+
+So for instance if you had an image that is right aligned to another image. If you grab the image on the left and move it around 
+the image on the right will follow.
+
+@property y
+@type Number
+**/
 Object.defineProperty( LayoutNode.prototype, 'y', {
 
 	get: function() {
@@ -266,6 +380,24 @@ Object.defineProperty( LayoutNode.prototype, 'y', {
 	}
 });
 
+/**
+This is the width of a LayoutNode on screen. Initially the value of width will be 0 until this node has been layed out.
+
+Once this node has been layed out the width will be set from all the rules applied to this node or read in by the read function.
+
+You can also set the width of a node by simply setting the width value:
+@example
+	node.width = 200;
+
+What this will do is adjust an offset in this layout node. So in practice what this means is that you can set the sizes of nodes
+and still all dependent nodes will follow their dependency rules.
+
+So let's say you had an image called image1 which you wanted to scale up however another image called image2 aligned left of image1.
+You can still set image1.width to be whatever value you wanted and image2 would align left of image1.
+
+@property width
+@type Number
+**/
 Object.defineProperty( LayoutNode.prototype, 'width', {
 
 	get: function() {
@@ -286,6 +418,24 @@ Object.defineProperty( LayoutNode.prototype, 'width', {
 	}
 });
 
+/**
+This is the height of a LayoutNode on screen. Initially the value of height will be 0 until this node has been layed out.
+
+Once this node has been layed out the height will be set from all the rules applied to this node or read in by the read function.
+
+You can also set the height of a node by simply setting the height value:
+@example
+	node.height = 333;
+
+What this will do is adjust an offset in this layout node. So in practice what this means is that you can set the sizes of nodes
+and still all dependent nodes will follow their dependency rules.
+
+So let's say you had an image called image1 which you wanted to scale up however another image called image2 aligned below image1.
+You can still set image1.height to be whatever value you wanted and image2 would align below image1.
+
+@property width
+@type Number
+**/
 Object.defineProperty( LayoutNode.prototype, 'height', {
 
 	get: function() {
@@ -306,6 +456,52 @@ Object.defineProperty( LayoutNode.prototype, 'height', {
 	}
 });
 
+
+/**
+Inner is a LayoutNode that is contained by this LayoutNode. Inner will match the size of this node but will have no positonal values.
+
+It is useful when working with the DOM to handle nested content inside html elements. For instance if we have a div with an image inside. You can
+can apply a layout node to the div and use the inner attribute to center the image inside.
+
+@example
+	var ourDiv = layout.create( document.getElementById( 'ourDiv' ) );
+	var ourImageInsideDiv = layout.create( document.getElementById( 'ourImageInsideDiv' ) );
+
+	ourDiv.matchesSizeOf( layout );
+	ourImageInsideDiv.matchesWidthOf( ourDiv.inner ).heightIsProportional( 400, 300 ).centeredWith( ourDiv.inner );
+
+
+@property inner
+@type LayoutNode
+**/
+Object.defineProperty( LayoutNode.prototype, 'inner', {
+
+	get: function() {
+
+		if( this._inner === null ) {
+
+			this._inner = this.layout.create();
+			this._inner.matchesSizeOf( this );
+		}
+
+		return this._inner;
+	}
+});
+
+/**
+doLayout will perform the layout of this LayoutNode. This function should never be called directly but be called by the LayDown layout.
+This way dependencies will be handled correctly.
+
+So for instance if you have one layout node which sets it's size according to another node calling doLayout manually could potentially be
+destructive.
+
+Although this is the entry point to perform layouts the actual grunt work is performed in the "doLayoutWork" function. This function will
+evaluate conditionals (if there are any) and grab the appropriate rule sets to use. After the rule sets are determined by the conditionals
+doLayoutWork is called.
+
+@protected
+@method doLayout
+**/
 LayoutNode.prototype.doLayout = function() {
 
 	this.hasBeenLayedOut = true;
@@ -369,7 +565,7 @@ LayoutNode.prototype.doLayout = function() {
 
 	//after conditionals have evaluated we may want to run
 	//items that we will ALWAYS RUN
-	doLayoutWork.call( this );
+	this.doLayoutWork();
 
 	//If this layoyt node has something to position and size and has a layout function run it
 	if( this.item && this.layoutFunction ) {
@@ -385,9 +581,30 @@ LayoutNode.prototype.doLayout = function() {
 };
 
 
-//this is not a property of the prototype cause there's no need to have two functions
-//on prototype that have similar names and in theory the other always uses the other
-function doLayoutWork() {
+/**
+doLayoutWork will perform the layout work of this LayoutNode. This function should never be called directly but be called by doLayout after
+all conditionals (if any) are evaluated.
+
+This function ensures everything is evaluated in correct order:
+
+1. Size Dependencies
+2. Position Dependencies
+3. Size Rules
+4. Size Bounds
+5. Size Offsets
+6. Size Bounds (again after size offset)
+7. Reading width, height if they were not set
+8. Position rules
+9. Positional Bounds
+10. Positional Offsets
+11. Positional Bounds (again after position offset)
+
+The basic rule of thumb is we can't position anything until we know it's size. Bounds are used to ensure things don't go off screen, get too big or small.
+
+@protected
+@method doLayoutWork
+**/
+LayoutNode.prototype.doLayoutWork = function() {
 
 	for( var i = 0, len = this.sizeDependencies.length; i < len; i++ ) {
 
@@ -478,6 +695,23 @@ function doLayoutWork() {
 	}
 };
 
+/**
+Use this function to set the layout function for this node. Layout functions perform the actual work to move things on screen. LayoutNode's and rules
+on LayoutNode's perform the virtual positioning of an object where the layoutFunction performs the actual physical.
+
+For instance if you're working with the DOM the layoutFunction could set CSS width and height properties or scale. Or if you really wanted to get fancy
+it could perform an animation to position the HTML element.
+
+@method setLayoutFunction
+@param layoutFunction {function} This is the layout function that will position this layout node.
+
+Layout function's should take four properties: item, node, setWidth, setHeight. 
+
++ Where item is the item to layout (DOM element or PIXI DisplayObject)
++ node will be a LayoutNode from which you can read x, y, width, height
++ setWidth will be a boolean for whether the layout function should set the width of the item
++ setHeight will be a boolean for whether the layout function should set the height of the item
+**/
 LayoutNode.prototype.setLayoutFunction = function( layoutFunction ) {
 
 	this.layoutFunction = layoutFunction;
@@ -485,34 +719,48 @@ LayoutNode.prototype.setLayoutFunction = function( layoutFunction ) {
 	return this;
 };
 
-LayoutNode.prototype.addDependency = function( item ) {
+/**
+You can use addCustomRule to define new rules which may not be defined by LayDown. This could be handy for instance if you wanted to set the
+colour of a DIV element based on how large it is. Really the sky is the limit here. Although to ensure your new rule is performed correctly and
+does not interfere with other rules you must pass in a rule type.
 
-	switch( this.lastPropTypeEffected ) {
+@method addCustomRule
+@param {function} ruleFunction This a new rule you'd like to add. To see how rules are composed we suggest looking at the following functions
+in the src folder.
 
-		case SIZE:
-		case BOUND_SIZE:
-		case SIZE_WIDTH:
-		case BOUND_SIZE_WIDTH:
-		case SIZE_HEIGHT:
-		case BOUND_SIZE_HEIGHT:
+###### Setting size (width, height):
+- src/layoutSize/sizeIs (if your rule will be setting both width and height at the same time from values)
+- src/layoutSize/widthIs (if your rule will be setting only the width from a value)
+- src/layoutSize/heightIs (if your rule will be setting only the height from a value)
+- src/layoutSize/matchesSizeOf (if your rule will be setting both width and height from another node)
+- src/layoutSize/matchesWidthOf (if your rule will be setting both width from another node)
+- src/layoutSize/matchesHeightOf (if your rule will be setting both height from another node)
 
-			this.sizeDependencies.push( item );
-		break;
+###### Setting position (x, y):
+- src/layoutPosition/positionIs (if your rule will be setting x and y from a values at the same time)
+- src/layoutPosition/xIs (if your rule will be setting x from a value)
+- src/layoutPosition/yIs (if your rule will be setting y from a value)
+- src/layoutPosition/alignedWith (if your rule will be setting x and y based on another node)
+- src/layoutPosition/leftAlignedWith (if your rule will be setting x based on another node)
+- src/layoutPosition/topAlignedWith (if your rule will be setting y based on another node)
 
-		case POSITION:
-		case BOUND_POSITION:
-		case POSITION_X:
-		case BOUND_POSITION_X:
-		case POSITION_Y:
-		case BOUND_POSITION_Y:
+###### Bounding size (width, height):
+- src/layoutBoundSize/maxSize (if your rule will be bounding both width and height at the same time)
+- src/layoutBoundSize/maxWidth (if your rule will be bounding width only)
+- src/layoutBoundSize/maxHeight (if your rule will be bounding height only)
+- src/layoutBoundSize/maxSizeFrom (if your rule will be bounding width and height based on another item)
+- src/layoutBoundSize/maxWidthFrom (if your rule will be bounding width based on another item)
+- src/layoutBoundSize/maxHeightFrom (if your rule will be bounding height based on another item)
 
-			this.positionDependencies.push( item );
-		break;
-	}
+###### Bounding position (x, y):
+- src/layoutBoundSize/maxPosition (if your rule will be bounding both x and y at the same time)
+- src/layoutBoundSize/maxX (if your rule will be bounding x only)
+- src/layoutBoundSize/maxY (if your rule will be bounding y only)
+- src/layoutBoundSize/maxPositionFrom (if your rule will be bounding x and y based on another item)
+- src/layoutBoundSize/maxXFrom (if your rule will be bounding x based on another item)
+- src/layoutBoundSize/maxYFrom (if your rule will be bounding y based on another item)
 
-	return this;
-};
-
+**/
 LayoutNode.prototype.addCustomRule = function( ruleFunction, ruleType ) {
 
 	arguments = Array.prototype.slice.call( arguments, 2 );
@@ -602,6 +850,34 @@ LayoutNode.prototype.addCustomRule = function( ruleFunction, ruleType ) {
 	};
 
 	return addRule.call( this, ruleFunction, arguments, ruleArr, rulePropArr, effectsProperties );
+};
+
+LayoutNode.prototype.addDependency = function( item ) {
+
+	switch( this.lastPropTypeEffected ) {
+
+		case SIZE:
+		case BOUND_SIZE:
+		case SIZE_WIDTH:
+		case BOUND_SIZE_WIDTH:
+		case SIZE_HEIGHT:
+		case BOUND_SIZE_HEIGHT:
+
+			this.sizeDependencies.push( item );
+		break;
+
+		case POSITION:
+		case BOUND_POSITION:
+		case POSITION_X:
+		case BOUND_POSITION_X:
+		case POSITION_Y:
+		case BOUND_POSITION_Y:
+
+			this.positionDependencies.push( item );
+		break;
+	}
+
+	return this;
 };
 
 LayoutNode.prototype.resetRules = function() {
@@ -756,11 +1032,11 @@ function addRule( rule, ruleArguments, ruleArr, rulePropArr, type ) {
 }
 
 
-/************************************************************/
-/************************************************************/
-/********************POSITION FUNCTIONS**********************/
-/************************************************************/
-/************************************************************/
+/*----------------------------------------------------------*/
+/*----------------------------------------------------------*/
+/*-------------------POSITION FUNCTIONS---------------------*/
+/*----------------------------------------------------------*/
+/*----------------------------------------------------------*/
 
 LayoutNode.prototype.positionIs = function( x, y ) {
 
@@ -838,11 +1114,11 @@ LayoutNode.prototype.verticallyCenteredWith = function( item ) {
 	return addRule.call( this, verticallyCenteredWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
 };
 
-/************************************************************/
-/************************************************************/
-/**********************SIZE FUNCTIONS************************/
-/************************************************************/
-/************************************************************/
+/*----------------------------------------------------------*/
+/*----------------------------------------------------------*/
+/*---------------------SIZE FUNCTIONS-----------------------*/
+/*----------------------------------------------------------*/
+/*----------------------------------------------------------*/
 LayoutNode.prototype.sizeIs = function( width, height ) {
 
 	return addRule.call( this, sizeIs, arguments, this.rulesSize, this.rulesSizeProp, SIZE );
@@ -906,11 +1182,11 @@ LayoutNode.prototype.heightIsAPercentageOf = function( item, percentage ) {
 
 
 
-/************************************************************/
-/************************************************************/
-/*********************OFFSET FUNCTIONS***********************/
-/************************************************************/
-/************************************************************/
+/*----------------------------------------------------------*/
+/*----------------------------------------------------------*/
+/*--------------------OFFSET FUNCTIONS----------------------*/
+/*----------------------------------------------------------*/
+/*----------------------------------------------------------*/
 LayoutNode.prototype.plus = function() {
 
 	switch( this.lastPropTypeEffected ) {
@@ -1122,11 +1398,11 @@ LayoutNode.prototype.minus = function() {
 	return this;
 };
 
-/************************************************************/
-/************************************************************/
-/********************BOUND FUNCTIONS*************************/
-/************************************************************/
-/************************************************************/
+/*----------------------------------------------------------*/
+/*----------------------------------------------------------*/
+/*-------------------BOUND FUNCTIONS------------------------*/
+/*----------------------------------------------------------*/
+/*----------------------------------------------------------*/
 LayoutNode.prototype.maxSize = function() {
 
 	if( arguments[ 0 ] instanceof LayoutNode ) {
@@ -1415,11 +1691,11 @@ LayoutNode.prototype.min = function() {
 };
 
 
-/************************************************************/
-/************************************************************/
-/*********************CONDITIONALS***************************/
-/************************************************************/
-/************************************************************/
+/*----------------------------------------------------------*/
+/*----------------------------------------------------------*/
+/*--------------------CONDITIONALS--------------------------*/
+/*----------------------------------------------------------*/
+/*----------------------------------------------------------*/
 function addConditional( cFunction, cArguments ) {
 
 	if( !this._isDoingWhen ) {
