@@ -228,6 +228,17 @@ This is used for instance used when adding custom rules.
 @final
 **/
 LayoutNode.SIZE_WIDTH_BOUND = 'SIZE_WIDTH_BOUND';
+
+/**
+This constant describes or is a key for height layout rules where height will be effected. 
+
+This is used for instance used when adding custom rules.
+
+@property SIZE_HEIGHT_LAYOUT
+@type String
+@static
+@final
+**/
 LayoutNode.SIZE_HEIGHT_LAYOUT = 'SIZE_HEIGHT_LAYOUT';
 
 /**
@@ -242,11 +253,76 @@ This is used for instance used when adding custom rules.
 **/
 LayoutNode.SIZE_HEIGHT_BOUND = 'SIZE_HEIGHT_BOUND';
 
+/**
+This constant describes or is a key for position layout rules where x and y will be effected. 
+
+This is used for instance used when adding custom rules.
+
+@property POSITION_LAYOUT
+@type String
+@static
+@final
+**/
 LayoutNode.POSITION_LAYOUT = 'POSITION_LAYOUT';
+
+/**
+This constant describes or is a key for position bound rules where x and y will be both bound. 
+
+This is used for instance used when adding custom rules.
+
+@property POSITION_BOUND
+@type String
+@static
+@final
+**/
 LayoutNode.POSITION_BOUND = 'POSITION_BOUND';
+
+/**
+This constant describes or is a key for x layout rules where x will be effected. 
+
+This is used for instance used when adding custom rules.
+
+@property POSITION_X_LAYOUT
+@type String
+@static
+@final
+**/
 LayoutNode.POSITION_X_LAYOUT = 'POSITION_X_LAYOUT';
+
+/**
+This constant describes or is a key for x bound rules where x will be bound. 
+
+This is used for instance used when adding custom rules.
+
+@property POSITION_X_BOUND
+@type String
+@static
+@final
+**/
 LayoutNode.POSITION_X_BOUND = 'POSITION_X_BOUND';
+
+/**
+This constant describes or is a key for y layout rules where y will be effected. 
+
+This is used for instance used when adding custom rules.
+
+@property POSITION_Y_LAYOUT
+@type String
+@static
+@final
+**/
 LayoutNode.POSITION_Y_LAYOUT = 'POSITION_Y_LAYOUT';
+
+/**
+This constant describes or is a key for y bound rules where y will be bound. 
+
+This is used for instance used when adding custom rules.
+
+@property POSITION_Y_BOUND
+@type String
+@static
+@final
+**/
 LayoutNode.POSITION_Y_BOUND = 'POSITION_Y_BOUND';
 
 
@@ -759,6 +835,24 @@ in the src folder.
 - src/layoutBoundSize/maxPositionFrom (if your rule will be bounding x and y based on another item)
 - src/layoutBoundSize/maxXFrom (if your rule will be bounding x based on another item)
 - src/layoutBoundSize/maxYFrom (if your rule will be bounding y based on another item)
+
+@param {String} ruleType is a string which describes what type of rule you're defining. For utility you can use the static constants defined
+on LayoutNode:
+
+- {{#crossLink "LayoutNode/SIZE_LAYOUT:property"}}{{/crossLink}}
+- {{#crossLink "LayoutNode/SIZE_LAYOUT:property"}}{{/crossLink}}
+- {{#crossLink "LayoutNode/SIZE_BOUND:property"}}{{/crossLink}}
+- {{#crossLink "LayoutNode/SIZE_WIDTH_LAYOUT:property"}}{{/crossLink}}
+- {{#crossLink "LayoutNode/SIZE_WIDTH_BOUND:property"}}{{/crossLink}}
+- {{#crossLink "LayoutNode/SIZE_HEIGHT_LAYOUT:property"}}{{/crossLink}}
+- {{#crossLink "LayoutNode/SIZE_HEIGHT_BOUND:property"}}{{/crossLink}}
+- {{#crossLink "LayoutNode/POSITION_LAYOUT:property"}}{{/crossLink}}
+- {{#crossLink "LayoutNode/POSITION_BOUND:property"}}{{/crossLink}}
+- {{#crossLink "LayoutNode/POSITION_X_LAYOUT:property"}}{{/crossLink}}
+- {{#crossLink "LayoutNode/POSITION_X_BOUND:property"}}{{/crossLink}}
+- {{#crossLink "LayoutNode/POSITION_Y_LAYOUT:property"}}{{/crossLink}}
+- {{#crossLink "LayoutNode/POSITION_Y_BOUND:property"}}{{/crossLink}}
+
 
 **/
 LayoutNode.prototype.addCustomRule = function( ruleFunction, ruleType ) {
