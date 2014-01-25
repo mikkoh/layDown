@@ -64,21 +64,21 @@ imageContainer.name= 'imageContainer';
 imageContainer.inner.name = 'imageContainerInner';
 
 logo.horizontallyCenteredWith( layout ).topAlignedWith( layout )
-.when( layout ).heightSmallerThan( 342 ).matchesHeightOf( layout ).minus( 60 ).widthIsProportional( 200, 282 )
+.when( layout ).heightLessThan( 342 ).matchesHeightOf( layout ).minus( 60 ).widthIsProportional( 200, 282 )
 .default().sizeIs( 200, 282 );
 
 menu.matchesWidthOf( layout ).horizontallyCenteredWith( layout ).alignedBelow( logo ).plus( 20 );
 
 menu1.alignedWith( menu )
-.when( menu ).widthSmallerThan( 600 ).matchesWidthOf( menu )
+.when( menu ).widthLessThan( 600 ).matchesWidthOf( menu )
 .default().widthIsAPercentageOf( menu, 0.33333 ).minus( 1 );
 
 menu2.matchesSizeOf( menu1 )
-.when( menu ).widthSmallerThan( 600 ).alignedBelow( menu1 ).plus( 3 ).leftAlignedWith( menu1 ).on( onMenu2SmallerThan600 )
-.default().topAlignedWith( menu ).alignedRightOf( menu1 ).plus( 3 );
+.when( menu ).widthLessThan( 600 ).alignedBelow( menu1 ).plus( 3 ).leftAlignedWith( menu1 ).on( onMenu2SmallerThan600 )
+.default().topAlignedWith( menu ).alignedRightOf( menu1 ).plus( 3 ).on( onMenu2GreaterThan600 );
 
 menu3.matchesSizeOf( menu1 )
-.when( menu ).widthSmallerThan( 600 ).alignedBelow( menu2 ).plus( 3 ).leftAlignedWith( menu1 )
+.when( menu ).widthLessThan( 600 ).alignedBelow( menu2 ).plus( 3 ).leftAlignedWith( menu1 )
 .default().topAlignedWith( menu ).alignedRightOf( menu2 ).plus( 3 );
 
 imageContainer.matchesWidthOf( menu ).heightIsProportional( 2700, 652 ).alignedBelow( menu3 ).plus( 3 );
@@ -100,4 +100,9 @@ function onResize() {
 function onMenu2SmallerThan600( isSmaller ) {
 
 	console.log( 'MENU2 IS SMALLER', isSmaller );
+}
+
+function onMenu2GreaterThan600( isGreaterThan ) {
+
+	console.log( 'MENU2 IS GREATER', isGreaterThan );
 }
