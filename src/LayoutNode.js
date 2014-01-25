@@ -62,8 +62,8 @@ var minWidthFrom = require( './layoutBoundSize/minWidthFrom' );
 //CONDITIONAL FUNCTIONS
 var widthGreaterThan = require( './conditionals/widthGreaterThan' );
 var heightGreaterThan = require( './conditionals/heightGreaterThan' );
-var widthSmallerThan = require( './conditionals/widthSmallerThan' );
-var heightSmallerThan = require( './conditionals/heightSmallerThan' );
+var widthLessThan = require( './conditionals/widthLessThan' );
+var heightLessThan = require( './conditionals/heightLessThan' );
 
 //OFFSET FUNCTIONS
 var minusHeight = require( './offsets/minusHeight' );
@@ -2741,14 +2741,14 @@ LayoutNode.prototype.heightGreaterThan = function( value ) {
 	return addConditional.call( this, heightGreaterThan, arguments );
 };
 
-LayoutNode.prototype.widthSmallerThan = function( value ) {
+LayoutNode.prototype.widthLessThan = function( value ) {
 
-	return addConditional.call( this, widthSmallerThan, arguments );
+	return addConditional.call( this, widthLessThan, arguments );
 };
 
-LayoutNode.prototype.heightSmallerThan = function( value ) {
+LayoutNode.prototype.heightLessThan = function( value ) {
 
-	return addConditional.call( this, heightSmallerThan, arguments );
+	return addConditional.call( this, heightLessThan, arguments );
 };
 
 
