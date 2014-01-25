@@ -1371,7 +1371,7 @@ This rule will set the width or height of this LayoutNode to be proportional bas
 It is handy for when you have rules adjusting either width or height only and yet you want the untouched property to be
 proportional.
 
-So if you have an image that is 200px x 100px if there are rules applied to this LayoutNode where the width will become 400px
+So if you have an image that is 200x100 if there are rules applied to this LayoutNode where the width will become 400px
 this rule will see that height has not been effected at all and will set the height to be proportional to the width based on
 the original height passed in. So in this case our image's size would be 400x200 where this rule sets the height to be 200px
 to stay in proportion to the original width.
@@ -1390,8 +1390,8 @@ LayoutNode.prototype.sizeIsProportional = function( originalWidth, originalHeigh
 This rule will set the width of the LayoutNode to be proportional to the height based on the originalWidth passed.
 It is handy for when you have rules adjusting height and width should remain proportional to the height.
 
-For instance you have an image which is 200px x 100px. Once rules are applied to it the height becomes 200px. Ideally we'll
-want the width to also be 2x larger. So this rule will set the width to be 400px and our final resolution is 400px x 200px.
+For instance you have an image which is 200x100. Once rules are applied to it the height becomes 200px. Ideally we'll
+want the width to also be 2x larger. So this rule will set the width to be 400px and our final resolution is 400x200.
 
 @method widthIsProportional
 @param originalWidth {Number} the original width of the item being layed out before any layout functions are applied
@@ -1407,8 +1407,8 @@ LayoutNode.prototype.widthIsProportional = function( originalWidth, originalHeig
 This rule will set the height of the LayoutNode to be proportional to the width based on the originalHeight passed.
 It is handy for when you have rules adjusting width and height should remain proportional to the width.
 
-For instance you have an image which is 200px x 100px. Once rules are applied to it the width becomes 400px. Ideally we'll
-want the height to also be 2x larger. So this rule will set the height to be 200px and our final resolution is 400px x 200px.
+For instance you have an image which is 200x100. Once rules are applied to it the width becomes 400px. Ideally we'll
+want the height to also be 2x larger. So this rule will set the height to be 200px and our final resolution is 400x200.
 
 @method heightIsProportional
 @param originalWidth {Number} the original width of the item being layed out before any layout functions are applied
@@ -1459,8 +1459,8 @@ LayoutNode.prototype.matchesHeightOf = function( item ) {
 /**
 This rule will set the width and height of this LayoutNode to be a percentage of the LayoutNode passed in.
 
-So for instance if the LayoutNode we're passing in is 400px x 200px after all rules have been applied and 
-we say this LayoutNode should be 0.5 of the LayoutNode passed in this LayoutNode's size will be 200px x 100px or 50% of 400px x 200px.
+So for instance if the LayoutNode we're passing in is 400x200 after all rules have been applied and 
+we say this LayoutNode should be 0.5 of the LayoutNode passed in this LayoutNode's size will be 200x100 or 50% of 400x200.
 
 @method sizeIsAPercentageOf
 @param item {LayoutNode} the LayoutNode that this LayoutNode will set it's width and height from
@@ -1475,7 +1475,7 @@ LayoutNode.prototype.sizeIsAPercentageOf = function( item, percentage ) {
 /**
 This rule will set the width of this LayoutNode to be a percentage of the LayoutNode passed in.
 
-So for instance if the LayoutNode we're passing in is 400px x 200px after all rules have been applied and 
+So for instance if the LayoutNode we're passing in is 400x200 after all rules have been applied and 
 we say this LayoutNode's width should be 0.5 of the width of the LayoutNode passed in. This LayoutNode's width will be 
 200px or 50% of 400px.
 
@@ -1492,7 +1492,7 @@ LayoutNode.prototype.widthIsAPercentageOf = function( item, percentage ) {
 /**
 This rule will set the height of this LayoutNode to be a percentage of the LayoutNode passed in.
 
-So for instance if the LayoutNode we're passing in is 400px x 200px after all rules have been applied and 
+So for instance if the LayoutNode we're passing in is 400x200 after all rules have been applied and 
 we say this LayoutNode's height should be 0.5 of the height of the LayoutNode passed in. This LayoutNode's height will be 
 100px or 50% of 200px.
 
@@ -1520,11 +1520,11 @@ So for instance if we did:
 
 	node.widthIs( 200 ).plus( 10 );
 
-Then the width of this layout node would be 210px. However if we do:
+Then the width of this LayoutNode would be 210px. However if we do:
 
 	node.yIs( 100 ).plus( 30 );
 
-Then the y position of this layout node would be at 130px.
+Then the y position of this LayoutNode would be at 130px.
 
 As you can see plus' context will change based on the type of rule applied previously.
 
@@ -1646,11 +1646,11 @@ So for instance if we did:
 
 	node.widthIs( 200 ).minus( 10 );
 
-Then the width of this layout node would be 190px. However if we do:
+Then the width of this LayoutNode would be 190px. However if we do:
 
 	node.yIs( 100 ).minus( 30 );
 
-Then the y position of this layout node would be at 70px.
+Then the y position of this LayoutNode would be at 70px.
 
 As you can see minus' context will change based on the type of rule applied previously.
 
@@ -1769,6 +1769,56 @@ LayoutNode.prototype.minus = function() {
 /*-------------------BOUND FUNCTIONS------------------------*/
 /*----------------------------------------------------------*/
 /*----------------------------------------------------------*/
+
+/**
+maxSize is a bounding function.
+
+There are three different ways to use maxSize. All are noted in this documentation.
+
+You can pass in a LayoutNode that this LayoutNode will never be larger than. So for instance:
+
+	node1.sizeIs( 200, 100 );
+	node2.sizeIs( 300, 300 ).maxSize( node1 );
+
+When run node2's width and height will be 200x100 not 300x300 because it will be bound to not be larger than
+node1.
+
+@method maxSize
+@param layoutNode {LayoutNode} this LayoutNode will always be larger or the same size as the LayoutNode this function is called on
+**/
+
+/**
+maxSize is a bounding function.
+
+There are three different ways to use maxSize. All are noted in this documentation.
+
+You can pass in width and height that this LayoutNode will never be larger than. So for instance:
+
+	node2.sizeIs( 300, 300 ).maxSize( 200, 100 );
+
+When run node2's width and height will be 200x100 not 300x300 because it will be bound to not be larger than
+200x100.
+
+@method maxSize
+@param width {Number} the LayoutNode's width that this function is called on will never be larger than this value passed in
+@param height {Number} the LayoutNode's height that this function is called on will never be larger than this value passed in
+**/
+
+/**
+maxSize is a bounding function.
+
+There are three different ways to use maxSize. All are noted in this documentation.
+
+You can pass in a size that this LayoutNode will never be larger than. So for instance:
+
+	node2.sizeIs( 300, 300 ).maxSize( 200 );
+
+When run node2's width and height will be 200x200 not 300x300 because it will be bound to not be larger than
+200x200.
+
+@method maxSize
+@param size {Number} the LayoutNode's width and height that this function is called on will never be larger than this value passed in
+**/
 LayoutNode.prototype.maxSize = function() {
 
 	if( arguments[ 0 ] instanceof LayoutNode ) {
@@ -1780,6 +1830,42 @@ LayoutNode.prototype.maxSize = function() {
 	}
 };
 
+
+
+
+/**
+maxWidth is a bounding function.
+
+There are two different ways to use maxWidth. All are noted in this documentation.
+
+You can pass in a LayoutNode that this LayoutNode's width will never be larger than. So for instance:
+
+	node1.widthIs( 200 );
+	node2.widthIs( 300 ).maxWidth( node1 );
+
+When run in the end node2's width will be 200px not 300px because it will be bound to not be larger than
+node1.
+
+@method maxWidth
+@param layoutNode {LayoutNode} this LayoutNode will always be larger or the same size as the LayoutNode this function is called on
+**/
+
+/**
+maxWidth is a bounding function.
+
+There are two different ways to use maxWidth. All are noted in this documentation.
+
+You can pass in width that this LayoutNode will never be larger than. So for instance:
+
+	node2.widthIs( 300 ).maxWidth( 200 );
+
+When run node2's width will be 200px not 300px because it will be bound to not be larger than
+200px.
+
+@method maxWidth
+@param width {Number} the LayoutNode's width that this function is called on will never be larger than this value passed in
+@param height {Number} the LayoutNode's height that this function is called on will never be larger than this value passed in
+**/
 LayoutNode.prototype.maxWidth = function() {
 
 	if( arguments[ 0 ] instanceof LayoutNode ) {
@@ -1791,6 +1877,42 @@ LayoutNode.prototype.maxWidth = function() {
 	}
 };
 
+
+
+
+/**
+maxHeight is a bounding function.
+
+There are two different ways to use maxHeight. All are noted in this documentation.
+
+You can pass in a LayoutNode that this LayoutNode's width will never be larger than. So for instance:
+
+	node1.heightIs( 200 );
+	node2.heightIs( 300 ).maxHeight( node1 );
+
+When run node2's height will be 200px not 300px because it will be bound to not be larger than
+node1.
+
+@method maxHeight
+@param layoutNode {LayoutNode} this LayoutNode will always be larger or the same size as the LayoutNode this function is called on
+**/
+
+/**
+maxHeight is a bounding function.
+
+There are two different ways to use maxHeight. All are noted in this documentation.
+
+You can pass in width that this LayoutNode will never be larger than. So for instance:
+
+	node2.heightIs( 300 ).maxHeight( 200 );
+
+When run node2's height will be 200px not 300px because it will be bound to not be larger than
+200px.
+
+@method maxHeight
+@param width {Number} the LayoutNode's width that this function is called on will never be larger than this value passed in
+@param height {Number} the LayoutNode's height that this function is called on will never be larger than this value passed in
+**/
 LayoutNode.prototype.maxHeight = function() {
 
 	if( arguments[ 0 ] instanceof LayoutNode ) {
@@ -1802,6 +1924,57 @@ LayoutNode.prototype.maxHeight = function() {
 	}
 };
 
+
+
+/**
+minSize is a bounding function.
+
+There are three different ways to use minSize. All are noted in this documentation.
+
+You can pass in a LayoutNode that this LayoutNode will never be larger than. So for instance:
+
+	node1.sizeIs( 200, 100 );
+	node2.sizeIs( 50, 50 ).minSize( node1 );
+
+When run node2's width and height will be 200x100 not 50x50 because it will be bound to not be larger than
+node1.
+
+@method minSize
+@param layoutNode {LayoutNode} this LayoutNode that this rule is applied to will never be smaller than than this LayoutNode passed in
+**/
+
+/**
+minSize is a bounding function.
+
+There are three different ways to use minSize. All are noted in this documentation.
+
+You can pass in width and height that this LayoutNode will never be larger than. So for instance:
+
+	node2.sizeIs( 50, 50 ).minSize( 200, 100 );
+
+When run node2's width and height will be 200x100 not 300x300 because it will be bound to not be larger than
+200x100.
+
+@method minSize
+@param width {Number} the LayoutNode's width that this function is called on will never be smaller than this value passed in
+@param height {Number} the LayoutNode's height that this function is called on will never be smaller than this value passed in
+**/
+
+/**
+minSize is a bounding function.
+
+There are three different ways to use minSize. All are noted in this documentation.
+
+You can pass in a size that this LayoutNode will never be larger than. So for instance:
+
+	node2.sizeIs( 100, 50 ).minSize( 200 );
+
+When run node2's width and height will be 200x200 not 100x50 because it will be bound to not be smaller than
+200x200.
+
+@method minSize
+@param size {Number} the LayoutNode's width and height that this function is called on will never be smaller than this value passed in
+**/
 LayoutNode.prototype.minSize = function() {
 
 	if( arguments[ 0 ] instanceof LayoutNode ) {
@@ -1813,6 +1986,38 @@ LayoutNode.prototype.minSize = function() {
 	}
 };
 
+
+
+
+/**
+minWidth is a bounding function.
+
+There are two different ways to use minWidth. All are noted in this documentation.
+
+You can pass in a LayoutNode that this LayoutNode's width will never be larger than. So for instance:
+
+	node1.widthIs( 200 );
+	node2.widthIs( 50 ).minWidth( node1 );
+
+When run node2's width will be 200px not 50px because it will be bound to not be larger than node1.
+
+@method minWidth
+@param layoutNode {LayoutNode} the width of the node that this function is called on will never be larger than the width of this node passed in
+**/
+/**
+minWidth is a bounding function.
+
+There are two different ways to use minWidth. All are noted in this documentation.
+
+You can pass in a width that this LayoutNode will never be larger than. So for instance:
+
+	node2.widthIs( 100 ).minWidth( 50 );
+
+When run node2's width will be 50px not 100px because it will be bound to not be larger than 50px.
+
+@method minWidth
+@param size {Number} the LayoutNode's width that this function is called on will never be smaller than this value passed in
+**/
 LayoutNode.prototype.minWidth = function() {
 
 	if( arguments[ 0 ] instanceof LayoutNode ) {
@@ -1824,6 +2029,38 @@ LayoutNode.prototype.minWidth = function() {
 	}
 };
 
+
+
+
+/**
+minHeight is a bounding function.
+
+There are two different ways to use minHeight. All are noted in this documentation.
+
+You can pass in a LayoutNode that this LayoutNode's height will never be larger than. So for instance:
+
+	node1.heightIs( 200 );
+	node2.heightIs( 50 ).minHeight( node1 );
+
+When run node2's height will be 200px not 50px because it will be bound to not be larger than node1.
+
+@method minHeight
+@param layoutNode {LayoutNode} the height of the node that this function is called on will never be larger than the height of this node passed in
+**/
+/**
+minHeight is a bounding function.
+
+There are two different ways to use minHeight. All are noted in this documentation.
+
+You can pass in a height that this LayoutNode will never be larger than. So for instance:
+
+	node2.heightIs( 100 ).minHeight( 50 );
+
+When run node2's height will be 50px not 100px because it will be bound to not be larger than 50px.
+
+@method minHeight
+@param size {Number} the LayoutNode's height that this function is called on will never be smaller than this value passed in
+**/
 LayoutNode.prototype.minHeight = function() {
 
 	if( arguments[ 0 ] instanceof LayoutNode ) {
@@ -1835,6 +2072,59 @@ LayoutNode.prototype.minHeight = function() {
 	}
 };
 
+
+
+
+
+/**
+maxPosition is a bounding function.
+
+There are three different ways to use maxPosition. All are noted in this documentation.
+
+You can pass in a LayoutNode. This LayoutNode's position will never be larger than the position of the passed node.
+
+	node1.positionIs( 300, 200 );
+	node2.positionIs( 400, 400 ).maxPosition( node1 );
+
+When run node2's x and y will be 200 and 100 not x 300 and y 200 because it will be bound x and y to not be larger than
+node1's x and y.
+
+@method maxPosition
+@param layoutNode {LayoutNode} this passed in LayoutNode's x and y position will be be the maximum x and y position for this node
+**/
+
+/**
+maxPosition is a bounding function.
+
+There are three different ways to use maxPosition. All are noted in this documentation.
+
+You can pass in a maximum x and y position for this node.
+
+	node2.positionIs( 300, 300 ).maxPosition( 200, 100 );
+
+When run node2's x and y will be x 200 and y 100 not x 300 and y 300 because it will be bound x and y to not be larger than
+x 200 and y 100.
+
+@method maxPosition
+@param x {Number} the maximum x value for this node's x value
+@param y {Number} the maximum y value for this node's y value
+**/
+
+/**
+maxPosition is a bounding function.
+
+There are three different ways to use maxPosition. All are noted in this documentation.
+
+You can pass in a value that this LayoutNode's x and y will never be larger than. So for instance:
+
+	node2.positionIs( 300, 400 ).maxPosition( 200 );
+
+When run node2's width and height will be 200x200 not 300x400 because it will be bound to not be larger x
+200 and y 200.
+
+@method maxPosition
+@param value {Number} the maximum x and y value for this node
+**/
 LayoutNode.prototype.maxPosition = function() {
 
 	if( arguments[ 0 ] instanceof LayoutNode ) {
@@ -1846,6 +2136,38 @@ LayoutNode.prototype.maxPosition = function() {
 	}
 };
 
+
+
+
+/**
+maxX is a bounding function.
+
+There are two possible ways to use this function. All are noted in this documentation.
+
+You can pass in a LayoutNode from which this node's maximum x value will be read from.
+
+	node1.xIs( 200 );
+	node2.xIs( 400 ).maxX( node1 );
+
+When run node2's x value will be 200 and not 400 because it will be bound to node1's x value.
+
+@method maxX
+@param layoutNode {LayoutNode} The LayoutNode whose x value will be the maximum x value for this node
+**/
+/**
+maxX is a bounding function.
+
+There are two possible ways to use this function. All are noted in this documentation.
+
+You can pass in an x value from which this node's maximum x value will be set.
+
+	node2.xIs( 400 ).maxX( 200 );
+
+When run node2's x value will be 200 and not 400 because it will be bound to the x value 200.
+
+@method maxX
+@param x {Number} The maximum x value for this LayoutNode
+**/
 LayoutNode.prototype.maxX = function() {
 
 	if( arguments[ 0 ] instanceof LayoutNode ) {
@@ -1857,6 +2179,39 @@ LayoutNode.prototype.maxX = function() {
 	}
 };
 
+
+
+
+
+/**
+maxY is a bounding function.
+
+There are two possible ways to use this function. All are noted in this documentation.
+
+You can pass in a LayoutNode from which this node's maximum y value will be read from.
+
+	node1.yIs( 200 );
+	node2.yIs( 400 ).maxY( node1 );
+
+When run node2's y value will be 200 and not 400 because it will be bound to node1's y value.
+
+@method maxY
+@param layoutNode {LayoutNode} The LayoutNode whose y value will be the maximum y value for this node
+**/
+/**
+maxY is a bounding function.
+
+There are two possible ways to use this function. All are noted in this documentation.
+
+You can pass in an y value from which this node's maximum y value will be set.
+
+	node2.yIs( 400 ).maxY( 200 );
+
+When run node2's x value will be 200 and not 400 because it will be bound to the y value 200.
+
+@method maxY
+@param y {Number} The maximum y value for this LayoutNode
+**/
 LayoutNode.prototype.maxY = function() {
 
 	if( arguments[ 0 ] instanceof LayoutNode ) {
