@@ -1507,12 +1507,32 @@ LayoutNode.prototype.heightIsAPercentageOf = function( item, percentage ) {
 }
 
 
-
 /*----------------------------------------------------------*/
 /*----------------------------------------------------------*/
 /*--------------------OFFSET FUNCTIONS----------------------*/
 /*----------------------------------------------------------*/
 /*----------------------------------------------------------*/
+
+/**
+plus is an offset function. Offset functions will offset the property previously effected.
+
+So for instance if we did:
+
+	node.widthIs( 200 ).plus( 10 );
+
+Then the width of this layout node would be 210px. However if we do:
+
+	node.yIs( 100 ).plus( 30 );
+
+Then the y position of this layout node would be at 130px.
+
+As you can see plus' context will change based on the type of rule applied previously.
+
+Plus is handy for when a designer sais "Can you move this over by X pixels".
+
+@method plus
+@chainable
+**/
 LayoutNode.prototype.plus = function() {
 
 	switch( this.lastPropTypeEffected ) {
@@ -1619,6 +1639,26 @@ LayoutNode.prototype.plus = function() {
 	return this;
 };
 
+/**
+minus is an offset function. Offset functions will offset the property previously effected.
+
+So for instance if we did:
+
+	node.widthIs( 200 ).minus( 10 );
+
+Then the width of this layout node would be 190px. However if we do:
+
+	node.yIs( 100 ).minus( 30 );
+
+Then the y position of this layout node would be at 70px.
+
+As you can see minus' context will change based on the type of rule applied previously.
+
+Minus is handy for when a designer sais "Can you move this over by X pixels".
+
+@method minus
+@chainable
+**/
 LayoutNode.prototype.minus = function() {
 
 	switch( this.lastPropTypeEffected ) {
