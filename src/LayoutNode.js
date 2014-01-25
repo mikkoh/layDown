@@ -2223,6 +2223,59 @@ LayoutNode.prototype.maxY = function() {
 	}
 };
 
+
+
+
+
+/**
+minPosition is a bounding function.
+
+There are three different ways to use minPosition. All are noted in this documentation.
+
+You can pass in a LayoutNode. This LayoutNode's position will never be smaller than the position of the passed node.
+
+	node1.positionIs( 300, 200 );
+	node2.positionIs( 100, 100 ).minPosition( node1 );
+
+When run node2's x and y will be 300 and 200 not x 100 and y 100 because it will be bound x and y to not be smaller than
+node1's x and y.
+
+@method minPosition
+@param layoutNode {LayoutNode} this passed in LayoutNode's x and y position will be be the minimum x and y position for this node
+**/
+
+/**
+minPosition is a bounding function.
+
+There are three different ways to use minPosition. All are noted in this documentation.
+
+You can pass in a minimum x and y position for this node.
+
+	node2.positionIs( 100, 100 ).minPosition( 200, 100 );
+
+When run node2's x and y will be x 200 and y 100 not x 100 and y 100 because it will be bound x and y to not be smaller than
+x 200 and y 100.
+
+@method minPosition
+@param x {Number} the minimum x value for this node's x value
+@param y {Number} the minimum y value for this node's y value
+**/
+
+/**
+minPosition is a bounding function.
+
+There are three different ways to use minPosition. All are noted in this documentation.
+
+You can pass in a value that this LayoutNode's x and y will never be smaller than. So for instance:
+
+	node2.positionIs( 100, 50 ).minPosition( 200 );
+
+When run node2's x and y will be x 200 and y 200 not 100 x and 50 y because it will be bound to not be smaller than x
+200 and y 200.
+
+@method minPosition
+@param value {Number} the minimum x and y value for this node
+**/
 LayoutNode.prototype.minPosition = function() {
 
 	if( arguments[ 0 ] instanceof LayoutNode ) {
@@ -2234,6 +2287,38 @@ LayoutNode.prototype.minPosition = function() {
 	}
 };
 
+
+
+
+/**
+minX is a bounding function.
+
+There are two possible ways to use this function. All are noted in this documentation.
+
+You can pass in a LayoutNode from which this node's minimum x value will be read from.
+
+	node1.xIs( 200 );
+	node2.xIs( 100 ).minX( node1 );
+
+When run node2's x value will be 200 and not 100 because it will be bound to node1's x value.
+
+@method minX
+@param layoutNode {LayoutNode} The LayoutNode whose x value will be the minimum x value for this node
+**/
+/**
+minX is a bounding function.
+
+There are two possible ways to use this function. All are noted in this documentation.
+
+You can pass in an x value from which this node's minimum x value will be set.
+
+	node2.xIs( 100 ).minX( 200 );
+
+When run node2's x value will be 200 and not 100 because it will be bound to the x value 200.
+
+@method minX
+@param y {Number} The minimum y value for this LayoutNode
+**/
 LayoutNode.prototype.minX = function() {
 
 	if( arguments[ 0 ] instanceof LayoutNode ) {
@@ -2245,7 +2330,40 @@ LayoutNode.prototype.minX = function() {
 	}
 };
 
-LayoutNode.prototype.maxY = function() {
+
+
+
+
+/**
+minY is a bounding function.
+
+There are two possible ways to use this function. All are noted in this documentation.
+
+You can pass in a LayoutNode from which this node's minimum y value will be read from.
+
+	node1.yIs( 200 );
+	node2.yIs( 100 ).minY( node1 );
+
+When run node2's y value will be 200 and not 100 because it will be bound to node1's y value.
+
+@method minY
+@param layoutNode {LayoutNode} The LayoutNode whose y value will be the minimum y value for this node
+**/
+/**
+minY is a bounding function.
+
+There are two possible ways to use this function. All are noted in this documentation.
+
+You can pass in an y value from which this node's minimum y value will be set.
+
+	node2.yIs( 100 ).minY( 200 );
+
+When run node2's y value will be 200 and not 100 because it will be bound to the y value 200.
+
+@method minY
+@param y {Number} The minimum y value for this LayoutNode
+**/
+LayoutNode.prototype.minY = function() {
 
 	if( arguments[ 0 ] instanceof LayoutNode ) {
 
