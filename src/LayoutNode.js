@@ -1014,6 +1014,14 @@ LayoutNode.prototype.resetSizeRules = function() {
 	return this;
 };
 
+/**
+This is a utility function to create a new layout node. It will use the parent layout (LayDown) of this node.
+
+This is basically for those peeps who loves them chainings. (don't get too crazy though)
+
+@method create
+@param itemToLayDown {Object} This is a new item to be laid out. eg. A DOM element or a DixiDisplayObject or whatever
+**/
 LayoutNode.prototype.create = function( itemToLayDown ) {
 
 	return this.layout.create( itemToLayDown );
@@ -1132,77 +1140,183 @@ function addRule( rule, ruleArguments, ruleArr, rulePropArr, type ) {
 /*----------------------------------------------------------*/
 /*----------------------------------------------------------*/
 
+/**
+This rule will position an item at the cordinate passed in.
+
+@method positionIs
+@param x {Number} x cordinate where the item being positioned should go
+@param y {Number} y cordinate where the item being positioned should go
+@chainable
+**/
 LayoutNode.prototype.positionIs = function( x, y ) {
 
 	return addRule.call( this, positionIs, arguments, this.rulesPos, this.rulesPosProp, POSITION );
 };
 
+/**
+This rule will position an item at the x cordinate passed in.
+
+@method xIs
+@param x {Number} x cordinate where the item being positioned should go
+@chainable
+**/
 LayoutNode.prototype.xIs = function( x ) {
 
 	return addRule.call( this, xIs, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
 };
 
+/**
+This rule will position an item at the y cordinate passed in.
+
+@method yIs
+@param y {Number} y cordinate where the item being positioned should go
+@chainable
+**/
 LayoutNode.prototype.yIs = function( y ) {
 
 	return addRule.call( this, yIs, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
 };
 
+/**
+This rule will position this LayoutNode below the item passed.
+
+@method alignedBelow
+@param item {LayoutNode} item that this LayoutNode should be below
+@chainable
+**/
 LayoutNode.prototype.alignedBelow = function( item ) {
 
 	return addRule.call( this, alignedBelow, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
 };
 
+/**
+This rule will position this LayoutNode above the item passed.
+
+@method alignedAbove
+@param item {LayoutNode} item that this LayoutNode should be above
+@chainable
+**/
 LayoutNode.prototype.alignedAbove = function( item ) {
 
 	return addRule.call( this, alignedAbove, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
 
 };
 
+/**
+This rule will position this LayoutNode left of the item passed.
+
+@method alignedLeftOf
+@param item {LayoutNode} item that this LayoutNode should be left of
+@chainable
+**/
 LayoutNode.prototype.alignedLeftOf = function( item ) {
 
 	return addRule.call( this, alignedLeftOf, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
 };
 
+/**
+This rule will position this LayoutNode right of the item passed.
+
+@method alignedLeftOf
+@param item {LayoutNode} item that this LayoutNode should be right of
+@chainable
+**/
 LayoutNode.prototype.alignedRightOf = function( item ) {
 
 	return addRule.call( this, alignedRightOf, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
 };
 
+/**
+This rule will position this LayoutNode so that it's aligned fully (top, left) with the item passed in.
+
+@method alignedWith
+@param item {LayoutNode} item that this LayoutNode should align to
+@chainable
+**/
 LayoutNode.prototype.alignedWith = function( item ) {
 
 	return addRule.call( this, alignedWith, arguments, this.rulesPos, this.rulesPosProp, POSITION );
 };
 
+/**
+This rule will position this LayoutNode so that it's left aligned with the item passed in.
+
+@method leftAlignedWith
+@param item {LayoutNode} item that this LayoutNode should left align to
+@chainable
+**/
 LayoutNode.prototype.leftAlignedWith = function( item ) {
 
 	return addRule.call( this, leftAlignedWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
 };
 
+/**
+This rule will position this LayoutNode so that it's right aligned with the item passed in.
+
+@method rightAlignedWith
+@param item {LayoutNode} item that this LayoutNode should right align to
+@chainable
+**/
 LayoutNode.prototype.rightAlignedWith = function( item ) {
 
 	return addRule.call( this, rightAlignedWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
 };
 
+/**
+This rule will position this LayoutNode so that it's top aligned with the item passed in.
+
+@method topAlignedWith
+@param item {LayoutNode} item that this LayoutNode should top align to
+@chainable
+**/
 LayoutNode.prototype.topAlignedWith = function( item ) {
 
 	return addRule.call( this, topAlignedWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
 };
 
+/**
+This rule will position this LayoutNode so that it's bottom aligned with the item passed in.
+
+@method bottomAlignedWith
+@param item {LayoutNode} item that this LayoutNode should bottom align to
+@chainable
+**/
 LayoutNode.prototype.bottomAlignedWith = function( item ) {
 
 	return addRule.call( this, bottomAlignedWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
 };
 
+/**
+This rule will position this LayoutNode so that it's center (horizontally and verically) aligned with the item passed in.
+
+@method centeredWith
+@param item {LayoutNode} item that this LayoutNode should center align to
+@chainable
+**/
 LayoutNode.prototype.centeredWith = function( item ) {
 
 	return addRule.call( this, centeredWith, arguments, this.rulesPos, this.rulesPosProp, POSITION );
 };
 
+/**
+This rule will position this LayoutNode so that it's horizontally centered with the item passed in.
+
+@method horizontallyCenteredWith
+@param item {LayoutNode} item that this LayoutNode should be horizontally centered to
+@chainable
+**/
 LayoutNode.prototype.horizontallyCenteredWith = function( item ) {
 
 	return addRule.call( this, horizontallyCenteredWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
 };
 
+/**
+This rule will position this LayoutNode so that it's vertically centered with the item passed in.
+
+@method verticallyCenteredWith
+@param item {LayoutNode} item that this LayoutNode should be vertically centered to
+@chainable
+**/
 LayoutNode.prototype.verticallyCenteredWith = function( item ) {
 
 	return addRule.call( this, verticallyCenteredWith, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
