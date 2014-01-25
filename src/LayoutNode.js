@@ -1785,6 +1785,7 @@ node1.
 
 @method maxSize
 @param layoutNode {LayoutNode} this LayoutNode will always be larger or the same size as the LayoutNode this function is called on
+@chainable
 **/
 
 /**
@@ -1802,6 +1803,7 @@ When run node2's width and height will be 200x100 not 300x300 because it will be
 @method maxSize
 @param width {Number} the LayoutNode's width that this function is called on will never be larger than this value passed in
 @param height {Number} the LayoutNode's height that this function is called on will never be larger than this value passed in
+@chainable
 **/
 
 /**
@@ -1818,6 +1820,7 @@ When run node2's width and height will be 200x200 not 300x300 because it will be
 
 @method maxSize
 @param size {Number} the LayoutNode's width and height that this function is called on will never be larger than this value passed in
+@chainable
 **/
 LayoutNode.prototype.maxSize = function() {
 
@@ -1848,6 +1851,7 @@ node1.
 
 @method maxWidth
 @param layoutNode {LayoutNode} this LayoutNode will always be larger or the same size as the LayoutNode this function is called on
+@chainable
 **/
 
 /**
@@ -1865,6 +1869,7 @@ When run node2's width will be 200px not 300px because it will be bound to not b
 @method maxWidth
 @param width {Number} the LayoutNode's width that this function is called on will never be larger than this value passed in
 @param height {Number} the LayoutNode's height that this function is called on will never be larger than this value passed in
+@chainable
 **/
 LayoutNode.prototype.maxWidth = function() {
 
@@ -1895,6 +1900,7 @@ node1.
 
 @method maxHeight
 @param layoutNode {LayoutNode} this LayoutNode will always be larger or the same size as the LayoutNode this function is called on
+@chainable
 **/
 
 /**
@@ -1912,6 +1918,7 @@ When run node2's height will be 200px not 300px because it will be bound to not 
 @method maxHeight
 @param width {Number} the LayoutNode's width that this function is called on will never be larger than this value passed in
 @param height {Number} the LayoutNode's height that this function is called on will never be larger than this value passed in
+@chainable
 **/
 LayoutNode.prototype.maxHeight = function() {
 
@@ -1941,6 +1948,7 @@ node1.
 
 @method minSize
 @param layoutNode {LayoutNode} this LayoutNode that this rule is applied to will never be smaller than than this LayoutNode passed in
+@chainable
 **/
 
 /**
@@ -1958,6 +1966,7 @@ When run node2's width and height will be 200x100 not 300x300 because it will be
 @method minSize
 @param width {Number} the LayoutNode's width that this function is called on will never be smaller than this value passed in
 @param height {Number} the LayoutNode's height that this function is called on will never be smaller than this value passed in
+@chainable
 **/
 
 /**
@@ -1974,6 +1983,7 @@ When run node2's width and height will be 200x200 not 100x50 because it will be 
 
 @method minSize
 @param size {Number} the LayoutNode's width and height that this function is called on will never be smaller than this value passed in
+@chainable
 **/
 LayoutNode.prototype.minSize = function() {
 
@@ -2003,6 +2013,7 @@ When run node2's width will be 200px not 50px because it will be bound to not be
 
 @method minWidth
 @param layoutNode {LayoutNode} the width of the node that this function is called on will never be larger than the width of this node passed in
+@chainable
 **/
 /**
 minWidth is a bounding function.
@@ -2017,6 +2028,7 @@ When run node2's width will be 50px not 100px because it will be bound to not be
 
 @method minWidth
 @param size {Number} the LayoutNode's width that this function is called on will never be smaller than this value passed in
+@chainable
 **/
 LayoutNode.prototype.minWidth = function() {
 
@@ -2046,6 +2058,7 @@ When run node2's height will be 200px not 50px because it will be bound to not b
 
 @method minHeight
 @param layoutNode {LayoutNode} the height of the node that this function is called on will never be larger than the height of this node passed in
+@chainable
 **/
 /**
 minHeight is a bounding function.
@@ -2060,6 +2073,7 @@ When run node2's height will be 50px not 100px because it will be bound to not b
 
 @method minHeight
 @param size {Number} the LayoutNode's height that this function is called on will never be smaller than this value passed in
+@chainable
 **/
 LayoutNode.prototype.minHeight = function() {
 
@@ -2091,6 +2105,7 @@ node1's x and y.
 
 @method maxPosition
 @param layoutNode {LayoutNode} this passed in LayoutNode's x and y position will be be the maximum x and y position for this node
+@chainable
 **/
 
 /**
@@ -2108,6 +2123,7 @@ x 200 and y 100.
 @method maxPosition
 @param x {Number} the maximum x value for this node's x value
 @param y {Number} the maximum y value for this node's y value
+@chainable
 **/
 
 /**
@@ -2124,6 +2140,7 @@ When run node2's width and height will be 200x200 not 300x400 because it will be
 
 @method maxPosition
 @param value {Number} the maximum x and y value for this node
+@chainable
 **/
 LayoutNode.prototype.maxPosition = function() {
 
@@ -2153,6 +2170,7 @@ When run node2's x value will be 200 and not 400 because it will be bound to nod
 
 @method maxX
 @param layoutNode {LayoutNode} The LayoutNode whose x value will be the maximum x value for this node
+@chainable
 **/
 /**
 maxX is a bounding function.
@@ -2167,6 +2185,7 @@ When run node2's x value will be 200 and not 400 because it will be bound to the
 
 @method maxX
 @param x {Number} The maximum x value for this LayoutNode
+@chainable
 **/
 LayoutNode.prototype.maxX = function() {
 
@@ -2197,6 +2216,7 @@ When run node2's y value will be 200 and not 400 because it will be bound to nod
 
 @method maxY
 @param layoutNode {LayoutNode} The LayoutNode whose y value will be the maximum y value for this node
+@chainable
 **/
 /**
 maxY is a bounding function.
@@ -2211,6 +2231,7 @@ When run node2's x value will be 200 and not 400 because it will be bound to the
 
 @method maxY
 @param y {Number} The maximum y value for this LayoutNode
+@chainable
 **/
 LayoutNode.prototype.maxY = function() {
 
@@ -2242,6 +2263,7 @@ node1's x and y.
 
 @method minPosition
 @param layoutNode {LayoutNode} this passed in LayoutNode's x and y position will be be the minimum x and y position for this node
+@chainable
 **/
 
 /**
@@ -2259,6 +2281,7 @@ x 200 and y 100.
 @method minPosition
 @param x {Number} the minimum x value for this node's x value
 @param y {Number} the minimum y value for this node's y value
+@chainable
 **/
 
 /**
@@ -2275,6 +2298,7 @@ When run node2's x and y will be x 200 and y 200 not 100 x and 50 y because it w
 
 @method minPosition
 @param value {Number} the minimum x and y value for this node
+@chainable
 **/
 LayoutNode.prototype.minPosition = function() {
 
@@ -2304,6 +2328,7 @@ When run node2's x value will be 200 and not 100 because it will be bound to nod
 
 @method minX
 @param layoutNode {LayoutNode} The LayoutNode whose x value will be the minimum x value for this node
+@chainable
 **/
 /**
 minX is a bounding function.
@@ -2317,7 +2342,8 @@ You can pass in an x value from which this node's minimum x value will be set.
 When run node2's x value will be 200 and not 100 because it will be bound to the x value 200.
 
 @method minX
-@param y {Number} The minimum y value for this LayoutNode
+@param x {Number} The minimum x value for this LayoutNode
+@chainable
 **/
 LayoutNode.prototype.minX = function() {
 
@@ -2348,6 +2374,7 @@ When run node2's y value will be 200 and not 100 because it will be bound to nod
 
 @method minY
 @param layoutNode {LayoutNode} The LayoutNode whose y value will be the minimum y value for this node
+@chainable
 **/
 /**
 minY is a bounding function.
@@ -2362,6 +2389,7 @@ When run node2's y value will be 200 and not 100 because it will be bound to the
 
 @method minY
 @param y {Number} The minimum y value for this LayoutNode
+@chainable
 **/
 LayoutNode.prototype.minY = function() {
 
@@ -2377,8 +2405,31 @@ LayoutNode.prototype.minY = function() {
 
 
 
+/**
+max is a bounding function.
 
-//General max and min functions that can be called after anything and the previous value will be used
+It's a general bounding function which derives it's context from the previous rule added.
+
+So basically:
+
+	node.xIs( 200 ).max( 100 );
+
+The x value of the node would end up being 100.
+
+Another example:
+
+	node.widthIs( 240 ).max( 40 );
+
+The width value of the node would end up being being 40.
+
+So as you can see act's like all the other max functions. For reference look at:
+- {{#crossLink "LayoutNode/maxWidth:method"}}{{/crossLink}}
+- {{#crossLink "LayoutNode/maxPosition:method"}}{{/crossLink}}
+- {{#crossLink "LayoutNode/maxY:method"}}{{/crossLink}}
+
+@method max
+@chainable
+**/
 LayoutNode.prototype.max = function() {
 
 	if( arguments[ 0 ] instanceof LayoutNode ) {
@@ -2454,6 +2505,34 @@ LayoutNode.prototype.max = function() {
 	}
 };
 
+
+
+
+/**
+min is a bounding function.
+
+It's a general bounding function which derives it's context from the previous rule added.
+
+So basically:
+
+	node.xIs( 50 ).min( 100 );
+
+The x value of the node would end up being 100.
+
+Another example:
+
+	node.widthIs( -400 ).min( -40 );
+
+The width value of the node would end up being being -40.
+
+So as you can see act's like all the other max functions. For reference look at:
+- {{#crossLink "LayoutNode/minWidth:method"}}{{/crossLink}}
+- {{#crossLink "LayoutNode/minPosition:method"}}{{/crossLink}}
+- {{#crossLink "LayoutNode/minY:method"}}{{/crossLink}}
+
+@method min
+@chainable
+**/
 LayoutNode.prototype.min = function() {
 
 	if( arguments[ 0 ] instanceof LayoutNode ) {
