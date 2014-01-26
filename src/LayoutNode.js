@@ -386,7 +386,7 @@ This is the x position of the LayoutNode on screen. Initially the value of x wil
 Once this node has been layed out the x position will be set from all the rules applied to this node.
 
 You can also set the x position of a node by simply setting the x value:
-@example
+
 	node.x = 10;
 
 What this will do is adjust an offset in this LayoutNode. So in practice what this means is that you can freely move around
@@ -424,7 +424,7 @@ This is the y position of the LayoutNode on screen. Initially the value of y wil
 Once this node has been layed out the y position will be set from all the rules applied to this node.
 
 You can also set the y position of a node by simply setting the y value:
-@example
+
 	node.y = 10;
 
 What this will do is adjust an offset in this LayoutNode. So in practice what this means is that you can freely move around
@@ -462,7 +462,7 @@ This is the width of a LayoutNode on screen. Initially the value of width will b
 Once this node has been layed out the width will be set from all the rules applied to this node or read in by the read function.
 
 You can also set the width of a node by simply setting the width value:
-@example
+
 	node.width = 200;
 
 What this will do is adjust an offset in this LayoutNode. So in practice what this means is that you can set the sizes of nodes
@@ -500,7 +500,7 @@ This is the height of a LayoutNode on screen. Initially the value of height will
 Once this node has been layed out the height will be set from all the rules applied to this node or read in by the read function.
 
 You can also set the height of a node by simply setting the height value:
-@example
+
 	node.height = 333;
 
 What this will do is adjust an offset in this LayoutNode. So in practice what this means is that you can set the sizes of nodes
@@ -539,13 +539,11 @@ Inner is a LayoutNode that is contained by this LayoutNode. Inner will match the
 It is useful when working with the DOM to handle nested content inside html elements. For instance if we have a div with an image inside. You can
 can apply a LayoutNode to the div and use the inner attribute to center the image inside.
 
-@example
 	var ourDiv = layout.create( document.getElementById( 'ourDiv' ) );
 	var ourImageInsideDiv = layout.create( document.getElementById( 'ourImageInsideDiv' ) );
 
 	ourDiv.matchesSizeOf( layout );
 	ourImageInsideDiv.matchesWidthOf( ourDiv.inner ).heightIsProportional( 400, 300 ).centeredWith( ourDiv.inner );
-
 
 @property inner
 @type LayoutNode
