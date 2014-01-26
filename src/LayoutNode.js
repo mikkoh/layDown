@@ -2649,7 +2649,22 @@ function addConditional( cFunction, cArguments ) {
 	return this;
 }
 
+/**
+Using the when function you can create conditionals. It is the first function to call when creating a conditonal. 
+It specifies what LayoutNode will be used when evaluating a conditional statement that follows.
 
+For instance:
+
+	node1.when( node2 ).widthGreaterThan( 200 ).widthIs( 100 );
+
+Basically what this statement sais is "when node2's width is greater than 200px node1's width is 100px".
+
+A conditional statement must always follow after a when statement.
+
+@method when
+@param node {LayoutNode} the LayoutNode which following conditionals will be evaluated against
+@chainable
+**/
 LayoutNode.prototype.when = function( node ) {
 
 	//we're checking of this is LayoutNode created based on conditionals
@@ -2678,6 +2693,22 @@ LayoutNode.prototype.when = function( node ) {
 	return this;
 };
 
+/**
+The andWhen function in essence is the same as an && operator. andWhen statements must follow after a conditional.
+
+For example:
+
+	node1.when( node2 ).widthGreaterThan( 100 ).andWhen( node2 ).widthLessThan( 200 ).widthIs( 100 );
+
+What the above is saying is "When node2's width is greater than 100px and when node2's width is less than 200px then node1's width is
+100px"
+
+andWhen statements must follow after a conditional statement.
+
+@method andWhen
+@param node {LayoutNode} the LayoutNode which following conditionals will be evaluated against
+@chainable
+**/
 LayoutNode.prototype.andWhen = function( node ) {
 
 	if( this.conditionalParent ) {
@@ -2693,6 +2724,30 @@ LayoutNode.prototype.andWhen = function( node ) {
 	return this;
 };
 
+/**
+The default statement is the equivalent to an else statement.
+
+For instance if we have the following statement:
+
+	node1
+	.when( node2 ).widthGreaterThan( 100 ).widthIs( 100 )
+	.default().widthIs( 50 );
+
+What the above means is "When node2's width is greater than 100px the width of node1 is 100px. Otherwise if the width of node2 is not
+greater than 100px then the width of node1 is 50px"
+
+Something to note is that you can also add rules which will always evaluate by doing the following:
+
+	node1
+	.heightIs( 200 )
+	.when( node2 ).widthGreaterThan( 100 ).widthIs( 100 )
+	.default().widthIs( 50 );
+
+Basically regardless of the width of node2 the height of node1 will be 200px. This clearly differs from the "default" statement.
+
+@method default
+@chainable
+**/
 LayoutNode.prototype.default = function() {
 
 	this._isDoingDefault = true;
@@ -2708,6 +2763,25 @@ LayoutNode.prototype.default = function() {
 	return this;
 };
 
+/**
+You can use this method to add callbacks for when conditionals evaluate.
+
+So let's say we do:
+
+	node1.when( node2 ).heightLessThan( 300 ).matchesHeightOf( node2 ).on( function( isTrue ) {
+		
+		console.log( "Is the height of node2 smaller than 300?", isTrue );
+	});
+
+Everytime the layout is updated the call back will fire with a boolean which is whether the conditional is
+true or false.
+
+The on function will only be applied to the previous "when" or "default" statement preceding the on statement.
+
+@method on
+@param listener {Function} This is the listener for the call back when this conditional evaluates
+@chainable
+**/
 LayoutNode.prototype.on = function( listener ) {
 
 
@@ -2731,21 +2805,89 @@ LayoutNode.prototype.on = function( listener ) {
 	return this;
 };
 
+
+
+
+/**
+This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
+this conditional statement.
+
+Here is a usage example:
+	
+	node1.when( node2 ).widthGreaterThan( 300 ).matchesHeightOf( node2 );
+
+The above is stating "when the width of node2 is greater than 300px node1 should match the height of node2".
+
+@method widthGreaterThan
+@param value {Number} This value states the width that the LayoutNode's width should be evaluated against
+@chainable
+**/
 LayoutNode.prototype.widthGreaterThan = function( value ) {
 
 	return addConditional.call( this, widthGreaterThan, arguments );
 };
 
+
+
+
+/**
+This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
+this conditional statement.
+
+Here is a usage example:
+	
+	node1.when( node2 ).heightGreaterThan( 300 ).matchesHeightOf( node2 );
+
+The above is stating "when the height of node2 is greater than 300px node1 should match the height of node2".
+
+@method heightGreaterThan
+@param value {Number} This value states the height that the LayoutNode's height should be evaluated against
+@chainable
+**/
 LayoutNode.prototype.heightGreaterThan = function( value ) {
 
 	return addConditional.call( this, heightGreaterThan, arguments );
 };
 
+
+
+
+/**
+This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
+this conditional statement.
+
+Here is a usage example:
+	
+	node1.when( node2 ).widthLessThan( 300 ).matchesHeightOf( node2 );
+
+The above is stating "when the width of node2 is less than 300px node1 should match the height of node2".
+
+@method widthLessThan
+@param value {Number} This value states the width that the LayoutNode's width should be evaluated against
+@chainable
+**/
 LayoutNode.prototype.widthLessThan = function( value ) {
 
 	return addConditional.call( this, widthLessThan, arguments );
 };
 
+
+
+
+/**
+This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
+this conditional statement.
+
+Here is a usage example:
+	
+	node1.when( node2 ).heightLessThan( 300 ).matchesHeightOf( node2 );
+
+The above is stating "when the height of node2 is less than 300px node1 should match the height of node2".
+
+@method heightLessThan
+@param value {Number} This value states the height that the LayoutNode's height should be evaluated against
+@chainable
+**/
 LayoutNode.prototype.heightLessThan = function( value ) {
 
 	return addConditional.call( this, heightLessThan, arguments );
