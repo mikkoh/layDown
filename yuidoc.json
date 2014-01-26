@@ -1,0 +1,11 @@
+{
+    "name": "layDown",
+    "description": "layDown is a library to create layouts using designer speak.",
+    "version": "0.0.1",
+    "url": "https://github.com/MikkoH/layDown",
+    "options": {
+    	"outdir": "./docs/",
+        "linkNatives": true,
+        "paths": "./src/"
+    }
+}

@@ -1,0 +1,1565 @@
+{
+    "project": {
+        "name": "layDown",
+        "description": "layDown is a library to create layouts using designer speak.",
+        "version": "0.0.1",
+        "url": "https://github.com/MikkoH/layDown"
+    },
+    "files": {
+        "src/LayDown.js": {
+            "name": "src/LayDown.js",
+            "modules": {},
+            "classes": {
+                "LayDown": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
+        "src/LayoutNode.js": {
+            "name": "src/LayoutNode.js",
+            "modules": {},
+            "classes": {
+                "LayoutNode": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        }
+    },
+    "modules": {},
+    "classes": {
+        "LayDown": {
+            "name": "LayDown",
+            "shortname": "LayDown",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/LayDown.js",
+            "line": 3,
+            "description": "LayDown is the root of the layDown library. It is a factory to create {{#crossLink \"LayoutNode\"}}{{/crossLink}}'s.\n\nAn instance of LayDown is equivalent to saying \"a layout\". So a LayDown is a layout that you lay down items on.\n\nWhen you instantiate a LayDown you must pass in two functions. \n\nThe first one is a layout function which will position things. \n\nAn example layout function:\n\n\tfunction layoutFunction( item, node, setWidth, setHeight ) { \n\n\t\titem.style.left = Math.floor( node.x ) + 'px';\n\t\titem.style.top = Math.floor( node.y ) + 'px';\n\n\t\tif( setWidth ) {\n\n\t\t\titem.style.width = Math.floor( node.width ) + 'px';\n\t\t}\n\n\t\tif( setHeight ) {\n\n\t\t\titem.style.height = Math.floor( node.height ) + 'px';\n\t\t}\n\t}\n\n\nThe second is a read function which will read in the width and height of an item if no rules effected those properties. \n\nHere is an example readFunction:\n\n\tfunction readFunction( item, name ) {\n\n\t\tif( name == 'width' ) {\n\n\t\t\treturn item.clientWidth;\n\t\t} else {\n\n\t\t\treturn item.clientHeight;\n\t\t}\n\t}\n\nThe third function that you may pass in is a create function which will be run on each item before a LayoutNode is created.\n\nHere is an example createFunction:\n\n\tfunction createFunction( item ) {\n\n\t\titem.style[ 'box-sizing' ] = 'border-box';\n\t\titem.style[ '-moz-box-sizing' ] = 'border-box';\n\t\titem.style[ '-webkit-box-sizing' ] = 'border-box';\n\n\t\titem.style[ 'position' ] = 'absolute';\n\t}",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "layoutFunction",
+                    "description": "The layoutFunction function is a function which will translate the x, y, width, and height properties of a\nLayoutNode into actual physical screen position. (see the above example)\n\nSo for instance if we're working with the DOM it would set CSS properties on the \"item\" passed in to ensure that the item is on \nscreen at x, y at the correct size. (see the above example)",
+                    "type": "Function"
+                },
+                {
+                    "name": "readFunction",
+                    "description": "If you define no sizing rules to set width and height of an \"item\"/LayoutNode then we will need to read the\nwidth and height of the object to be able to position dependent LayoutNode's.",
+                    "type": "Function"
+                },
+                {
+                    "name": "createFunction",
+                    "description": "Is a function that will be run on every every item to be layed out before a LayoutNode is created.\n\nLet's say you're working with the DOM you may want to for instance set the CSS position property to be absolute within this function. (see the above example)",
+                    "type": "Function"
+                }
+            ]
+        },
+        "LayoutNode": {
+            "name": "LayoutNode",
+            "shortname": "LayoutNode",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/LayoutNode.js",
+            "line": 121,
+            "description": "LayoutNode is where all the magic happens. LayoutNode's are created from LayDown. You will never instantiate LayoutNodes \ndirectly however you will use the LayDown node to always instantiate them.\n\nLayoutNode's abstract positioning elements on screen using rules.\n\nBasically what that means is if you're using the DOM, LayoutNode's will sit between the DOM and the logic\nto position and resize things on screen.\n\nTo do this you add \"rules\" to the LayoutNode's by calling their rule functions. For ease of use and to keep inline with the\nlibraries goal of being very readable, handy to translate designers needs, all rules are chainable and form \"sentences\".\n\nFor example the code:\n\nnode.leftAlignedWith( someUI ).alignedBelow( someUI ).plus( 3 );\n\nWould read as:\n\nOur node will be left aligned with Some UI and aligned below Some UI plus 3 pixels.",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "layout",
+                    "description": "Is the parent LayDown object. The parent LayDown object will manage relationships between all LayoutNode's and will\n\t\t\t\t\t\thandle circular dependencies and all that fun stuff.",
+                    "type": "LayDown"
+                },
+                {
+                    "name": "item",
+                    "description": "item will be what will be positioned on screen. For instance an HTML DOM Element or a PIXI DisplayObject. It's\n\t\t\t\twhatever you want to layout on screen.",
+                    "type": "Object"
+                },
+                {
+                    "name": "layoutFunction",
+                    "description": "The layoutFunction function is a function which will translate the x, y, width, and height properties of a\nLayoutNode into actual physical screen position. So for instance if we're working with the DOM it would set\nCSS properties on the \"item\" passed in to ensure that the item is on screen at x, y at the correct size.",
+                    "type": "Function"
+                },
+                {
+                    "name": "readFunction",
+                    "description": "If you define no sizing rules to set width and height of an \"item\"/LayoutNode then we will need to read the\nwidth and height of the object to be able to position dependent LayoutNode's. \n\nSo for instance if we have LayoutNode Button and LayoutNode Image and we wanted Image to be below Button and\nButton has no layout rules for setting it's height we will need to \"read\" in Buttons height to be able to correctly\nposition Image. So if Button is a DIV element we will read in it's height to be able to postion Image below it.",
+                    "type": "Function"
+                }
+            ]
+        }
+    },
+    "classitems": [
+        {
+            "file": "src/LayDown.js",
+            "line": 86,
+            "description": "This is the x position of the LayDown on screen. Initially the value of x will be 0 until \n{{#crossLink \"LayDown/resizeAndPosition:method\"}}{{/crossLink}} is called.\n\nOnce {{#crossLink \"LayDown/resizeAndPosition:method\"}}{{/crossLink}} has been called the x value will be whatever was passed\nin for the x parameter.\n\nThis property is read only and should not be set manually.",
+            "itemtype": "property",
+            "name": "x",
+            "type": "Number",
+            "readonly": "",
+            "class": "LayDown"
+        },
+        {
+            "file": "src/LayDown.js",
+            "line": 102,
+            "description": "This is the y position of the LayDown on screen. Initially the value of y will be 0 until \n{{#crossLink \"LayDown/resizeAndPosition:method\"}}{{/crossLink}} is called.\n\nOnce {{#crossLink \"LayDown/resizeAndPosition:method\"}}{{/crossLink}} has been called the y value will be whatever was passed\nin for the y parameter.\n\nThis property is read only and should not be set manually.",
+            "itemtype": "property",
+            "name": "y",
+            "type": "Number",
+            "readonly": "",
+            "class": "LayDown"
+        },
+        {
+            "file": "src/LayDown.js",
+            "line": 118,
+            "description": "This is the width position of the LayDown on screen. Initially the value of width will be 0 until \n{{#crossLink \"LayDown/resizeAndPosition:method\"}}{{/crossLink}} is called.\n\nOnce {{#crossLink \"LayDown/resizeAndPosition:method\"}}{{/crossLink}} has been called the width value will be whatever was passed\nin for the width parameter.\n\nThis property is read only and should not be set manually.",
+            "itemtype": "property",
+            "name": "width",
+            "type": "Number",
+            "readonly": "",
+            "class": "LayDown"
+        },
+        {
+            "file": "src/LayDown.js",
+            "line": 134,
+            "description": "This is the height position of the LayDown on screen. Initially the value of height will be 0 until \n{{#crossLink \"LayDown/resizeAndPosition:method\"}}{{/crossLink}} is called.\n\nOnce {{#crossLink \"LayDown/resizeAndPosition:method\"}}{{/crossLink}} has been called the height value will be whatever was passed\nin for the height parameter.\n\nThis property is read only and should not be set manually.",
+            "itemtype": "property",
+            "name": "height",
+            "type": "Number",
+            "readonly": "",
+            "class": "LayDown"
+        },
+        {
+            "file": "src/LayDown.js",
+            "line": 149,
+            "description": "This is the layout function which will be used by default for all LayoutNode's. This value is set in the constructor initially.",
+            "itemtype": "property",
+            "name": "layoutFunction",
+            "type": "Function",
+            "class": "LayDown"
+        },
+        {
+            "file": "src/LayDown.js",
+            "line": 157,
+            "description": "This is the read function which will be used by default for all LayoutNode's. This value is set in the constructor initially.",
+            "itemtype": "property",
+            "name": "readFunction",
+            "type": "Function",
+            "class": "LayDown"
+        },
+        {
+            "file": "src/LayDown.js",
+            "line": 165,
+            "description": "This is the create function which will be used on all items being layed out. This value is set in the constructor initially.",
+            "itemtype": "property",
+            "name": "createFunction",
+            "type": "Function",
+            "class": "LayDown"
+        },
+        {
+            "file": "src/LayDown.js",
+            "line": 174,
+            "description": "The create method will create a {{#crossLink \"LayoutNode\"}}{{/crossLink}} which rules can then be applied to.",
+            "itemtype": "method",
+            "name": "create",
+            "params": [
+                {
+                    "name": "itemToLayDown",
+                    "description": "This will be the item that we'll be laying down. For instance if we were working with the DOM it could be\nan image html element or a div element or whatever you'd like.",
+                    "type": "Object"
+                }
+            ],
+            "class": "LayDown"
+        },
+        {
+            "file": "src/LayDown.js",
+            "line": 195,
+            "description": "Call resizeAndPosition whenever you'd like to layout all your items. For instance you may want to call this when a window resizes.",
+            "itemtype": "method",
+            "name": "resizeAndPosition",
+            "params": [
+                {
+                    "name": "x",
+                    "description": "This is the x position of where this layout should begin. For instance x = 0 could be the left side of the screen.",
+                    "type": "Number"
+                },
+                {
+                    "name": "y",
+                    "description": "This is the y position of where this layout should begin. For instance y = 0 could be the left side of the screen.",
+                    "type": "Number"
+                },
+                {
+                    "name": "width",
+                    "description": "This is the width of the layout. For instance this could be the width of the screen.",
+                    "type": "Number"
+                },
+                {
+                    "name": "height",
+                    "description": "This is the height of the layout. For instance this could be the height of the screen.",
+                    "type": "Number"
+                }
+            ],
+            "class": "LayDown"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 184,
+            "description": "This constant describes or is a key for size layout rules where both width and height will be effected. \n\nThis is used for instance used when adding custom rules.",
+            "itemtype": "property",
+            "name": "SIZE_LAYOUT",
+            "type": "String",
+            "static": 1,
+            "final": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 196,
+            "description": "This constant describes or is a key for size bound rules where both width and height will be bound. \n\nThis is used for instance used when adding custom rules.",
+            "itemtype": "property",
+            "name": "SIZE_BOUND",
+            "type": "String",
+            "static": 1,
+            "final": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 208,
+            "description": "This constant describes or is a key for width layout rules where width will be effected. \n\nThis is used for instance used when adding custom rules.",
+            "itemtype": "property",
+            "name": "SIZE_WIDTH_LAYOUT",
+            "type": "String",
+            "static": 1,
+            "final": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 220,
+            "description": "This constant describes or is a key for width bound rules where width will be bound. \n\nThis is used for instance used when adding custom rules.",
+            "itemtype": "property",
+            "name": "SIZE_WIDTH_BOUND",
+            "type": "String",
+            "static": 1,
+            "final": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 232,
+            "description": "This constant describes or is a key for height layout rules where height will be effected. \n\nThis is used for instance used when adding custom rules.",
+            "itemtype": "property",
+            "name": "SIZE_HEIGHT_LAYOUT",
+            "type": "String",
+            "static": 1,
+            "final": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 244,
+            "description": "This constant describes or is a key for height bound rules where height will be bound. \n\nThis is used for instance used when adding custom rules.",
+            "itemtype": "property",
+            "name": "SIZE_HEIGHT_BOUND",
+            "type": "String",
+            "static": 1,
+            "final": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 256,
+            "description": "This constant describes or is a key for position layout rules where x and y will be effected. \n\nThis is used for instance used when adding custom rules.",
+            "itemtype": "property",
+            "name": "POSITION_LAYOUT",
+            "type": "String",
+            "static": 1,
+            "final": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 268,
+            "description": "This constant describes or is a key for position bound rules where x and y will be both bound. \n\nThis is used for instance used when adding custom rules.",
+            "itemtype": "property",
+            "name": "POSITION_BOUND",
+            "type": "String",
+            "static": 1,
+            "final": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 280,
+            "description": "This constant describes or is a key for x layout rules where x will be effected. \n\nThis is used for instance used when adding custom rules.",
+            "itemtype": "property",
+            "name": "POSITION_X_LAYOUT",
+            "type": "String",
+            "static": 1,
+            "final": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 292,
+            "description": "This constant describes or is a key for x bound rules where x will be bound. \n\nThis is used for instance used when adding custom rules.",
+            "itemtype": "property",
+            "name": "POSITION_X_BOUND",
+            "type": "String",
+            "static": 1,
+            "final": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 304,
+            "description": "This constant describes or is a key for y layout rules where y will be effected. \n\nThis is used for instance used when adding custom rules.",
+            "itemtype": "property",
+            "name": "POSITION_Y_LAYOUT",
+            "type": "String",
+            "static": 1,
+            "final": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 316,
+            "description": "This constant describes or is a key for y bound rules where y will be bound. \n\nThis is used for instance used when adding custom rules.",
+            "itemtype": "property",
+            "name": "POSITION_Y_BOUND",
+            "type": "String",
+            "static": 1,
+            "final": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 383,
+            "description": "This is the x position of the LayoutNode on screen. Initially the value of x will be 0 until this node has been layed out.\n\nOnce this node has been layed out the x position will be set from all the rules applied to this node.\n\nYou can also set the x position of a node by simply setting the x value:\n\n\tnode.x = 10;\n\nWhat this will do is adjust an offset in this LayoutNode. So in practice what this means is that you can freely move around\nnodes for instance by dragging but all dependent nodes will still position themselves according to the rules set on them.\n\nSo for instance if you had an image that is right aligned to another image. If you grab the image on the left and move it around \nthe image on the right will follow.",
+            "itemtype": "property",
+            "name": "x",
+            "type": "Number",
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 421,
+            "description": "This is the y position of the LayoutNode on screen. Initially the value of y will be 0 until this node has been layed out.\n\nOnce this node has been layed out the y position will be set from all the rules applied to this node.\n\nYou can also set the y position of a node by simply setting the y value:\n\n\tnode.y = 10;\n\nWhat this will do is adjust an offset in this LayoutNode. So in practice what this means is that you can freely move around\nnodes for instance by dragging but all dependent nodes will still position themselves according to the rules set on them.\n\nSo for instance if you had an image that is right aligned to another image. If you grab the image on the left and move it around \nthe image on the right will follow.",
+            "itemtype": "property",
+            "name": "y",
+            "type": "Number",
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 459,
+            "description": "This is the width of a LayoutNode on screen. Initially the value of width will be 0 until this node has been layed out.\n\nOnce this node has been layed out the width will be set from all the rules applied to this node or read in by the read function.\n\nYou can also set the width of a node by simply setting the width value:\n\n\tnode.width = 200;\n\nWhat this will do is adjust an offset in this LayoutNode. So in practice what this means is that you can set the sizes of nodes\nand still all dependent nodes will follow their dependency rules.\n\nSo let's say you had an image called image1 which you wanted to scale up however another image called image2 aligned left of image1.\nYou can still set image1.width to be whatever value you wanted and image2 would align left of image1.",
+            "itemtype": "property",
+            "name": "width",
+            "type": "Number",
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 497,
+            "description": "This is the height of a LayoutNode on screen. Initially the value of height will be 0 until this node has been layed out.\n\nOnce this node has been layed out the height will be set from all the rules applied to this node or read in by the read function.\n\nYou can also set the height of a node by simply setting the height value:\n\n\tnode.height = 333;\n\nWhat this will do is adjust an offset in this LayoutNode. So in practice what this means is that you can set the sizes of nodes\nand still all dependent nodes will follow their dependency rules.\n\nSo let's say you had an image called image1 which you wanted to scale up however another image called image2 aligned below image1.\nYou can still set image1.height to be whatever value you wanted and image2 would align below image1.",
+            "itemtype": "property",
+            "name": "width",
+            "type": "Number",
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 536,
+            "description": "Inner is a LayoutNode that is contained by this LayoutNode. Inner will match the size of this node but will have no positonal values.\n\nIt is useful when working with the DOM to handle nested content inside html elements. For instance if we have a div with an image inside. You can\ncan apply a LayoutNode to the div and use the inner attribute to center the image inside.\n\n\tvar ourDiv = layout.create( document.getElementById( 'ourDiv' ) );\n\tvar ourImageInsideDiv = layout.create( document.getElementById( 'ourImageInsideDiv' ) );\n\n\tourDiv.matchesSizeOf( layout );\n\tourImageInsideDiv.matchesWidthOf( ourDiv.inner ).heightIsProportional( 400, 300 ).centeredWith( ourDiv.inner );",
+            "itemtype": "property",
+            "name": "inner",
+            "type": "LayoutNode",
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 565,
+            "description": "doLayout will perform the layout of this LayoutNode. This function should never be called directly but be called by the LayDown layout.\nThis way dependencies will be handled correctly.\n\nSo for instance if you have one LayoutNode which sets it's size according to another node calling doLayout manually could potentially be\ndestructive.\n\nAlthough this is the entry point to perform layouts the actual grunt work is performed in the \"doLayoutWork\" function. This function will\nevaluate conditionals (if there are any) and grab the appropriate rule sets to use. After the rule sets are determined by the conditionals\ndoLayoutWork is called.",
+            "access": "protected",
+            "tagname": "",
+            "itemtype": "method",
+            "name": "doLayout",
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 658,
+            "description": "doLayoutWork will perform the layout work of this LayoutNode. This function should never be called directly but be called by doLayout after\nall conditionals (if any) are evaluated.\n\nThis function ensures everything is evaluated in correct order:\n\n1. Size Dependencies\n2. Position Dependencies\n3. Size Rules\n4. Size Bounds\n5. Size Offsets\n6. Size Bounds (again after size offset)\n7. Reading width, height if they were not set\n8. Position rules\n9. Positional Bounds\n10. Positional Offsets\n11. Positional Bounds (again after position offset)\n\nThe basic rule of thumb is we can't position anything until we know it's size. Bounds are used to ensure things don't go off screen, get too big or small.",
+            "access": "protected",
+            "tagname": "",
+            "itemtype": "method",
+            "name": "doLayoutWork",
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 772,
+            "description": "Use this function to set the layout function for this node. Layout functions perform the actual work to move things on screen. LayoutNode's and rules\non LayoutNode's perform the virtual positioning of an object where the layoutFunction performs the actual physical.\n\nFor instance if you're working with the DOM the layoutFunction could set CSS width and height properties or scale. Or if you really wanted to get fancy\nit could perform an animation to position the HTML element.",
+            "itemtype": "method",
+            "name": "setLayoutFunction",
+            "params": [
+                {
+                    "name": "layoutFunction",
+                    "description": "This is the layout function that will position this LayoutNode.\n\nLayout function's should take four properties: item, node, setWidth, setHeight. \n\n+ Where item is the item to layout (DOM element or PIXI DisplayObject)\n+ node will be a LayoutNode from which you can read x, y, width, height\n+ setWidth will be a boolean for whether the layout function should set the width of the item\n+ setHeight will be a boolean for whether the layout function should set the height of the item",
+                    "type": "Function"
+                }
+            ],
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 796,
+            "description": "You can use addCustomRule to define new rules which may not be defined by LayDown. This could be handy for instance if you wanted to set the\ncolour of a DIV element based on how large it is. Really the sky is the limit here. Although to ensure your new rule is performed correctly and\ndoes not interfere with other rules you must pass in a rule type.",
+            "itemtype": "method",
+            "name": "addCustomRule",
+            "params": [
+                {
+                    "name": "ruleFunction",
+                    "description": "This a new rule you'd like to add. To see how rules are composed we suggest looking at the following functions\nin the src folder.\n\n###### Setting size (width, height):\n- src/layoutSize/sizeIs (if your rule will be setting both width and height at the same time from values)\n- src/layoutSize/widthIs (if your rule will be setting only the width from a value)\n- src/layoutSize/heightIs (if your rule will be setting only the height from a value)\n- src/layoutSize/matchesSizeOf (if your rule will be setting both width and height from another node)\n- src/layoutSize/matchesWidthOf (if your rule will be setting both width from another node)\n- src/layoutSize/matchesHeightOf (if your rule will be setting both height from another node)\n\n###### Setting position (x, y):\n- src/layoutPosition/positionIs (if your rule will be setting x and y from a values at the same time)\n- src/layoutPosition/xIs (if your rule will be setting x from a value)\n- src/layoutPosition/yIs (if your rule will be setting y from a value)\n- src/layoutPosition/alignedWith (if your rule will be setting x and y based on another node)\n- src/layoutPosition/leftAlignedWith (if your rule will be setting x based on another node)\n- src/layoutPosition/topAlignedWith (if your rule will be setting y based on another node)\n\n###### Bounding size (width, height):\n- src/layoutBoundSize/maxSize (if your rule will be bounding both width and height at the same time)\n- src/layoutBoundSize/maxWidth (if your rule will be bounding width only)\n- src/layoutBoundSize/maxHeight (if your rule will be bounding height only)\n- src/layoutBoundSize/maxSizeFrom (if your rule will be bounding width and height based on another item)\n- src/layoutBoundSize/maxWidthFrom (if your rule will be bounding width based on another item)\n- src/layoutBoundSize/maxHeightFrom (if your rule will be bounding height based on another item)\n\n###### Bounding position (x, y):\n- src/layoutBoundSize/maxPosition (if your rule will be bounding both x and y at the same time)\n- src/layoutBoundSize/maxX (if your rule will be bounding x only)\n- src/layoutBoundSize/maxY (if your rule will be bounding y only)\n- src/layoutBoundSize/maxPositionFrom (if your rule will be bounding x and y based on another item)\n- src/layoutBoundSize/maxXFrom (if your rule will be bounding x based on another item)\n- src/layoutBoundSize/maxYFrom (if your rule will be bounding y based on another item)",
+                    "type": "Function"
+                },
+                {
+                    "name": "ruleType",
+                    "description": "is a string which describes what type of rule you're defining. For utility you can use the static constants defined\non LayoutNode:\n\n- {{#crossLink \"LayoutNode/SIZE_LAYOUT:property\"}}{{/crossLink}}\n- {{#crossLink \"LayoutNode/SIZE_LAYOUT:property\"}}{{/crossLink}}\n- {{#crossLink \"LayoutNode/SIZE_BOUND:property\"}}{{/crossLink}}\n- {{#crossLink \"LayoutNode/SIZE_WIDTH_LAYOUT:property\"}}{{/crossLink}}\n- {{#crossLink \"LayoutNode/SIZE_WIDTH_BOUND:property\"}}{{/crossLink}}\n- {{#crossLink \"LayoutNode/SIZE_HEIGHT_LAYOUT:property\"}}{{/crossLink}}\n- {{#crossLink \"LayoutNode/SIZE_HEIGHT_BOUND:property\"}}{{/crossLink}}\n- {{#crossLink \"LayoutNode/POSITION_LAYOUT:property\"}}{{/crossLink}}\n- {{#crossLink \"LayoutNode/POSITION_BOUND:property\"}}{{/crossLink}}\n- {{#crossLink \"LayoutNode/POSITION_X_LAYOUT:property\"}}{{/crossLink}}\n- {{#crossLink \"LayoutNode/POSITION_X_BOUND:property\"}}{{/crossLink}}\n- {{#crossLink \"LayoutNode/POSITION_Y_LAYOUT:property\"}}{{/crossLink}}\n- {{#crossLink \"LayoutNode/POSITION_Y_BOUND:property\"}}{{/crossLink}}",
+                    "type": "String"
+                }
+            ],
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1015,
+            "description": "This is a utility function to create a new LayoutNode. It will use the parent layout (LayDown) of this node.\n\nThis is basically for those peeps who loves them chainings. (don't get too crazy though)",
+            "itemtype": "method",
+            "name": "create",
+            "params": [
+                {
+                    "name": "itemToLayDown",
+                    "description": "This is a new item to be laid out. eg. A DOM element or a DixiDisplayObject or whatever",
+                    "type": "Object"
+                }
+            ],
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1141,
+            "description": "This rule will position an item at the cordinate passed in.",
+            "itemtype": "method",
+            "name": "positionIs",
+            "params": [
+                {
+                    "name": "x",
+                    "description": "x cordinate where the item being positioned should go",
+                    "type": "Number"
+                },
+                {
+                    "name": "y",
+                    "description": "y cordinate where the item being positioned should go",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1154,
+            "description": "This rule will position an item at the x cordinate passed in.",
+            "itemtype": "method",
+            "name": "xIs",
+            "params": [
+                {
+                    "name": "x",
+                    "description": "x cordinate where the item being positioned should go",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1166,
+            "description": "This rule will position an item at the y cordinate passed in.",
+            "itemtype": "method",
+            "name": "yIs",
+            "params": [
+                {
+                    "name": "y",
+                    "description": "y cordinate where the item being positioned should go",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1178,
+            "description": "This rule will position this LayoutNode below the item passed.",
+            "itemtype": "method",
+            "name": "alignedBelow",
+            "params": [
+                {
+                    "name": "item",
+                    "description": "item that this LayoutNode should be below",
+                    "type": "LayoutNode"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1190,
+            "description": "This rule will position this LayoutNode above the item passed.",
+            "itemtype": "method",
+            "name": "alignedAbove",
+            "params": [
+                {
+                    "name": "item",
+                    "description": "item that this LayoutNode should be above",
+                    "type": "LayoutNode"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1203,
+            "description": "This rule will position this LayoutNode left of the item passed.",
+            "itemtype": "method",
+            "name": "alignedLeftOf",
+            "params": [
+                {
+                    "name": "item",
+                    "description": "item that this LayoutNode should be left of",
+                    "type": "LayoutNode"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1215,
+            "description": "This rule will position this LayoutNode right of the item passed.",
+            "itemtype": "method",
+            "name": "alignedRightOf",
+            "params": [
+                {
+                    "name": "item",
+                    "description": "item that this LayoutNode should be right of",
+                    "type": "LayoutNode"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1227,
+            "description": "This rule will position this LayoutNode so that it's aligned fully (top, left) with the item passed in.",
+            "itemtype": "method",
+            "name": "alignedWith",
+            "params": [
+                {
+                    "name": "item",
+                    "description": "item that this LayoutNode should align to",
+                    "type": "LayoutNode"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1239,
+            "description": "This rule will position this LayoutNode so that it's left aligned with the item passed in.",
+            "itemtype": "method",
+            "name": "leftAlignedWith",
+            "params": [
+                {
+                    "name": "item",
+                    "description": "item that this LayoutNode should left align to",
+                    "type": "LayoutNode"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1251,
+            "description": "This rule will position this LayoutNode so that it's right aligned with the item passed in.",
+            "itemtype": "method",
+            "name": "rightAlignedWith",
+            "params": [
+                {
+                    "name": "item",
+                    "description": "item that this LayoutNode should right align to",
+                    "type": "LayoutNode"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1263,
+            "description": "This rule will position this LayoutNode so that it's top aligned with the item passed in.",
+            "itemtype": "method",
+            "name": "topAlignedWith",
+            "params": [
+                {
+                    "name": "item",
+                    "description": "item that this LayoutNode should top align to",
+                    "type": "LayoutNode"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1275,
+            "description": "This rule will position this LayoutNode so that it's bottom aligned with the item passed in.",
+            "itemtype": "method",
+            "name": "bottomAlignedWith",
+            "params": [
+                {
+                    "name": "item",
+                    "description": "item that this LayoutNode should bottom align to",
+                    "type": "LayoutNode"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1287,
+            "description": "This rule will position this LayoutNode so that it's center (horizontally and verically) aligned with the item passed in.",
+            "itemtype": "method",
+            "name": "centeredWith",
+            "params": [
+                {
+                    "name": "item",
+                    "description": "item that this LayoutNode should center align to",
+                    "type": "LayoutNode"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1299,
+            "description": "This rule will position this LayoutNode so that it's horizontally centered with the item passed in.",
+            "itemtype": "method",
+            "name": "horizontallyCenteredWith",
+            "params": [
+                {
+                    "name": "item",
+                    "description": "item that this LayoutNode should be horizontally centered to",
+                    "type": "LayoutNode"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1311,
+            "description": "This rule will position this LayoutNode so that it's vertically centered with the item passed in.",
+            "itemtype": "method",
+            "name": "verticallyCenteredWith",
+            "params": [
+                {
+                    "name": "item",
+                    "description": "item that this LayoutNode should be vertically centered to",
+                    "type": "LayoutNode"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1329,
+            "description": "This rule will size an item to be the exact size value (width and height) passed in",
+            "itemtype": "method",
+            "name": "sizeIs",
+            "params": [
+                {
+                    "name": "width",
+                    "description": "width of this LayoutNode",
+                    "type": "Number"
+                },
+                {
+                    "name": "height",
+                    "description": "height of this LayoutNode",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1342,
+            "description": "This rule will set the width of an item to be the exact value passed in",
+            "itemtype": "method",
+            "name": "widthIs",
+            "params": [
+                {
+                    "name": "width",
+                    "description": "width of this LayoutNode",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1354,
+            "description": "This rule will set the height of an item to be the exact value passed in",
+            "itemtype": "method",
+            "name": "heightIs",
+            "params": [
+                {
+                    "name": "height",
+                    "description": "height of this LayoutNode",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1367,
+            "description": "This rule will set the width or height of this LayoutNode to be proportional based on the original width and height passed in.\nIt is handy for when you have rules adjusting either width or height only and yet you want the untouched property to be\nproportional.\n\nSo if you have an image that is 200x100 if there are rules applied to this LayoutNode where the width will become 400px\nthis rule will see that height has not been effected at all and will set the height to be proportional to the width based on\nthe original height passed in. So in this case our image's size would be 400x200 where this rule sets the height to be 200px\nto stay in proportion to the original width.",
+            "itemtype": "method",
+            "name": "sizeIsProportional",
+            "params": [
+                {
+                    "name": "originalWidth",
+                    "description": "the original width of the item being layed out before any layout functions are applied",
+                    "type": "Number"
+                },
+                {
+                    "name": "originalHeight",
+                    "description": "the original height of the item being layed out before any layout functions are applied",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1387,
+            "description": "This rule will set the width of the LayoutNode to be proportional to the height based on the originalWidth passed.\nIt is handy for when you have rules adjusting height and width should remain proportional to the height.\n\nFor instance you have an image which is 200x100. Once rules are applied to it the height becomes 200px. Ideally we'll\nwant the width to also be 2x larger. So this rule will set the width to be 400px and our final resolution is 400x200.",
+            "itemtype": "method",
+            "name": "widthIsProportional",
+            "params": [
+                {
+                    "name": "originalWidth",
+                    "description": "the original width of the item being layed out before any layout functions are applied",
+                    "type": "Number"
+                },
+                {
+                    "name": "originalHeight",
+                    "description": "the original height of the item being layed out before any layout functions are applied",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1404,
+            "description": "This rule will set the height of the LayoutNode to be proportional to the width based on the originalHeight passed.\nIt is handy for when you have rules adjusting width and height should remain proportional to the width.\n\nFor instance you have an image which is 200x100. Once rules are applied to it the width becomes 400px. Ideally we'll\nwant the height to also be 2x larger. So this rule will set the height to be 200px and our final resolution is 400x200.",
+            "itemtype": "method",
+            "name": "heightIsProportional",
+            "params": [
+                {
+                    "name": "originalWidth",
+                    "description": "the original width of the item being layed out before any layout functions are applied",
+                    "type": "Number"
+                },
+                {
+                    "name": "originalHeight",
+                    "description": "the original height of the item being layed out before any layout functions are applied",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1421,
+            "description": "This rule will set the width and height of this LayoutNode to match the width and height of the LayoutNode passed in.",
+            "itemtype": "method",
+            "name": "matchesSizeOf",
+            "params": [
+                {
+                    "name": "item",
+                    "description": "item is a LayoutNode that this LayoutNode will match in size",
+                    "type": "LayoutNode"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1433,
+            "description": "This rule will set the width of this LayoutNode to match the width of the LayoutNode passed in.",
+            "itemtype": "method",
+            "name": "matchesWidthOf",
+            "params": [
+                {
+                    "name": "item",
+                    "description": "item is a LayoutNode that this LayoutNode will match in width",
+                    "type": "LayoutNode"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1445,
+            "description": "This rule will set the height of this LayoutNode to match the height of the LayoutNode passed in.",
+            "itemtype": "method",
+            "name": "matchesHeightOf",
+            "params": [
+                {
+                    "name": "item",
+                    "description": "item is a LayoutNode that this LayoutNode will match in height",
+                    "type": "LayoutNode"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1457,
+            "description": "This rule will set the width and height of this LayoutNode to be a percentage of the LayoutNode passed in.\n\nSo for instance if the LayoutNode we're passing in is 400x200 after all rules have been applied and \nwe say this LayoutNode should be 0.5 of the LayoutNode passed in this LayoutNode's size will be 200x100 or 50% of 400x200.",
+            "itemtype": "method",
+            "name": "sizeIsAPercentageOf",
+            "params": [
+                {
+                    "name": "item",
+                    "description": "the LayoutNode that this LayoutNode will set it's width and height from",
+                    "type": "LayoutNode"
+                },
+                {
+                    "name": "percentage",
+                    "description": "a percentage value in decimal that states how big this LayoutNode should be based on the LayoutNode passed in",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1473,
+            "description": "This rule will set the width of this LayoutNode to be a percentage of the LayoutNode passed in.\n\nSo for instance if the LayoutNode we're passing in is 400x200 after all rules have been applied and \nwe say this LayoutNode's width should be 0.5 of the width of the LayoutNode passed in. This LayoutNode's width will be \n200px or 50% of 400px.",
+            "itemtype": "method",
+            "name": "widthIsAPercentageOf",
+            "params": [
+                {
+                    "name": "item",
+                    "description": "the LayoutNode that this LayoutNode will set it's width from",
+                    "type": "LayoutNode"
+                },
+                {
+                    "name": "percentage",
+                    "description": "a percentage value in decimal that states how wide this LayoutNode should be based on the LayoutNode passed in",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1490,
+            "description": "This rule will set the height of this LayoutNode to be a percentage of the LayoutNode passed in.\n\nSo for instance if the LayoutNode we're passing in is 400x200 after all rules have been applied and \nwe say this LayoutNode's height should be 0.5 of the height of the LayoutNode passed in. This LayoutNode's height will be \n100px or 50% of 200px.",
+            "itemtype": "method",
+            "name": "heightIsAPercentageOf",
+            "params": [
+                {
+                    "name": "item",
+                    "description": "the LayoutNode that this LayoutNode will set it's height from",
+                    "type": "LayoutNode"
+                },
+                {
+                    "name": "percentage",
+                    "description": "a percentage value in decimal that states how tall this LayoutNode should be based on the LayoutNode passed in",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1514,
+            "description": "plus is an offset function. Offset functions will offset the property previously effected.\n\nSo for instance if we did:\n\n\tnode.widthIs( 200 ).plus( 10 );\n\nThen the width of this LayoutNode would be 210px. However if we do:\n\n\tnode.yIs( 100 ).plus( 30 );\n\nThen the y position of this LayoutNode would be at 130px.\n\nAs you can see plus' context will change based on the type of rule applied previously.\n\nPlus is handy for when a designer sais \"Can you move this over by X pixels\".",
+            "itemtype": "method",
+            "name": "plus",
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1640,
+            "description": "minus is an offset function. Offset functions will offset the property previously effected.\n\nSo for instance if we did:\n\n\tnode.widthIs( 200 ).minus( 10 );\n\nThen the width of this LayoutNode would be 190px. However if we do:\n\n\tnode.yIs( 100 ).minus( 30 );\n\nThen the y position of this LayoutNode would be at 70px.\n\nAs you can see minus' context will change based on the type of rule applied previously.\n\nMinus is handy for when a designer sais \"Can you move this over by X pixels\".",
+            "itemtype": "method",
+            "name": "minus",
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1771,
+            "description": "maxSize is a bounding function.\n\nThere are three different ways to use maxSize. All are noted in this documentation.\n\nYou can pass in a LayoutNode that this LayoutNode will never be larger than. So for instance:\n\n\tnode1.sizeIs( 200, 100 );\n\tnode2.sizeIs( 300, 300 ).maxSize( node1 );\n\nWhen run node2's width and height will be 200x100 not 300x300 because it will be bound to not be larger than\nnode1.",
+            "itemtype": "method",
+            "name": "maxSize",
+            "params": [
+                {
+                    "name": "layoutNode",
+                    "description": "this LayoutNode will always be larger or the same size as the LayoutNode this function is called on",
+                    "type": "LayoutNode"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1789,
+            "description": "maxSize is a bounding function.\n\nThere are three different ways to use maxSize. All are noted in this documentation.\n\nYou can pass in width and height that this LayoutNode will never be larger than. So for instance:\n\n\tnode2.sizeIs( 300, 300 ).maxSize( 200, 100 );\n\nWhen run node2's width and height will be 200x100 not 300x300 because it will be bound to not be larger than\n200x100.",
+            "itemtype": "method",
+            "name": "maxSize",
+            "params": [
+                {
+                    "name": "width",
+                    "description": "the LayoutNode's width that this function is called on will never be larger than this value passed in",
+                    "type": "Number"
+                },
+                {
+                    "name": "height",
+                    "description": "the LayoutNode's height that this function is called on will never be larger than this value passed in",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1807,
+            "description": "maxSize is a bounding function.\n\nThere are three different ways to use maxSize. All are noted in this documentation.\n\nYou can pass in a size that this LayoutNode will never be larger than. So for instance:\n\n\tnode2.sizeIs( 300, 300 ).maxSize( 200 );\n\nWhen run node2's width and height will be 200x200 not 300x300 because it will be bound to not be larger than\n200x200.",
+            "itemtype": "method",
+            "name": "maxSize",
+            "params": [
+                {
+                    "name": "size",
+                    "description": "the LayoutNode's width and height that this function is called on will never be larger than this value passed in",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1837,
+            "description": "maxWidth is a bounding function.\n\nThere are two different ways to use maxWidth. All are noted in this documentation.\n\nYou can pass in a LayoutNode that this LayoutNode's width will never be larger than. So for instance:\n\n\tnode1.widthIs( 200 );\n\tnode2.widthIs( 300 ).maxWidth( node1 );\n\nWhen run in the end node2's width will be 200px not 300px because it will be bound to not be larger than\nnode1.",
+            "itemtype": "method",
+            "name": "maxWidth",
+            "params": [
+                {
+                    "name": "layoutNode",
+                    "description": "this LayoutNode will always be larger or the same size as the LayoutNode this function is called on",
+                    "type": "LayoutNode"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1855,
+            "description": "maxWidth is a bounding function.\n\nThere are two different ways to use maxWidth. All are noted in this documentation.\n\nYou can pass in width that this LayoutNode will never be larger than. So for instance:\n\n\tnode2.widthIs( 300 ).maxWidth( 200 );\n\nWhen run node2's width will be 200px not 300px because it will be bound to not be larger than\n200px.",
+            "itemtype": "method",
+            "name": "maxWidth",
+            "params": [
+                {
+                    "name": "width",
+                    "description": "the LayoutNode's width that this function is called on will never be larger than this value passed in",
+                    "type": "Number"
+                },
+                {
+                    "name": "height",
+                    "description": "the LayoutNode's height that this function is called on will never be larger than this value passed in",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1886,
+            "description": "maxHeight is a bounding function.\n\nThere are two different ways to use maxHeight. All are noted in this documentation.\n\nYou can pass in a LayoutNode that this LayoutNode's width will never be larger than. So for instance:\n\n\tnode1.heightIs( 200 );\n\tnode2.heightIs( 300 ).maxHeight( node1 );\n\nWhen run node2's height will be 200px not 300px because it will be bound to not be larger than\nnode1.",
+            "itemtype": "method",
+            "name": "maxHeight",
+            "params": [
+                {
+                    "name": "layoutNode",
+                    "description": "this LayoutNode will always be larger or the same size as the LayoutNode this function is called on",
+                    "type": "LayoutNode"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1904,
+            "description": "maxHeight is a bounding function.\n\nThere are two different ways to use maxHeight. All are noted in this documentation.\n\nYou can pass in width that this LayoutNode will never be larger than. So for instance:\n\n\tnode2.heightIs( 300 ).maxHeight( 200 );\n\nWhen run node2's height will be 200px not 300px because it will be bound to not be larger than\n200px.",
+            "itemtype": "method",
+            "name": "maxHeight",
+            "params": [
+                {
+                    "name": "width",
+                    "description": "the LayoutNode's width that this function is called on will never be larger than this value passed in",
+                    "type": "Number"
+                },
+                {
+                    "name": "height",
+                    "description": "the LayoutNode's height that this function is called on will never be larger than this value passed in",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1934,
+            "description": "minSize is a bounding function.\n\nThere are three different ways to use minSize. All are noted in this documentation.\n\nYou can pass in a LayoutNode that this LayoutNode will never be larger than. So for instance:\n\n\tnode1.sizeIs( 200, 100 );\n\tnode2.sizeIs( 50, 50 ).minSize( node1 );\n\nWhen run node2's width and height will be 200x100 not 50x50 because it will be bound to not be larger than\nnode1.",
+            "itemtype": "method",
+            "name": "minSize",
+            "params": [
+                {
+                    "name": "layoutNode",
+                    "description": "this LayoutNode that this rule is applied to will never be smaller than than this LayoutNode passed in",
+                    "type": "LayoutNode"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1952,
+            "description": "minSize is a bounding function.\n\nThere are three different ways to use minSize. All are noted in this documentation.\n\nYou can pass in width and height that this LayoutNode will never be larger than. So for instance:\n\n\tnode2.sizeIs( 50, 50 ).minSize( 200, 100 );\n\nWhen run node2's width and height will be 200x100 not 300x300 because it will be bound to not be larger than\n200x100.",
+            "itemtype": "method",
+            "name": "minSize",
+            "params": [
+                {
+                    "name": "width",
+                    "description": "the LayoutNode's width that this function is called on will never be smaller than this value passed in",
+                    "type": "Number"
+                },
+                {
+                    "name": "height",
+                    "description": "the LayoutNode's height that this function is called on will never be smaller than this value passed in",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 1970,
+            "description": "minSize is a bounding function.\n\nThere are three different ways to use minSize. All are noted in this documentation.\n\nYou can pass in a size that this LayoutNode will never be larger than. So for instance:\n\n\tnode2.sizeIs( 100, 50 ).minSize( 200 );\n\nWhen run node2's width and height will be 200x200 not 100x50 because it will be bound to not be smaller than\n200x200.",
+            "itemtype": "method",
+            "name": "minSize",
+            "params": [
+                {
+                    "name": "size",
+                    "description": "the LayoutNode's width and height that this function is called on will never be smaller than this value passed in",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 2000,
+            "description": "minWidth is a bounding function.\n\nThere are two different ways to use minWidth. All are noted in this documentation.\n\nYou can pass in a LayoutNode that this LayoutNode's width will never be larger than. So for instance:\n\n\tnode1.widthIs( 200 );\n\tnode2.widthIs( 50 ).minWidth( node1 );\n\nWhen run node2's width will be 200px not 50px because it will be bound to not be larger than node1.",
+            "itemtype": "method",
+            "name": "minWidth",
+            "params": [
+                {
+                    "name": "layoutNode",
+                    "description": "the width of the node that this function is called on will never be larger than the width of this node passed in",
+                    "type": "LayoutNode"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 2016,
+            "description": "minWidth is a bounding function.\n\nThere are two different ways to use minWidth. All are noted in this documentation.\n\nYou can pass in a width that this LayoutNode will never be larger than. So for instance:\n\n\tnode2.widthIs( 100 ).minWidth( 50 );\n\nWhen run node2's width will be 50px not 100px because it will be bound to not be larger than 50px.",
+            "itemtype": "method",
+            "name": "minWidth",
+            "params": [
+                {
+                    "name": "size",
+                    "description": "the LayoutNode's width that this function is called on will never be smaller than this value passed in",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 2045,
+            "description": "minHeight is a bounding function.\n\nThere are two different ways to use minHeight. All are noted in this documentation.\n\nYou can pass in a LayoutNode that this LayoutNode's height will never be larger than. So for instance:\n\n\tnode1.heightIs( 200 );\n\tnode2.heightIs( 50 ).minHeight( node1 );\n\nWhen run node2's height will be 200px not 50px because it will be bound to not be larger than node1.",
+            "itemtype": "method",
+            "name": "minHeight",
+            "params": [
+                {
+                    "name": "layoutNode",
+                    "description": "the height of the node that this function is called on will never be larger than the height of this node passed in",
+                    "type": "LayoutNode"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 2061,
+            "description": "minHeight is a bounding function.\n\nThere are two different ways to use minHeight. All are noted in this documentation.\n\nYou can pass in a height that this LayoutNode will never be larger than. So for instance:\n\n\tnode2.heightIs( 100 ).minHeight( 50 );\n\nWhen run node2's height will be 50px not 100px because it will be bound to not be larger than 50px.",
+            "itemtype": "method",
+            "name": "minHeight",
+            "params": [
+                {
+                    "name": "size",
+                    "description": "the LayoutNode's height that this function is called on will never be smaller than this value passed in",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 2091,
+            "description": "maxPosition is a bounding function.\n\nThere are three different ways to use maxPosition. All are noted in this documentation.\n\nYou can pass in a LayoutNode. This LayoutNode's position will never be larger than the position of the passed node.\n\n\tnode1.positionIs( 300, 200 );\n\tnode2.positionIs( 400, 400 ).maxPosition( node1 );\n\nWhen run node2's x and y will be 200 and 100 not x 300 and y 200 because it will be bound x and y to not be larger than\nnode1's x and y.",
+            "itemtype": "method",
+            "name": "maxPosition",
+            "params": [
+                {
+                    "name": "layoutNode",
+                    "description": "this passed in LayoutNode's x and y position will be be the maximum x and y position for this node",
+                    "type": "LayoutNode"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 2109,
+            "description": "maxPosition is a bounding function.\n\nThere are three different ways to use maxPosition. All are noted in this documentation.\n\nYou can pass in a maximum x and y position for this node.\n\n\tnode2.positionIs( 300, 300 ).maxPosition( 200, 100 );\n\nWhen run node2's x and y will be x 200 and y 100 not x 300 and y 300 because it will be bound x and y to not be larger than\nx 200 and y 100.",
+            "itemtype": "method",
+            "name": "maxPosition",
+            "params": [
+                {
+                    "name": "x",
+                    "description": "the maximum x value for this node's x value",
+                    "type": "Number"
+                },
+                {
+                    "name": "y",
+                    "description": "the maximum y value for this node's y value",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 2127,
+            "description": "maxPosition is a bounding function.\n\nThere are three different ways to use maxPosition. All are noted in this documentation.\n\nYou can pass in a value that this LayoutNode's x and y will never be larger than. So for instance:\n\n\tnode2.positionIs( 300, 400 ).maxPosition( 200 );\n\nWhen run node2's width and height will be 200x200 not 300x400 because it will be bound to not be larger x\n200 and y 200.",
+            "itemtype": "method",
+            "name": "maxPosition",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "the maximum x and y value for this node",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 2157,
+            "description": "maxX is a bounding function.\n\nThere are two possible ways to use this function. All are noted in this documentation.\n\nYou can pass in a LayoutNode from which this node's maximum x value will be read from.\n\n\tnode1.xIs( 200 );\n\tnode2.xIs( 400 ).maxX( node1 );\n\nWhen run node2's x value will be 200 and not 400 because it will be bound to node1's x value.",
+            "itemtype": "method",
+            "name": "maxX",
+            "params": [
+                {
+                    "name": "layoutNode",
+                    "description": "The LayoutNode whose x value will be the maximum x value for this node",
+                    "type": "LayoutNode"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 2173,
+            "description": "maxX is a bounding function.\n\nThere are two possible ways to use this function. All are noted in this documentation.\n\nYou can pass in an x value from which this node's maximum x value will be set.\n\n\tnode2.xIs( 400 ).maxX( 200 );\n\nWhen run node2's x value will be 200 and not 400 because it will be bound to the x value 200.",
+            "itemtype": "method",
+            "name": "maxX",
+            "params": [
+                {
+                    "name": "x",
+                    "description": "The maximum x value for this LayoutNode",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 2203,
+            "description": "maxY is a bounding function.\n\nThere are two possible ways to use this function. All are noted in this documentation.\n\nYou can pass in a LayoutNode from which this node's maximum y value will be read from.\n\n\tnode1.yIs( 200 );\n\tnode2.yIs( 400 ).maxY( node1 );\n\nWhen run node2's y value will be 200 and not 400 because it will be bound to node1's y value.",
+            "itemtype": "method",
+            "name": "maxY",
+            "params": [
+                {
+                    "name": "layoutNode",
+                    "description": "The LayoutNode whose y value will be the maximum y value for this node",
+                    "type": "LayoutNode"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 2219,
+            "description": "maxY is a bounding function.\n\nThere are two possible ways to use this function. All are noted in this documentation.\n\nYou can pass in an y value from which this node's maximum y value will be set.\n\n\tnode2.yIs( 400 ).maxY( 200 );\n\nWhen run node2's x value will be 200 and not 400 because it will be bound to the y value 200.",
+            "itemtype": "method",
+            "name": "maxY",
+            "params": [
+                {
+                    "name": "y",
+                    "description": "The maximum y value for this LayoutNode",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 2249,
+            "description": "minPosition is a bounding function.\n\nThere are three different ways to use minPosition. All are noted in this documentation.\n\nYou can pass in a LayoutNode. This LayoutNode's position will never be smaller than the position of the passed node.\n\n\tnode1.positionIs( 300, 200 );\n\tnode2.positionIs( 100, 100 ).minPosition( node1 );\n\nWhen run node2's x and y will be 300 and 200 not x 100 and y 100 because it will be bound x and y to not be smaller than\nnode1's x and y.",
+            "itemtype": "method",
+            "name": "minPosition",
+            "params": [
+                {
+                    "name": "layoutNode",
+                    "description": "this passed in LayoutNode's x and y position will be be the minimum x and y position for this node",
+                    "type": "LayoutNode"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 2267,
+            "description": "minPosition is a bounding function.\n\nThere are three different ways to use minPosition. All are noted in this documentation.\n\nYou can pass in a minimum x and y position for this node.\n\n\tnode2.positionIs( 100, 100 ).minPosition( 200, 100 );\n\nWhen run node2's x and y will be x 200 and y 100 not x 100 and y 100 because it will be bound x and y to not be smaller than\nx 200 and y 100.",
+            "itemtype": "method",
+            "name": "minPosition",
+            "params": [
+                {
+                    "name": "x",
+                    "description": "the minimum x value for this node's x value",
+                    "type": "Number"
+                },
+                {
+                    "name": "y",
+                    "description": "the minimum y value for this node's y value",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 2285,
+            "description": "minPosition is a bounding function.\n\nThere are three different ways to use minPosition. All are noted in this documentation.\n\nYou can pass in a value that this LayoutNode's x and y will never be smaller than. So for instance:\n\n\tnode2.positionIs( 100, 50 ).minPosition( 200 );\n\nWhen run node2's x and y will be x 200 and y 200 not 100 x and 50 y because it will be bound to not be smaller than x\n200 and y 200.",
+            "itemtype": "method",
+            "name": "minPosition",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "the minimum x and y value for this node",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 2315,
+            "description": "minX is a bounding function.\n\nThere are two possible ways to use this function. All are noted in this documentation.\n\nYou can pass in a LayoutNode from which this node's minimum x value will be read from.\n\n\tnode1.xIs( 200 );\n\tnode2.xIs( 100 ).minX( node1 );\n\nWhen run node2's x value will be 200 and not 100 because it will be bound to node1's x value.",
+            "itemtype": "method",
+            "name": "minX",
+            "params": [
+                {
+                    "name": "layoutNode",
+                    "description": "The LayoutNode whose x value will be the minimum x value for this node",
+                    "type": "LayoutNode"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 2331,
+            "description": "minX is a bounding function.\n\nThere are two possible ways to use this function. All are noted in this documentation.\n\nYou can pass in an x value from which this node's minimum x value will be set.\n\n\tnode2.xIs( 100 ).minX( 200 );\n\nWhen run node2's x value will be 200 and not 100 because it will be bound to the x value 200.",
+            "itemtype": "method",
+            "name": "minX",
+            "params": [
+                {
+                    "name": "x",
+                    "description": "The minimum x value for this LayoutNode",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 2361,
+            "description": "minY is a bounding function.\n\nThere are two possible ways to use this function. All are noted in this documentation.\n\nYou can pass in a LayoutNode from which this node's minimum y value will be read from.\n\n\tnode1.yIs( 200 );\n\tnode2.yIs( 100 ).minY( node1 );\n\nWhen run node2's y value will be 200 and not 100 because it will be bound to node1's y value.",
+            "itemtype": "method",
+            "name": "minY",
+            "params": [
+                {
+                    "name": "layoutNode",
+                    "description": "The LayoutNode whose y value will be the minimum y value for this node",
+                    "type": "LayoutNode"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 2377,
+            "description": "minY is a bounding function.\n\nThere are two possible ways to use this function. All are noted in this documentation.\n\nYou can pass in an y value from which this node's minimum y value will be set.\n\n\tnode2.yIs( 100 ).minY( 200 );\n\nWhen run node2's y value will be 200 and not 100 because it will be bound to the y value 200.",
+            "itemtype": "method",
+            "name": "minY",
+            "params": [
+                {
+                    "name": "y",
+                    "description": "The minimum y value for this LayoutNode",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 2406,
+            "description": "max is a bounding function.\n\nIt's a general bounding function which derives it's context from the previous rule added.\n\nSo basically:\n\n\tnode.xIs( 200 ).max( 100 );\n\nThe x value of the node would end up being 100.\n\nAnother example:\n\n\tnode.widthIs( 240 ).max( 40 );\n\nThe width value of the node would end up being being 40.\n\nSo as you can see act's like all the other max functions. For reference look at:\n- {{#crossLink \"LayoutNode/maxWidth:method\"}}{{/crossLink}}\n- {{#crossLink \"LayoutNode/maxPosition:method\"}}{{/crossLink}}\n- {{#crossLink \"LayoutNode/maxY:method\"}}{{/crossLink}}",
+            "itemtype": "method",
+            "name": "max",
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 2509,
+            "description": "min is a bounding function.\n\nIt's a general bounding function which derives it's context from the previous rule added.\n\nSo basically:\n\n\tnode.xIs( 50 ).min( 100 );\n\nThe x value of the node would end up being 100.\n\nAnother example:\n\n\tnode.widthIs( -400 ).min( -40 );\n\nThe width value of the node would end up being being -40.\n\nSo as you can see act's like all the other max functions. For reference look at:\n- {{#crossLink \"LayoutNode/minWidth:method\"}}{{/crossLink}}\n- {{#crossLink \"LayoutNode/minPosition:method\"}}{{/crossLink}}\n- {{#crossLink \"LayoutNode/minY:method\"}}{{/crossLink}}",
+            "itemtype": "method",
+            "name": "min",
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 2650,
+            "description": "Using the when function you can create conditionals. It is the first function to call when creating a conditonal. \nIt specifies what LayoutNode will be used when evaluating a conditional statement that follows.\n\nFor instance:\n\n\tnode1.when( node2 ).widthGreaterThan( 200 ).widthIs( 100 );\n\nBasically what this statement sais is \"when node2's width is greater than 200px node1's width is 100px\".\n\nA conditional statement must always follow after a when statement.",
+            "itemtype": "method",
+            "name": "when",
+            "params": [
+                {
+                    "name": "node",
+                    "description": "the LayoutNode which following conditionals will be evaluated against",
+                    "type": "LayoutNode"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 2694,
+            "description": "The andWhen function in essence is the same as an && operator. andWhen statements must follow after a conditional.\n\nFor example:\n\n\tnode1.when( node2 ).widthGreaterThan( 100 ).andWhen( node2 ).widthLessThan( 200 ).widthIs( 100 );\n\nWhat the above is saying is \"When node2's width is greater than 100px and when node2's width is less than 200px then node1's width is\n100px\"\n\nandWhen statements must follow after a conditional statement.",
+            "itemtype": "method",
+            "name": "andWhen",
+            "params": [
+                {
+                    "name": "node",
+                    "description": "the LayoutNode which following conditionals will be evaluated against",
+                    "type": "LayoutNode"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 2725,
+            "description": "The default statement is the equivalent to an else statement.\n\nFor instance if we have the following statement:\n\n\tnode1\n\t.when( node2 ).widthGreaterThan( 100 ).widthIs( 100 )\n\t.default().widthIs( 50 );\n\nWhat the above means is \"When node2's width is greater than 100px the width of node1 is 100px. Otherwise if the width of node2 is not\ngreater than 100px then the width of node1 is 50px\"\n\nSomething to note is that you can also add rules which will always evaluate by doing the following:\n\n\tnode1\n\t.heightIs( 200 )\n\t.when( node2 ).widthGreaterThan( 100 ).widthIs( 100 )\n\t.default().widthIs( 50 );\n\nBasically regardless of the width of node2 the height of node1 will be 200px. This clearly differs from the \"default\" statement.",
+            "itemtype": "method",
+            "name": "default",
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 2764,
+            "description": "You can use this method to add callbacks for when conditionals evaluate.\n\nSo let's say we do:\n\n\tnode1.when( node2 ).heightLessThan( 300 ).matchesHeightOf( node2 ).on( function( isTrue ) {\n\t\t\n\t\tconsole.log( \"Is the height of node2 smaller than 300?\", isTrue );\n\t});\n\nEverytime the layout is updated the call back will fire with a boolean which is whether the conditional is\ntrue or false.\n\nThe on function will only be applied to the previous \"when\" or \"default\" statement preceding the on statement.",
+            "itemtype": "method",
+            "name": "on",
+            "params": [
+                {
+                    "name": "listener",
+                    "description": "This is the listener for the call back when this conditional evaluates",
+                    "type": "Function"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 2809,
+            "description": "This function is a conditional. It must follow after a \"when\" or \"andWhen\" statement and a layout rule must follow\nthis conditional statement.\n\nHere is a usage example:\n\t\n\tnode1.when( node2 ).widthGreaterThan( 300 ).matchesHeightOf( node2 );\n\nThe above is stating \"when the width of node2 is greater than 300px node1 should match the height of node2\".",
+            "itemtype": "method",
+            "name": "widthGreaterThan",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "This value states the width that the LayoutNode's width should be evaluated against",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 2831,
+            "description": "This function is a conditional. It must follow after a \"when\" or \"andWhen\" statement and a layout rule must follow\nthis conditional statement.\n\nHere is a usage example:\n\t\n\tnode1.when( node2 ).heightGreaterThan( 300 ).matchesHeightOf( node2 );\n\nThe above is stating \"when the height of node2 is greater than 300px node1 should match the height of node2\".",
+            "itemtype": "method",
+            "name": "heightGreaterThan",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "This value states the height that the LayoutNode's height should be evaluated against",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 2853,
+            "description": "This function is a conditional. It must follow after a \"when\" or \"andWhen\" statement and a layout rule must follow\nthis conditional statement.\n\nHere is a usage example:\n\t\n\tnode1.when( node2 ).widthLessThan( 300 ).matchesHeightOf( node2 );\n\nThe above is stating \"when the width of node2 is less than 300px node1 should match the height of node2\".",
+            "itemtype": "method",
+            "name": "widthLessThan",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "This value states the width that the LayoutNode's width should be evaluated against",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        },
+        {
+            "file": "src/LayoutNode.js",
+            "line": 2875,
+            "description": "This function is a conditional. It must follow after a \"when\" or \"andWhen\" statement and a layout rule must follow\nthis conditional statement.\n\nHere is a usage example:\n\t\n\tnode1.when( node2 ).heightLessThan( 300 ).matchesHeightOf( node2 );\n\nThe above is stating \"when the height of node2 is less than 300px node1 should match the height of node2\".",
+            "itemtype": "method",
+            "name": "heightLessThan",
+            "params": [
+                {
+                    "name": "value",
+                    "description": "This value states the height that the LayoutNode's height should be evaluated against",
+                    "type": "Number"
+                }
+            ],
+            "chainable": 1,
+            "class": "LayoutNode"
+        }
+    ],
+    "warnings": []
+}
