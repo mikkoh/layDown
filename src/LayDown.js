@@ -79,7 +79,7 @@ var LayDown = function( layoutFunction, readFunction, createFunction ) {
 
 	this.layoutFunction = layoutFunction;
 	this.readFunction = readFunction;
-	this.createFunction = createFunction;
+	this.createFunction = createFunction || null;
 	this.nodes = [];
 };
 
