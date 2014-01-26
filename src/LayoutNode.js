@@ -143,14 +143,14 @@ Our node will be left aligned with Some UI and aligned below Some UI plus 3 pixe
 @param {LayDown} layout Is the parent LayDown object. The parent LayDown object will manage relationships between all LayoutNode's and will
 						handle circular dependencies and all that fun stuff.
 
-@param {Object} item item will be what will be positioned on screen. For instance an HTML DOM Element or a PIXI DisplayObject. It's
+@param item {Object} item will be what will be positioned on screen. For instance an HTML DOM Element or a PIXI DisplayObject. It's
 				whatever you want to layout on screen.
 
-@param {function} layoutFunction The layoutFunction function is a function which will translate the x, y, width, and height properties of a
+@param layoutFunction {function} The layoutFunction function is a function which will translate the x, y, width, and height properties of a
 LayoutNode into actual physical screen position. So for instance if we're working with the DOM it would set
 CSS properties on the "item" passed in to ensure that the item is on screen at x, y at the correct size.
 
-@param {function} readFunction If you define no sizing rules to set width and height of an "item"/LayoutNode then we will need to read the
+@param readFunction {function} If you define no sizing rules to set width and height of an "item"/LayoutNode then we will need to read the
 width and height of the object to be able to position dependent LayoutNode's. 
 
 So for instance if we have LayoutNode Button and LayoutNode Image and we wanted Image to be below Button and
