@@ -67,8 +67,14 @@ var widthGreaterThan = require( './conditionals/widthGreaterThan' );
 var heightGreaterThan = require( './conditionals/heightGreaterThan' );
 var widthLessThan = require( './conditionals/widthLessThan' );
 var heightLessThan = require( './conditionals/heightLessThan' );
-var leftSideGreaterThan = require( './conditionals/leftSideGreaterThan' );
-var rightSideGreaterThan = require( './conditionals/rightSideGreaterThan' );
+var leftGreaterThan = require( './conditionals/leftGreaterThan' );
+var rightGreaterThan = require( './conditionals/rightGreaterThan' );
+var leftLessThan = require( './conditionals/leftLessThan' );
+var rightLessThan = require( './conditionals/rightLessThan' );
+var bottomGreaterThan = require( './conditionals/bottomGreaterThan' );
+var topGreaterThan = require( './conditionals/topGreaterThan' );
+var bottomLessThan = require( './conditionals/bottomLessThan' );
+var topLessThan = require( './conditionals/topLessThan' );
 
 //OFFSET FUNCTIONS
 var minusHeight = require( './offsets/minusHeight' );
@@ -568,7 +574,6 @@ LayoutNode.prototype.doLayout = function() {
 	this.hasBeenLayedOut = true;
 
 	this._x = this._y = this._width = this._height = 0;
-	
 	this.doLayoutWork();
 
 	//this is the listener added when an on function was called after creating a conditional
@@ -2929,14 +2934,87 @@ this conditional statement.
 
 Here is a usage example:
 	
-	node1.when( node2 ).leftSideGreaterThan( 400 ).xIs( 400 );
+	node1.when( node2 ).leftGreaterThan( 400 ).xIs( 400 );
 
 The above is stating "when the the left side (node2.x position) of node2 is greater than 400 node1's x will be 400".
 
+@method leftGreaterThan
+@param value {Number} When the x value of LayoutNode passed in the when statement is greater than this value the 
+conditionals layout rules will be run
+@chainable
 **/
-LayoutNode.prototype.leftSideGreaterThan = function( value ) {
+LayoutNode.prototype.leftGreaterThan = function( value ) {
 
-	return addConditional.call( this, leftSideGreaterThan, arguments );
+	return addConditional.call( this, leftGreaterThan, arguments );
+};
+
+
+
+
+/**
+This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
+this conditional statement.
+
+Here is a usage example:
+	
+	node1.when( node2 ).leftLessThan( 400 ).xIs( 400 );
+
+The above is stating "when the the left side (node2.x position) of node2 is less than 400 node1's x will be 400".
+
+@method leftLessThan
+@param value {Number} When the x value of LayoutNode passed in the when statement is less than this value the 
+conditionals layout rules will be run
+@chainable
+**/
+LayoutNode.prototype.leftLessThan = function( value ) {
+
+	return addConditional.call( this, leftLessThan, arguments );
+};
+
+
+
+
+/**
+This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
+this conditional statement.
+
+Here is a usage example:
+	
+	node1.when( node2 ).rightGreaterThan( 400 ).xIs( 400 );
+
+The above is stating "when the the right side (node2.x + node2.width) of node2 is greater than 400 node1's x will be 400".
+
+@method rightGreaterThan
+@param value {Number} When x + width value of LayoutNode passed in the when statement is greater than this value the 
+conditionals layout rules will be run
+@chainable
+**/
+LayoutNode.prototype.rightGreaterThan = function( value ) {
+
+	return addConditional.call( this, rightGreaterThan, arguments );
+};
+
+
+
+
+/**
+This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
+this conditional statement.
+
+Here is a usage example:
+	
+	node1.when( node2 ).rightLessThan( 400 ).xIs( 400 );
+
+The above is stating "when the the right side (node2.x + node2.width) of node2 is less than 400 node1's x will be 400".
+
+@method rightLessThan
+@param value {Number} When x + width value of LayoutNode passed in the when statement is less than this value the 
+conditionals layout rules will be run
+@chainable
+**/
+LayoutNode.prototype.rightLessThan = function( value ) {
+
+	return addConditional.call( this, rightLessThan, arguments );
 };
 
 
@@ -2947,16 +3025,88 @@ this conditional statement.
 
 Here is a usage example:
 	
-	node1.when( node2 ).rightSideGreaterThan( 400 ).xIs( 400 );
+	node1.when( node2 ).topGreaterThan( 400 ).yIs( 400 );
 
-The above is stating "when the the right side (node2.x + node2.width) of node2 is greater than 400 node1's x will be 400".
+The above is stating "when the the left side (node2.y position) of node2 is greater than 400 node1's y will be 400".
 
+@method topGreaterThan
+@param value {Number} When the y value of LayoutNode passed in the when statement is greater than this value the 
+conditionals layout rules will be run
+@chainable
 **/
-LayoutNode.prototype.rightSideGreaterThan = function( value ) {
+LayoutNode.prototype.topGreaterThan = function( value ) {
 
-	return addConditional.call( this, rightSideGreaterThan, arguments );
+	return addConditional.call( this, topGreaterThan, arguments );
 };
 
+
+
+
+/**
+This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
+this conditional statement.
+
+Here is a usage example:
+	
+	node1.when( node2 ).topLessThan( 400 ).yIs( 400 );
+
+The above is stating "when the the left side (node2.y position) of node2 is less than 400 node1's y will be 400".
+
+@method topLessThan
+@param value {Number} When the y value of LayoutNode passed in the when statement is less than this value the 
+conditionals layout rules will be run
+@chainable
+**/
+LayoutNode.prototype.topLessThan = function( value ) {
+
+	return addConditional.call( this, topLessThan, arguments );
+};
+
+
+
+
+/**
+This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
+this conditional statement.
+
+Here is a usage example:
+	
+	node1.when( node2 ).bottomGreaterThan( 400 ).yIs( 400 );
+
+The above is stating "when the the right side (node2.y + node2.height) of node2 is greater than 400 node1's y will be 400".
+
+@method bottomGreaterThan
+@param value {Number} When y + height value of LayoutNode passed in the when statement is greater than this value the 
+conditionals layout rules will be run
+@chainable
+**/
+LayoutNode.prototype.bottomGreaterThan = function( value ) {
+
+	return addConditional.call( this, bottomGreaterThan, arguments );
+};
+
+
+
+
+/**
+This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
+this conditional statement.
+
+Here is a usage example:
+	
+	node1.when( node2 ).bottomLessThan( 400 ).yIs( 400 );
+
+The above is stating "when the the right side (node2.y + node2.width) of node2 is less than 400 node1's y will be 400".
+
+@method bottomLessThan
+@param value {Number} When y + width value of LayoutNode passed in the when statement is less than this value the 
+conditionals layout rules will be run
+@chainable
+**/
+LayoutNode.prototype.bottomLessThan = function( value ) {
+
+	return addConditional.call( this, bottomLessThan, arguments );
+};
 
 
 
