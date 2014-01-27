@@ -447,7 +447,7 @@ Object.defineProperty( LayoutNode.prototype, 'y', {
 
 		this.lastPropTypeEffected = POSITION_Y;
 		
-		this._offY += value - this._x;
+		this._offY += value - this._y;
 
 		if( this.hasBeenLayedOut ) {
 
