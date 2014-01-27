@@ -10,11 +10,14 @@ var centeredWith = require( './layoutPosition/centeredWith' );
 var horizontallyCenteredWith = require( './layoutPosition/horizontallyCenteredWith' );
 var leftAlignedWith = require( './layoutPosition/leftAlignedWith' );
 var positionIs = require( './layoutPosition/positionIs' );
+var positionIsAPercentageOf = require( './layoutPosition/positionIsAPercentageOf' );
 var rightAlignedWith = require( './layoutPosition/rightAlignedWith' );
 var topAlignedWith = require( './layoutPosition/topAlignedWith' );
 var verticallyCenteredWith = require( './layoutPosition/verticallyCenteredWith' );
 var xIs = require( './layoutPosition/xIs' );
 var yIs = require( './layoutPosition/yIs' );
+var xIsAPercentageOf = require( './layoutPosition/xIsAPercentageOf' );
+var yIsAPercentageOf = require( './layoutPosition/yIsAPercentageOf' );
 
 //POSITION BOUND FUNCTIONS
 var maxPosition = require( './layoutBoundPosition/maxPosition' );
@@ -64,6 +67,8 @@ var widthGreaterThan = require( './conditionals/widthGreaterThan' );
 var heightGreaterThan = require( './conditionals/heightGreaterThan' );
 var widthLessThan = require( './conditionals/widthLessThan' );
 var heightLessThan = require( './conditionals/heightLessThan' );
+var leftSideGreaterThan = require( './conditionals/leftSideGreaterThan' );
+var rightSideGreaterThan = require( './conditionals/rightSideGreaterThan' );
 
 //OFFSET FUNCTIONS
 var minusHeight = require( './offsets/minusHeight' );
@@ -161,9 +166,9 @@ position Image. So if Button is a DIV element we will read in it's height to be 
 var LayoutNode = function( layout, item, layoutFunction, readFunction ) {
 
 	this.layout = layout;
-	this.item = item;
-	this.layoutFunction = layoutFunction;
-	this.readFunction = readFunction;
+	this.item = item === undefined ? null : item;
+	this.layoutFunction = layoutFunction === undefined ? null : layoutFunction;
+	this.readFunction = readFunction === undefined ? null : readFunction;
 	this.sizeDependencies = [];
 	this.positionDependencies = [];
 	this.rulesPos = [];
@@ -179,6 +184,28 @@ var LayoutNode = function( layout, item, layoutFunction, readFunction ) {
 	this.conditionalsArgumentsForItem = [];
 	this.layoutNodeForConditional = [];
 	this.conditionalListeners = [];
+
+	this._inner = null;
+	this._x = 0;
+	this._y = 0;
+	this._width = 0;
+	this._height = 0;
+	this._offX = 0;
+	this._offY = 0;
+	this._offWidth = 0;
+	this._offHeight = 0;
+	this._isDoingWhen = false;
+	this._hasConditional = false;
+	this._isDoingDefault = false;
+	this.lastPropTypeEffected = null;
+	this.hasBeenLayedOut = false;
+	this.layoutNodeForDefault = null;
+	this.conditionalParent = null; //this is the parent LayoutNode that this conditional LayoutNode was created from
+	this.defaultConditionalListener = null;
+	this.lastConditionalListnerIdx = -1;
+	this.lastConditionalListenerIsDefault = false;
+	this.doNotReadWidth = false;
+	this.doNotReadHeight = false;
 };
 
 /**
@@ -339,46 +366,6 @@ LayoutNode.prototype.POSITION_X_LAYOUT = LayoutNode.POSITION_X_LAYOUT;
 LayoutNode.prototype.POSITION_X_BOUND = LayoutNode.POSITION_X_BOUND;
 LayoutNode.prototype.POSITION_Y_LAYOUT = LayoutNode.POSITION_Y_LAYOUT;
 LayoutNode.prototype.POSITION_Y_BOUND = LayoutNode.POSITION_Y_BOUND;
-LayoutNode.prototype._inner = null;
-LayoutNode.prototype._x = 0;
-LayoutNode.prototype._y = 0;
-LayoutNode.prototype._width = 0;
-LayoutNode.prototype._height = 0;
-LayoutNode.prototype._offX = 0;
-LayoutNode.prototype._offY = 0;
-LayoutNode.prototype._offWidth = 0;
-LayoutNode.prototype._offHeight = 0;
-LayoutNode.prototype._isDoingWhen = false;
-LayoutNode.prototype._hasConditional = false;
-LayoutNode.prototype._isDoingDefault = false;
-LayoutNode.prototype.layout = null;
-LayoutNode.prototype.item = null;
-LayoutNode.prototype.layoutFunction = null;
-LayoutNode.prototype.readFunction = null;
-LayoutNode.prototype.lastPropTypeEffected = null;
-LayoutNode.prototype.sizeDependencies = null;
-LayoutNode.prototype.positionDependencies = null;
-LayoutNode.prototype.hasBeenLayedOut = false;
-LayoutNode.prototype.rulesPos = null;
-LayoutNode.prototype.rulesPosProp = null;
-LayoutNode.prototype.rulesSize = null;
-LayoutNode.prototype.rulesSizeProp = null;
-LayoutNode.prototype.rulesPosBound = null;
-LayoutNode.prototype.rulesPosBoundProp = null;
-LayoutNode.prototype.rulesSizeBound = null;
-LayoutNode.prototype.rulesSizeBoundProp = null;
-LayoutNode.prototype.itemsToCompare = null;
-LayoutNode.prototype.conditionalsForItem = null;
-LayoutNode.prototype.conditionalsArgumentsForItem = null;
-LayoutNode.prototype.layoutNodeForConditional = null;
-LayoutNode.prototype.layoutNodeForDefault = null;
-LayoutNode.prototype.conditionalParent = null; //this is the parent LayoutNode that this conditional LayoutNode was created from
-LayoutNode.prototype.conditionalListeners = null;
-LayoutNode.prototype.defaultConditionalListener = null;
-LayoutNode.prototype.lastConditionalListnerIdx = -1;
-LayoutNode.prototype.lastConditionalListenerIsDefault = false;
-LayoutNode.prototype.doNotReadWidth = false;
-LayoutNode.prototype.doNotReadHeight = false;
 
 /**
 This is the x position of the LayoutNode on screen. Initially the value of x will be 0 until this node has been layed out.
@@ -581,7 +568,10 @@ LayoutNode.prototype.doLayout = function() {
 	this.hasBeenLayedOut = true;
 
 	this._x = this._y = this._width = this._height = 0;
+	
+	this.doLayoutWork();
 
+	//this is the listener added when an on function was called after creating a conditional
 	var listenerForConditional = null;
 
 	if( this.itemsToCompare.length > 0 ) {
@@ -636,10 +626,6 @@ LayoutNode.prototype.doLayout = function() {
 			this.layoutNodeForDefault.doLayout();
 		}
 	}
-
-	//after conditionals have evaluated we may want to run
-	//items that we will ALWAYS RUN
-	this.doLayoutWork();
 
 	//If this layoyt node has something to position and size and has a layout function run it
 	if( this.item && this.layoutFunction ) {
@@ -721,16 +707,19 @@ LayoutNode.prototype.doLayoutWork = function() {
 	//check if we should read in a size for an item
 	if( this.item ) {
 
-		if( !this.doNotReadWidth && !this.doNotReadWidth ) {
+		if( this.readFunction ) {
 
-			this._width = this.readFunction( this.item, 'width' );
-			this._height = this.readFunction( this.item, 'height' );
-		} else if( !this.doNotReadWidth ) {
+			if( !this.doNotReadWidth && !this.doNotReadWidth ) {
 
-			this._width = this.readFunction( this.item, 'width' );
-		} else if( !this.doNotReadHeight ) {
+				this._width = this.readFunction( this.item, 'width' );
+				this._height = this.readFunction( this.item, 'height' );
+			} else if( !this.doNotReadWidth ) {
 
-			this._height = this.readFunction( this.item, 'height' );
+				this._width = this.readFunction( this.item, 'width' );
+			} else if( !this.doNotReadHeight ) {
+
+				this._height = this.readFunction( this.item, 'height' );
+			}
 		}	
 	}
 
@@ -1152,6 +1141,20 @@ LayoutNode.prototype.positionIs = function( x, y ) {
 };
 
 /**
+This rule will position an item at the x and y calculated by taking the width and height of the LayoutNode passed in times the
+percentage passed in.
+
+@method positionIsAPercentageOf
+@param item {LayoutNode} this LayoutNode's width and height is going to be used to calculate the positon of this LayoutNode
+@param percentage {Number} this percentage will be used to the calculate the x and y position of this LayoutNode
+@chainable
+**/
+LayoutNode.prototype.positionIsAPercentageOf = function( item, percentage ) {
+
+	return addRule.call( this, positionIsAPercentageOf, arguments, this.rulesPos, this.rulesPosProp, POSITION );
+};
+
+/**
 This rule will position an item at the x cordinate passed in.
 
 @method xIs
@@ -1164,6 +1167,20 @@ LayoutNode.prototype.xIs = function( x ) {
 };
 
 /**
+This rule will position an item at the x calculated by taking the width of the LayoutNode passed in times the
+percentage passed in.
+
+@method xIsAPercentageOf
+@param item {LayoutNode} this LayoutNode's width is going to be used to calculate the positon of this LayoutNode
+@param percentage {Number} this percentage will be used to the calculate the x position of this LayoutNode
+@chainable
+**/
+LayoutNode.prototype.xIsAPercentageOf = function( item, percentage ) {
+
+	return addRule.call( this, xIsAPercentageOf, arguments, this.rulesPos, this.rulesPosProp, POSITION_X );
+};
+
+/**
 This rule will position an item at the y cordinate passed in.
 
 @method yIs
@@ -1173,6 +1190,20 @@ This rule will position an item at the y cordinate passed in.
 LayoutNode.prototype.yIs = function( y ) {
 
 	return addRule.call( this, yIs, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
+};
+
+/**
+This rule will position an item at the y calculated by taking the height of the LayoutNode passed in times the
+percentage passed in.
+
+@method yIsAPercentageOf
+@param item {LayoutNode} this LayoutNode's height is going to be used to calculate the positon of this LayoutNode
+@param percentage {Number} this percentage will be used to the calculate the y position of this LayoutNode
+@chainable
+**/
+LayoutNode.prototype.yIsAPercentageOf = function( item, percentage ) {
+
+	return addRule.call( this, yIsAPercentageOf, arguments, this.rulesPos, this.rulesPosProp, POSITION_Y );
 };
 
 /**
@@ -2889,6 +2920,41 @@ The above is stating "when the height of node2 is less than 300px node1 should m
 LayoutNode.prototype.heightLessThan = function( value ) {
 
 	return addConditional.call( this, heightLessThan, arguments );
+};
+
+
+/**
+This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
+this conditional statement.
+
+Here is a usage example:
+	
+	node1.when( node2 ).leftSideGreaterThan( 400 ).xIs( 400 );
+
+The above is stating "when the the left side (node2.x position) of node2 is greater than 400 node1's x will be 400".
+
+**/
+LayoutNode.prototype.leftSideGreaterThan = function( value ) {
+
+	return addConditional.call( this, leftSideGreaterThan, arguments );
+};
+
+
+
+/**
+This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
+this conditional statement.
+
+Here is a usage example:
+	
+	node1.when( node2 ).rightSideGreaterThan( 400 ).xIs( 400 );
+
+The above is stating "when the the right side (node2.x + node2.width) of node2 is greater than 400 node1's x will be 400".
+
+**/
+LayoutNode.prototype.rightSideGreaterThan = function( value ) {
+
+	return addConditional.call( this, rightSideGreaterThan, arguments );
 };
 
 
