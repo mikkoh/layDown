@@ -5,7 +5,8 @@ module.exports = function( grunt ) {
 		browserify: {
 			example: {
 				files: {
-					'example/bundled.js': [ 'example/main.js' ]
+					'example/page/bundled.js': [ 'example/page/main.js' ],
+					'example/pong/bundled.js': [ 'example/pong/main.js' ]
 				},
 				options: {
 					debug: true
@@ -32,7 +33,7 @@ module.exports = function( grunt ) {
 
 		watch: {
 			example: {
-				files: [ 'example/main.js', 'src/**/*.js' ],
+				files: [ 'example/**/*.js', 'src/**/*.js' ],
 				tasks: [ 'browserify:example', 'nodeunit:all' ],
 				options: { 
 					livereload: true
