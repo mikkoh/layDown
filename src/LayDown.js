@@ -177,10 +177,15 @@ The create method will create a {{#crossLink "LayoutNode"}}{{/crossLink}} which 
 @method create
 @param itemToLayDown {Object} This will be the item that we'll be laying down. For instance if we were working with the DOM it could be
 an image html element or a div element or whatever you'd like.
-**/
-LayDown.prototype.create = function( itemToLayDown ) {
 
-	if( itemToLayDown && this.createFunction != null ) {
+@param createFunction {Function} This function will be used before creating the LayoutNode where this is handy is if you want to override the 
+default create function
+**/
+LayDown.prototype.create = function( itemToLayDown, createFunction ) {
+
+	createFunction = createFunction === undefined ? this.createFunction : createFunction;
+
+	if( createFunction && itemToLayDown) {
 
 		this.createFunction( itemToLayDown );
 	}
