@@ -832,11 +832,11 @@ in the src folder.
 
 ###### Bounding position (x, y):
 - src/layoutBoundSize/maxPosition (if your rule will be bounding both x and y at the same time)
-- src/layoutBoundSize/maxX (if your rule will be bounding x only)
-- src/layoutBoundSize/maxY (if your rule will be bounding y only)
+- src/layoutBoundSize/leftMax (if your rule will be bounding x only)
+- src/layoutBoundSize/topMax (if your rule will be bounding y only)
 - src/layoutBoundSize/maxPositionFrom (if your rule will be bounding x and y based on another item)
-- src/layoutBoundSize/maxXFrom (if your rule will be bounding x based on another item)
-- src/layoutBoundSize/maxYFrom (if your rule will be bounding y based on another item)
+- src/layoutBoundSize/leftMaxFrom (if your rule will be bounding x based on another item)
+- src/layoutBoundSize/topMaxFrom (if your rule will be bounding y based on another item)
 
 @param {String} ruleType is a string which describes what type of rule you're defining. For utility you can use the static constants defined
 on LayoutNode:
@@ -2201,33 +2201,33 @@ LayoutNode.prototype.maxPosition = function() {
 
 
 /**
-maxX is a bounding function.
+leftMax is a bounding function.
 
 There are two possible ways to use this function. All are noted in this documentation.
 
 You can pass in a LayoutNode from which this node's maximum x value will be read from.
 
 	node1.xIs( 200 );
-	node2.xIs( 400 ).maxX( node1 );
+	node2.xIs( 400 ).leftMax( node1 );
 
 When run node2's x value will be 200 and not 400 because it will be bound to node1's x value.
 
-@method maxX
+@method leftMax
 @param layoutNode {LayoutNode} The LayoutNode whose x value will be the maximum x value for this node
 @chainable
 **/
 /**
-maxX is a bounding function.
+leftMax is a bounding function.
 
 There are two possible ways to use this function. All are noted in this documentation.
 
 You can pass in an x value from which this node's maximum x value will be set.
 
-	node2.xIs( 400 ).maxX( 200 );
+	node2.xIs( 400 ).leftMax( 200 );
 
 When run node2's x value will be 200 and not 400 because it will be bound to the x value 200.
 
-@method maxX
+@method leftMax
 @param x {Number} The maximum x value for this LayoutNode
 @chainable
 **/
@@ -2247,33 +2247,33 @@ LayoutNode.prototype.leftMax = function() {
 
 
 /**
-maxY is a bounding function.
+topMax is a bounding function.
 
 There are two possible ways to use this function. All are noted in this documentation.
 
 You can pass in a LayoutNode from which this node's maximum y value will be read from.
 
 	node1.yIs( 200 );
-	node2.yIs( 400 ).maxY( node1 );
+	node2.yIs( 400 ).topMax( node1 );
 
 When run node2's y value will be 200 and not 400 because it will be bound to node1's y value.
 
-@method maxY
+@method topMax
 @param layoutNode {LayoutNode} The LayoutNode whose y value will be the maximum y value for this node
 @chainable
 **/
 /**
-maxY is a bounding function.
+topMax is a bounding function.
 
 There are two possible ways to use this function. All are noted in this documentation.
 
 You can pass in an y value from which this node's maximum y value will be set.
 
-	node2.yIs( 400 ).maxY( 200 );
+	node2.yIs( 400 ).topMax( 200 );
 
 When run node2's x value will be 200 and not 400 because it will be bound to the y value 200.
 
-@method maxY
+@method topMax
 @param y {Number} The maximum y value for this LayoutNode
 @chainable
 **/
@@ -2359,33 +2359,33 @@ LayoutNode.prototype.minPosition = function() {
 
 
 /**
-minX is a bounding function.
+leftMin is a bounding function.
 
 There are two possible ways to use this function. All are noted in this documentation.
 
 You can pass in a LayoutNode from which this node's minimum x value will be read from.
 
 	node1.xIs( 200 );
-	node2.xIs( 100 ).minX( node1 );
+	node2.xIs( 100 ).leftMin( node1 );
 
 When run node2's x value will be 200 and not 100 because it will be bound to node1's x value.
 
-@method minX
+@method leftMin
 @param layoutNode {LayoutNode} The LayoutNode whose x value will be the minimum x value for this node
 @chainable
 **/
 /**
-minX is a bounding function.
+leftMin is a bounding function.
 
 There are two possible ways to use this function. All are noted in this documentation.
 
 You can pass in an x value from which this node's minimum x value will be set.
 
-	node2.xIs( 100 ).minX( 200 );
+	node2.xIs( 100 ).leftMin( 200 );
 
 When run node2's x value will be 200 and not 100 because it will be bound to the x value 200.
 
-@method minX
+@method leftMin
 @param x {Number} The minimum x value for this LayoutNode
 @chainable
 **/
@@ -2405,33 +2405,33 @@ LayoutNode.prototype.leftMin = function() {
 
 
 /**
-minY is a bounding function.
+topMin is a bounding function.
 
 There are two possible ways to use this function. All are noted in this documentation.
 
 You can pass in a LayoutNode from which this node's minimum y value will be read from.
 
 	node1.yIs( 200 );
-	node2.yIs( 100 ).minY( node1 );
+	node2.yIs( 100 ).topMin( node1 );
 
 When run node2's y value will be 200 and not 100 because it will be bound to node1's y value.
 
-@method minY
+@method topMin
 @param layoutNode {LayoutNode} The LayoutNode whose y value will be the minimum y value for this node
 @chainable
 **/
 /**
-minY is a bounding function.
+topMin is a bounding function.
 
 There are two possible ways to use this function. All are noted in this documentation.
 
 You can pass in an y value from which this node's minimum y value will be set.
 
-	node2.yIs( 100 ).minY( 200 );
+	node2.yIs( 100 ).topMin( 200 );
 
 When run node2's y value will be 200 and not 100 because it will be bound to the y value 200.
 
-@method minY
+@method topMin
 @param y {Number} The minimum y value for this LayoutNode
 @chainable
 **/
@@ -2515,7 +2515,7 @@ The width value of the node would end up being being 40.
 So as you can see act's like all the other max functions. For reference look at:
 - {{#crossLink "LayoutNode/maxWidth:method"}}{{/crossLink}}
 - {{#crossLink "LayoutNode/maxPosition:method"}}{{/crossLink}}
-- {{#crossLink "LayoutNode/maxY:method"}}{{/crossLink}}
+- {{#crossLink "LayoutNode/topMax:method"}}{{/crossLink}}
 
 @method max
 @chainable
@@ -2618,7 +2618,7 @@ The width value of the node would end up being being -40.
 So as you can see act's like all the other max functions. For reference look at:
 - {{#crossLink "LayoutNode/minWidth:method"}}{{/crossLink}}
 - {{#crossLink "LayoutNode/minPosition:method"}}{{/crossLink}}
-- {{#crossLink "LayoutNode/minY:method"}}{{/crossLink}}
+- {{#crossLink "LayoutNode/topMin:method"}}{{/crossLink}}
 
 @method min
 @chainable
@@ -2653,12 +2653,12 @@ LayoutNode.prototype.min = function() {
 
 			case POSITION_X:
 			case BOUND_POSITION_X:
-				return addRule.call( this, minXFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION_X );
+				return addRule.call( this, leftMinFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION_X );
 			
 
 			case POSITION_Y:
 			case BOUND_POSITION_Y:
-				return addRule.call( this, minYFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION_Y );
+				return addRule.call( this, topMinFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION_Y );
 			
 		}		
 	} else {
@@ -2687,12 +2687,12 @@ LayoutNode.prototype.min = function() {
 
 			case POSITION_X:
 			case BOUND_POSITION_X:
-				return addRule.call( this, minX, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION_X );
+				return addRule.call( this, leftMin, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION_X );
 			
 
 			case POSITION_Y:
 			case BOUND_POSITION_Y:
-				return addRule.call( this, minY, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION_Y );
+				return addRule.call( this, topMin, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION_Y );
 			
 		}
 	}
@@ -3165,11 +3165,87 @@ LayoutNode.prototype.bottomLessThan = function( value ) {
 };
 
 
+
+/**
+There are two ways to use this function both are documented.
+
+This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
+this conditional statement.
+
+Here is a usage example:
+	
+	node1.when( node2 ).isInside( node1 ).yIs( 400 );
+
+The above is stating "when any part of node1 is inside node y is 400".
+
+@method isInside
+@param node {LayoutNode} if the layout node which isInside is called on is inside this passed LayoutNode then this conditional
+will evaluate true
+@chainable
+**/
+/**
+There are two ways to use this function both are documented.
+
+This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
+this conditional statement.
+
+Here is a usage example:
+	
+	node1.when( node2 ).isInside( 0, 0, 100, 100 ).yIs( 400 );
+
+The above is stating "when any part of node1 is inside the rectangle 0, 0, 100, 100 then the y value of node1 will be 400".
+
+@method isInside
+@param x {Number} x position of rectangular area to check
+@param y {Number} y position of rectangular area to check
+@param width {Number} width of rectangular area to check
+@param height {Number} height of rectangular area to check
+will evaluate true
+@chainable
+**/
 LayoutNode.prototype.isInside = function() {
 
 	return addConditional.call( this, isInside, arguments );
 };
 
+
+/**
+There are two ways to use this function both are documented.
+
+This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
+this conditional statement.
+
+Here is a usage example:
+	
+	node1.when( node2 ).isOutside( node1 ).yIs( 400 );
+
+The above is stating "when node1 is fully outside node2 (no part of node1 is inside node2) node1 y is 400".
+
+@method isOutside
+@param node {LayoutNode} if the layout node which isOutside is called on is inside this passed LayoutNode then this conditional
+will evaluate true
+@chainable
+**/
+/**
+There are two ways to use this function both are documented.
+
+This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
+this conditional statement.
+
+Here is a usage example:
+	
+	node1.when( node2 ).isOutside( 0, 0, 100, 100 ).yIs( 400 );
+
+The above is stating "when no part of node1 is inside the rectangle 0, 0, 100, 100 then the y value of node1 will be 400".
+
+@method isOutside
+@param x {Number} x position of rectangular area to check
+@param y {Number} y position of rectangular area to check
+@param width {Number} width of rectangular area to check
+@param height {Number} height of rectangular area to check
+will evaluate true
+@chainable
+**/
 LayoutNode.prototype.isOutside = function() {
 
 	return addConditional.call( this, isOutside, arguments );
