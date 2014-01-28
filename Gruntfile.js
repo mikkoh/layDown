@@ -33,7 +33,7 @@ module.exports = function( grunt ) {
 
 		watch: {
 			example: {
-				files: [ 'example/**/*.js', 'src/**/*.js' ],
+				files: [ 'example/**/main.js', 'src/**/*.js' ],
 				tasks: [ 'browserify:example', 'nodeunit:all' ],
 				options: { 
 					livereload: true

@@ -27,18 +27,17 @@ velocity.layoutFunction = function( ballVelocity, node ) {
 
 
 
-field.matchesSizeOf( layout ).minus( 40 )
-.positionIs( 20, 20 );
+field.matchesSizeOf( layout ).minus( 100 )
+.positionIs( 50, 50 );
 
 paddle1
-.widthIsAPercentageOf( field, 0.03 ).heightIsProportional( 60, 400 )
-.leftAlignedWith( field ).plus( 20 ).verticallyCenteredWith( field );
+.widthIsAPercentageOf( field, 0.03 ).heightIsAPercentageOf( field, 0.3 )
+.leftAlignedWith( field ).plus( 20 ).verticallyCenteredWith( field )
+.topMin( field ).bottomMax( field );
 
-paddle2
-.widthIsAPercentageOf( field, 0.03 ).heightIsProportional( 60, 400 )
-.rightAlignedWith( field ).minus( 20 ).verticallyCenteredWith( field );
+paddle2.matchesSizeOf( paddle1 ).topAlignedWith( paddle1 ).rightAlignedWith( field ).minus( 20 );
 
-ball.widthIsAPercentageOf( field, 0.03 ).heightIsProportional( 10, 10 ).verticallyCenteredWith( field )
+ball.matchesWidthOf( paddle1 ).heightIsProportional( 10, 10 ).centeredWith( field )
 .when( ball ).rightGreaterThan( field ).xIs( 0 ).on( function( rightSideOver ) {
 
 	if( rightSideOver ) {
@@ -70,9 +69,25 @@ ball.widthIsAPercentageOf( field, 0.03 ).heightIsProportional( 10, 10 ).vertical
 		ballYDirection *= -1;
 		ball.y = field.y + field.height - ball.height;
 	}
+})
+.when( ball ).isInside( paddle1 ).xIs( 0 ).on( function( isInsidePaddle1 ) {
+
+	if( isInsidePaddle1 ) {
+
+		ballXDirection *= -1;
+		ball.x = paddle1.x + paddle1.width + ballXDirection * ballVelocity.x;
+	}
+})
+.when( ball ).isInside( paddle2 ).xIs( 0 ).on( function( isInsidePaddle2 ) {
+
+	if( isInsidePaddle2 ) {
+
+		ballXDirection *= -1;
+		ball.x = paddle2.x - ball.width + ballXDirection * ballVelocity.x;
+	}
 });
 
-velocity.positionIsAPercentageOf( field, 0.003 );
+velocity.positionIsAPercentageOf( field, 0.008 );
 
 
 
@@ -82,6 +97,12 @@ onResize();
 onEnterFrame();
 
 window.onresize = onResize;
+window.onmousemove = onMouseMove;
+
+function onMouseMove( ev ) {
+
+	paddle1.y = ev.pageY - paddle1.height * 0.5;
+}
 
 function onEnterFrame() {
 

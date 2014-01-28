@@ -20,18 +20,26 @@ var xIsAPercentageOf = require( './layoutPosition/xIsAPercentageOf' );
 var yIsAPercentageOf = require( './layoutPosition/yIsAPercentageOf' );
 
 //POSITION BOUND FUNCTIONS
+var bottomMax = require( './layoutBoundPosition/bottomMax' );
+var bottomMaxFrom = require( './layoutBoundPosition/bottomMaxFrom' );
+var bottomMin = require( './layoutBoundPosition/bottomMin' );
+var bottomMinFrom = require( './layoutBoundPosition/bottomMinFrom' );
+var leftMax = require( './layoutBoundPosition/leftMax' );
+var leftMaxFrom = require( './layoutBoundPosition/leftMaxFrom' );
+var leftMin = require( './layoutBoundPosition/leftMin' );
+var leftMinFrom = require( './layoutBoundPosition/leftMinFrom' );
 var maxPosition = require( './layoutBoundPosition/maxPosition' );
 var maxPositionFrom = require( './layoutBoundPosition/maxPositionFrom' );
-var maxX = require( './layoutBoundPosition/maxX' );
-var maxXFrom = require( './layoutBoundPosition/maxXFrom' );
-var maxY = require( './layoutBoundPosition/maxY' );
-var maxYFrom = require( './layoutBoundPosition/maxYFrom' );
 var minPosition = require( './layoutBoundPosition/minPosition' );
 var minPositionFrom = require( './layoutBoundPosition/minPositionFrom' );
-var minX = require( './layoutBoundPosition/minX' );
-var minXFrom = require( './layoutBoundPosition/minXFrom' );
-var minY = require( './layoutBoundPosition/minY' );
-var minYFrom = require( './layoutBoundPosition/minYFrom' );
+var rightMax = require( './layoutBoundPosition/rightMax' );
+var rightMaxFrom = require( './layoutBoundPosition/rightMaxFrom' );
+var rightMin = require( './layoutBoundPosition/rightMin' );
+var rightMinFrom = require( './layoutBoundPosition/rightMinFrom' );
+var topMax = require( './layoutBoundPosition/topMax' );
+var topMaxFrom = require( './layoutBoundPosition/topMaxFrom' );
+var topMin = require( './layoutBoundPosition/topMin' );
+var topMinFrom = require( './layoutBoundPosition/topMinFrom' );
 
 ///SIZE FUNCTIONS
 var heightIs = require( './layoutSize/heightIs' );
@@ -75,6 +83,8 @@ var bottomGreaterThan = require( './conditionals/bottomGreaterThan' );
 var topGreaterThan = require( './conditionals/topGreaterThan' );
 var bottomLessThan = require( './conditionals/bottomLessThan' );
 var topLessThan = require( './conditionals/topLessThan' );
+var isInside = require( './conditionals/isInside' );
+var isOutside = require( './conditionals/isOutside' );
 
 //OFFSET FUNCTIONS
 var minusHeight = require( './offsets/minusHeight' );
@@ -2221,14 +2231,14 @@ When run node2's x value will be 200 and not 400 because it will be bound to the
 @param x {Number} The maximum x value for this LayoutNode
 @chainable
 **/
-LayoutNode.prototype.maxX = function() {
+LayoutNode.prototype.leftMax = function() {
 
 	if( arguments[ 0 ] instanceof LayoutNode ) {
 
-		return addRule.call( this, maxXFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION );
+		return addRule.call( this, leftMaxFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION );
 	} else {
 
-		return addRule.call( this, maxX, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION );
+		return addRule.call( this, leftMax, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION );
 	}
 };
 
@@ -2267,14 +2277,14 @@ When run node2's x value will be 200 and not 400 because it will be bound to the
 @param y {Number} The maximum y value for this LayoutNode
 @chainable
 **/
-LayoutNode.prototype.maxY = function() {
+LayoutNode.prototype.topMax = function() {
 
 	if( arguments[ 0 ] instanceof LayoutNode ) {
 
-		return addRule.call( this, maxYFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION );
+		return addRule.call( this, topMaxFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION );
 	} else {
 
-		return addRule.call( this, maxY, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION );
+		return addRule.call( this, topMax, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION );
 	}
 };
 
@@ -2379,14 +2389,14 @@ When run node2's x value will be 200 and not 100 because it will be bound to the
 @param x {Number} The minimum x value for this LayoutNode
 @chainable
 **/
-LayoutNode.prototype.minX = function() {
+LayoutNode.prototype.leftMin = function() {
 
 	if( arguments[ 0 ] instanceof LayoutNode ) {
 
-		return addRule.call( this, minXFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION );
+		return addRule.call( this, leftMinFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION );
 	} else {
 
-		return addRule.call( this, minX, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION );
+		return addRule.call( this, leftMin, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION );
 	}
 };
 
@@ -2425,14 +2435,60 @@ When run node2's y value will be 200 and not 100 because it will be bound to the
 @param y {Number} The minimum y value for this LayoutNode
 @chainable
 **/
-LayoutNode.prototype.minY = function() {
+LayoutNode.prototype.topMin = function() {
 
 	if( arguments[ 0 ] instanceof LayoutNode ) {
 
-		return addRule.call( this, minYFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION );
+		return addRule.call( this, topMinFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION );
 	} else {
 
-		return addRule.call( this, minY, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION );
+		return addRule.call( this, topMin, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION );
+	}
+};
+
+
+
+LayoutNode.prototype.bottomMax = function() {
+
+	if( arguments[ 0 ] instanceof LayoutNode ) {
+
+		return addRule.call( this, bottomMaxFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION );
+	} else {
+
+		return addRule.call( this, bottomMax, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION );
+	}
+};
+
+LayoutNode.prototype.bottomMin = function() {
+
+	if( arguments[ 0 ] instanceof LayoutNode ) {
+
+		return addRule.call( this, bottomMinFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION );
+	} else {
+
+		return addRule.call( this, bottomMin, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION );
+	}
+};
+
+LayoutNode.prototype.rightMax = function() {
+
+	if( arguments[ 0 ] instanceof LayoutNode ) {
+
+		return addRule.call( this, rightMaxFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION );
+	} else {
+
+		return addRule.call( this, rightMax, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION );
+	}
+};
+
+LayoutNode.prototype.rightMin = function() {
+
+	if( arguments[ 0 ] instanceof LayoutNode ) {
+
+		return addRule.call( this, rightMinFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION );
+	} else {
+
+		return addRule.call( this, rightMin, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION );
 	}
 };
 
@@ -2494,12 +2550,12 @@ LayoutNode.prototype.max = function() {
 
 			case POSITION_X:
 			case BOUND_POSITION_X:
-				return addRule.call( this, maxXFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION_X );
+				return addRule.call( this, leftMaxFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION_X );
 			
 
 			case POSITION_Y:
 			case BOUND_POSITION_Y:
-				return addRule.call( this, maxYFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION_Y );
+				return addRule.call( this, topMaxFrom, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION_Y );
 			
 		}
 	} else {
@@ -2528,12 +2584,12 @@ LayoutNode.prototype.max = function() {
 
 			case POSITION_X:
 			case BOUND_POSITION_X:
-				return addRule.call( this, maxX, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION_X );
+				return addRule.call( this, leftMax, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION_X );
 			
 
 			case POSITION_Y:
 			case BOUND_POSITION_Y:
-				return addRule.call( this, maxY, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION_Y );
+				return addRule.call( this, topMax, arguments, this.rulesPosBound, this.rulesPosBoundProp, BOUND_POSITION_Y );
 			
 		}
 	}
@@ -3106,6 +3162,17 @@ conditionals layout rules will be run
 LayoutNode.prototype.bottomLessThan = function( value ) {
 
 	return addConditional.call( this, bottomLessThan, arguments );
+};
+
+
+LayoutNode.prototype.isInside = function() {
+
+	return addConditional.call( this, isInside, arguments );
+};
+
+LayoutNode.prototype.isOutside = function() {
+
+	return addConditional.call( this, isOutside, arguments );
 };
 
 
