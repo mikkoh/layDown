@@ -615,8 +615,12 @@ LayoutNode.prototype.doLayout = function() {
 			//instead of "this" which is now considered the default value
 			if( isConditionalValid ) {
 
-				layoutNode.doLayout();
+				//if we simply just do a conditional with a listener we'll have no layoutNode
+				if( layoutNode ) {
 
+					layoutNode.doLayout();	
+				}
+			
 				conditionalLayedOut = true;
 
 				listenerForConditional = this.conditionalListeners[ i ];
