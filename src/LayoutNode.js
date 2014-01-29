@@ -2931,7 +2931,7 @@ LayoutNode.prototype.when = function( node ) {
 };
 
 /**
-The andWhen function in essence is the same as an && operator. andWhen statements must follow after a conditional.
+The andWhen function in essence is the same as an && operator. andWhen statements must follow after another conditional.
 
 For example:
 
@@ -3046,8 +3046,7 @@ LayoutNode.prototype.on = function( listener ) {
 
 
 /**
-This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
-this conditional statement.
+This function is a conditional. It must follow after a "when" or "andWhen" statement.
 
 Here is a usage example:
 	
@@ -3068,8 +3067,7 @@ LayoutNode.prototype.widthGreaterThan = function( value ) {
 
 
 /**
-This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
-this conditional statement.
+This function is a conditional. It must follow after a "when" or "andWhen" statement.
 
 Here is a usage example:
 	
@@ -3090,8 +3088,7 @@ LayoutNode.prototype.heightGreaterThan = function( value ) {
 
 
 /**
-This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
-this conditional statement.
+This function is a conditional. It must follow after a "when" or "andWhen" statement.
 
 Here is a usage example:
 	
@@ -3112,8 +3109,7 @@ LayoutNode.prototype.widthLessThan = function( value ) {
 
 
 /**
-This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
-this conditional statement.
+This function is a conditional. It must follow after a "when" or "andWhen" statement.
 
 Here is a usage example:
 	
@@ -3132,8 +3128,7 @@ LayoutNode.prototype.heightLessThan = function( value ) {
 
 
 /**
-This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
-this conditional statement.
+This function is a conditional. It must follow after a "when" or "andWhen" statement.
 
 Here is a usage example:
 	
@@ -3155,8 +3150,7 @@ LayoutNode.prototype.leftGreaterThan = function( value ) {
 
 
 /**
-This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
-this conditional statement.
+This function is a conditional. It must follow after a "when" or "andWhen" statement.
 
 Here is a usage example:
 	
@@ -3178,8 +3172,7 @@ LayoutNode.prototype.leftLessThan = function( value ) {
 
 
 /**
-This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
-this conditional statement.
+This function is a conditional. It must follow after a "when" or "andWhen" statement.
 
 Here is a usage example:
 	
@@ -3201,8 +3194,7 @@ LayoutNode.prototype.rightGreaterThan = function( value ) {
 
 
 /**
-This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
-this conditional statement.
+This function is a conditional. It must follow after a "when" or "andWhen" statement.
 
 Here is a usage example:
 	
@@ -3223,8 +3215,7 @@ LayoutNode.prototype.rightLessThan = function( value ) {
 
 
 /**
-This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
-this conditional statement.
+This function is a conditional. It must follow after a "when" or "andWhen" statement.
 
 Here is a usage example:
 	
@@ -3246,8 +3237,7 @@ LayoutNode.prototype.topGreaterThan = function( value ) {
 
 
 /**
-This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
-this conditional statement.
+This function is a conditional. It must follow after a "when" or "andWhen" statement.
 
 Here is a usage example:
 	
@@ -3269,8 +3259,7 @@ LayoutNode.prototype.topLessThan = function( value ) {
 
 
 /**
-This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
-this conditional statement.
+This function is a conditional. It must follow after a "when" or "andWhen" statement.
 
 Here is a usage example:
 	
@@ -3292,8 +3281,7 @@ LayoutNode.prototype.bottomGreaterThan = function( value ) {
 
 
 /**
-This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
-this conditional statement.
+This function is a conditional. It must follow after a "when" or "andWhen" statement.
 
 Here is a usage example:
 	
@@ -3316,8 +3304,7 @@ LayoutNode.prototype.bottomLessThan = function( value ) {
 /**
 There are two ways to use this function both are documented.
 
-This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
-this conditional statement.
+This function is a conditional. It must follow after a "when" or "andWhen" statement.
 
 Here is a usage example:
 	
@@ -3333,8 +3320,7 @@ will evaluate true
 /**
 There are two ways to use this function both are documented.
 
-This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
-this conditional statement.
+This function is a conditional. It must follow after a "when" or "andWhen" statement.
 
 Here is a usage example:
 	
@@ -3359,8 +3345,7 @@ LayoutNode.prototype.isInside = function() {
 /**
 There are two ways to use this function both are documented.
 
-This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
-this conditional statement.
+This function is a conditional. It must follow after a "when" or "andWhen" statement.
 
 Here is a usage example:
 	
@@ -3376,8 +3361,7 @@ will evaluate true
 /**
 There are two ways to use this function both are documented.
 
-This function is a conditional. It must follow after a "when" or "andWhen" statement and a layout rule must follow
-this conditional statement.
+This function is a conditional. It must follow after a "when" or "andWhen" statement.
 
 Here is a usage example:
 	
