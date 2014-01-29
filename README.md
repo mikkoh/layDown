@@ -46,8 +46,8 @@ Basic usage with jQuery:
 	$( window ).resize( function onResize() {
 
 		var $w = $( window );
-		var width = w.width();
-		var height = w.height();
+		var width = $w.width();
+		var height = $w.height();
 	
 		//this will cause the page to be layed out
 		page.resizeAndPosition( 0, 0, width, height );
