@@ -2447,7 +2447,41 @@ LayoutNode.prototype.topMin = function() {
 };
 
 
+/**
+bottomMax is a bounding function.
 
+There are two possible ways to use this function. All are noted in this documentation.
+
+Here is an example usage of bottomMax:
+
+	node1.heightIs( 100 ).yIs( 50 );
+	node2.heightIs( 100 ).yIs( 100 ).bottomMax( node1 );
+
+If we evaluated the above node2's y value would be 50 and not 100. This is because the maximum value for the bottom of
+node2 is the y position of node1 plus its height (node1.y + node1.height).
+
+
+@method bottomMax
+@param layoutNode {LayoutNode} The LayoutNode whose bottom ( y + height ) value will be the maximum bottom value for this node
+@chainable
+**/
+/**
+bottomMax is a bounding function.
+
+There are two possible ways to use this function. All are noted in this documentation.
+
+Here is an example usage of bottomMax:
+
+	node2.heightIs( 100 ).yIs( 200 ).bottomMax( 200 );
+
+If we evaluated the above node2's y value would be 100 and not 200. This is because the maximum value for the bottom of
+node2 is 200. Bottom values are calculated from y + height.
+
+
+@method bottomMax
+@param maxBottom {Number} The maximum bottom ( y + height ) value for this LayoutNode
+@chainable
+**/
 LayoutNode.prototype.bottomMax = function() {
 
 	if( arguments[ 0 ] instanceof LayoutNode ) {
@@ -2459,6 +2493,42 @@ LayoutNode.prototype.bottomMax = function() {
 	}
 };
 
+
+/**
+bottomMin is a bounding function.
+
+There are two possible ways to use this function. All are noted in this documentation.
+
+Here is an example usage of bottomMin:
+
+	node1.heightIs( 100 ).yIs( 50 );
+	node2.heightIs( 100 ).yIs( 20 ).bottomMin( node1 );
+
+If we evaluated the above node2's y value would be 50 and not 20. This is because the minimum value for the bottom of
+node2 is the y position of node1 plus its height (node1.y + node1.height).
+
+
+@method bottomMin
+@param layoutNode {LayoutNode} The LayoutNode whose bottom ( y + height ) value will be the minimum bottom value for this node
+@chainable
+**/
+/**
+bottomMin is a bounding function.
+
+There are two possible ways to use this function. All are noted in this documentation.
+
+Here is an example usage of bottomMin:
+
+	node2.heightIs( 100 ).yIs( 50 ).bottomMin( 200 );
+
+If we evaluated the above node2's y value would be 100 and not 50. This is because the minimum value for the bottom of
+node2 is 200. Bottom values are calculated from y + height.
+
+
+@method bottomMin
+@param y {Number} The minimum bottom ( y + height ) value for this LayoutNode
+@chainable
+**/
 LayoutNode.prototype.bottomMin = function() {
 
 	if( arguments[ 0 ] instanceof LayoutNode ) {
@@ -2470,6 +2540,42 @@ LayoutNode.prototype.bottomMin = function() {
 	}
 };
 
+
+/**
+rightMax is a bounding function.
+
+There are two possible ways to use this function. All are noted in this documentation.
+
+Here is an example usage of rightMax:
+
+	node1.widthIs( 100 ).xIs( 50 );
+	node2.widthIs( 100 ).xIs( 100 ).rightMax( node1 );
+
+If we evaluated the above node2's x value would be 50 and not 100. This is because the maximum value for the right side of
+node2 is the x position of node1 plus its height (node1.x + node1.width).
+
+
+@method rightMax
+@param layoutNode {LayoutNode} The LayoutNode whose right (x + width) value will be the maximum right value for this node
+@chainable
+**/
+/**
+rightMax is a bounding function.
+
+There are two possible ways to use this function. All are noted in this documentation.
+
+Here is an example usage of rightMax:
+
+	node2.widthIs( 100 ).xIs( 200 ).rightMax( 200 );
+
+If we evaluated the above node2's x value would be 100 and not 200. This is because the maximum value for the right side of
+node2 is 200. Bottom values are calculated from x + width.
+
+
+@method rightMax
+@param maxRight {Number} The maximum right value for this LayoutNode
+@chainable
+**/
 LayoutNode.prototype.rightMax = function() {
 
 	if( arguments[ 0 ] instanceof LayoutNode ) {
@@ -2481,6 +2587,43 @@ LayoutNode.prototype.rightMax = function() {
 	}
 };
 
+
+
+/**
+rightMin is a bounding function.
+
+There are two possible ways to use this function. All are noted in this documentation.
+
+Here is an example usage of rightMin:
+
+	node1.widthIs( 100 ).xIs( 100 );
+	node2.widthIs( 100 ).xIs( 50 ).rightMin( node1 );
+
+If we evaluated the above node2's x value would be 100 and not 50. This is because the minimum value for the right side of
+node2 is the x position of node1 plus its height (node1.x + node1.width).
+
+
+@method rightMin
+@param layoutNode {LayoutNode} The LayoutNode whose x value will be the minimum right value for this node
+@chainable
+**/
+/**
+rightMin is a bounding function.
+
+There are two possible ways to use this function. All are noted in this documentation.
+
+Here is an example usage of rightMin:
+
+	node2.widthIs( 100 ).xIs( 50 ).rightMin( 200 );
+
+If we evaluated the above node2's x value would be 100 and not 50. This is because the minimum value for the right side of
+node2 is 200. Bottom values are calculated from x + width.
+
+
+@method rightMin
+@param minRight {Number} The minimum "right" ( x + width ) value for this LayoutNode
+@chainable
+**/
 LayoutNode.prototype.rightMin = function() {
 
 	if( arguments[ 0 ] instanceof LayoutNode ) {
