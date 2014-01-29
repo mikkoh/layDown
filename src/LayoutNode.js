@@ -215,11 +215,20 @@ var LayoutNode = function( layout, item, layoutFunction, readFunction ) {
 	this._isDoingDefault = false;
 	this.lastPropTypeEffected = null;
 	this.hasBeenLayedOut = false;
+
 	this.layoutNodeForDefault = null;
 	this.conditionalParent = null; //this is the parent LayoutNode that this conditional LayoutNode was created from
 	this.defaultConditionalListener = null;
 	this.lastConditionalListnerIdx = -1;
 	this.lastConditionalListenerIsDefault = false;
+
+	this._doingSelfConditional = false;
+	this.selfItemsToCompare = [];
+	this.selfConditionalsForItem = [];
+	this.selfConditionalArgumentsForItem = [];
+	this.selfConditionalListeners = [];
+	this.lastSelfConditionalListenerIdx = -1;
+
 	this.doNotReadWidth = false;
 	this.doNotReadHeight = false;
 };
@@ -584,7 +593,6 @@ LayoutNode.prototype.doLayout = function() {
 	this.hasBeenLayedOut = true;
 
 	this._x = this._y = this._width = this._height = 0;
-	this.doLayoutWork();
 
 	//this is the listener added when an on function was called after creating a conditional
 	var listenerForConditional = null;
@@ -645,6 +653,38 @@ LayoutNode.prototype.doLayout = function() {
 			this.layoutNodeForDefault.doLayout();
 		}
 	}
+
+	//Do the actual layout
+	this.doLayoutWork();
+
+
+
+	//Now do self conditionals
+	for( var i = 0, lenI = this.selfItemsToCompare.length; i < lenI; i++ ) {
+
+		var itemsToCompareTo = this.selfItemsToCompare[ i ];
+		var isConditionalValid = true;
+
+		for( var j = 0, lenJ = itemsToCompareTo.length; isConditionalValid && j < lenJ; j++ ) {
+
+			var conditionals = this.selfConditionalsForItem[ i ][ j ];
+			var argumentsForConditionals = this.selfConditionalArgumentsForItem[ i ][ j ];
+			
+			for( var k = 0, lenK = conditionals.length; isConditionalValid && k < lenK; k++ ) {
+
+				isConditionalValid = conditionals[ k ].apply( itemsToCompareTo[ k ], argumentsForConditionals[ k ] );
+			}
+
+			if( this.selfConditionalListeners[ i ] ) {
+
+				this.selfConditionalListeners[ i ]( isConditionalValid );	
+			} else {
+
+				throw 'If you add a self conditional you must add a listener using the on method';
+			}
+		}
+	}
+
 
 	//If this layoyt node has something to position and size and has a layout function run it
 	if( this.item && this.layoutFunction ) {
@@ -1036,6 +1076,12 @@ LayoutNode.prototype.create = function( itemToLayDown ) {
 //This is not a part of prototype cause it's more just a utility function to add rules quickly
 //don't want people to get confused if there's an add rule function on the proto
 function addRule( rule, ruleArguments, ruleArr, rulePropArr, type ) {
+
+	//we never want to allow adding rules to a self conditional
+	if( this._doingSelfConditional ) {
+
+		throw 'You cannot add layout rules after adding a conditional to the item itself';
+	}
 
 	if( this.conditionalParent ) { 
 
@@ -2860,28 +2906,57 @@ function addConditional( cFunction, cArguments ) {
 
 	this._hasConditional = true;
 
-	var idx1 = this.itemsToCompare.length - 1;
+	//if we're not doing a self conditional then do this
+	if( !this._doingSelfConditional ) {
 
-	//we don't has many conditionals to compare against as we have items to compare against
-	if( this.conditionalsForItem[ idx1 ] == undefined ) {
+		var idx1 = this.itemsToCompare.length - 1;
 
-		this.conditionalsForItem[ idx1 ] = [];
-		this.conditionalsArgumentsForItem[ idx1 ] = [];
+		//we don't has many conditionals to compare against as we have items to compare against
+		if( this.conditionalsForItem[ idx1 ] == undefined ) {
 
-		this.conditionalsForItem[ idx1 ].push( [] );
-		this.conditionalsArgumentsForItem[ idx1 ].push( [] );
+			this.conditionalsForItem[ idx1 ] = [];
+			this.conditionalsArgumentsForItem[ idx1 ] = [];
 
-	} else if( this.itemsToCompare[ idx1 ].length != this.conditionalsForItem[ idx1 ].length ) {
+			this.conditionalsForItem[ idx1 ].push( [] );
+			this.conditionalsArgumentsForItem[ idx1 ].push( [] );
 
-		this.conditionalsForItem[ idx1 ].push( [] );
-		this.conditionalsArgumentsForItem[ idx1 ].push( [] );
+		} else if( this.itemsToCompare[ idx1 ].length != this.conditionalsForItem[ idx1 ].length ) {
+
+			this.conditionalsForItem[ idx1 ].push( [] );
+			this.conditionalsArgumentsForItem[ idx1 ].push( [] );
+		}
+
+
+		var idx2 = this.conditionalsForItem[ idx1 ].length - 1;
+
+		this.conditionalsForItem[ idx1 ][ idx2 ].push( cFunction );
+		this.conditionalsArgumentsForItem[ idx1 ][ idx2 ].push( cArguments );
+	} else {
+
+		
+		var idx1 = this.selfItemsToCompare.length - 1;
+
+		//we don't has many conditionals to compare against as we have items to compare against
+		if( this.selfConditionalsForItem[ idx1 ] == undefined ) {
+
+			this.selfConditionalsForItem[ idx1 ] = [];
+			this.selfConditionalArgumentsForItem[ idx1 ] = [];
+
+			this.selfConditionalsForItem[ idx1 ].push( [] );
+			this.selfConditionalArgumentsForItem[ idx1 ].push( [] );
+
+		} else if( this.selfItemsToCompare[ idx1 ].length != this.selfConditionalsForItem[ idx1 ].length ) {
+
+			this.selfConditionalsForItem[ idx1 ].push( [] );
+			this.selfConditionalArgumentsForItem[ idx1 ].push( [] );
+		}
+
+
+		var idx2 = this.selfConditionalsForItem[ idx1 ].length - 1;
+
+		this.selfConditionalsForItem[ idx1 ][ idx2 ].push( cFunction );
+		this.selfConditionalArgumentsForItem[ idx1 ][ idx2 ].push( cArguments );
 	}
-
-
-	var idx2 = this.conditionalsForItem[ idx1 ].length - 1;
-
-	this.conditionalsForItem[ idx1 ][ idx2 ].push( cFunction );
-	this.conditionalsArgumentsForItem[ idx1 ][ idx2 ].push( cArguments );
 
 	return this;
 }
@@ -2904,6 +2979,12 @@ A conditional statement must always follow after a when statement.
 **/
 LayoutNode.prototype.when = function( node ) {
 
+	//Check if they've called when and tried to call it again
+	if( this._isDoingWhen && !this._hasConditional ) {
+
+		throw 'You should call when or andWhen after adding conditionals such "widthGreaterThan"';
+	}
+
 	//we're checking of this is LayoutNode created based on conditionals
 	//if when is called we should kick back to the parent nodes when function and call when there
 	if( this.conditionalParent !== null ) {
@@ -2911,21 +2992,25 @@ LayoutNode.prototype.when = function( node ) {
 		return this.conditionalParent.when( node );
 	}
 
-	//Check if they've called when and tried to call it again
-	if( this._isDoingWhen && !this._hasConditional ) {
-
-		throw 'You should call when or andWhen after adding conditionals such "widthGreaterThan"';
-	}
-
+	//reset lastConditionalListenerIsDefault to false
 	this._isDoingWhen = true;
-
-	var itemArray = [];
-	this.itemsToCompare.push( itemArray );
-	itemArray.push( node );
-
-	this.conditionalListeners.push( null );
-	this.lastConditionalListnerIdx = this.conditionalListeners.length - 1;
 	this.lastConditionalListenerIsDefault = false;
+	this._doingSelfConditional = false;
+
+	if( node != this ) {
+
+		this.itemsToCompare.push( [ node ] );
+
+		this.conditionalListeners.push( null );
+		this.lastConditionalListnerIdx = this.conditionalListeners.length - 1;
+	} else {
+
+		this._doingSelfConditional = true;
+
+		this.selfItemsToCompare.push( [ node ] ); //add this to the self list
+		this.selfConditionalListeners.push( null );
+		this.lastSelfConditionalListenerIdx = this.selfConditionalListeners.length - 1;
+	}
 
 	return this;
 };
@@ -2948,16 +3033,40 @@ andWhen statements must follow after a conditional statement.
 **/
 LayoutNode.prototype.andWhen = function( node ) {
 
-	if( this.conditionalParent ) {
+	if( !this._isDoingWhen ) {
 
-		this.conditionalParent.andWhen( node );
+		throw 'You should call when before calling andWhen';		
+	} else if( this.conditionalParent ) {
+
+		throw 'You should call when before calling andWhen';
 	}
 
-	this._isDoingWhen = true;
+	//if andWhen was called then and we're not doing a self conditional
+	//we want to grab the regular conditionals and push them to the self conditional array
+	if( node == this && !this._doingSelfConditional ) {
 
-	var idx = this.itemsToCompare.length - 1;
-	this.itemsToCompare[ idx ].push( node );
+		this._doingSelfConditional = true;
 
+		//remove the array that was added to make this a self conditional
+		this.selfItemsToCompare.push( this.itemsToCompare.pop() );
+		//add this node in
+		this.selfItemsToCompare[ this.selfItemsToCompare.length - 1 ].push( node );
+		//reverse whats been added for listeners
+		this.conditionalListeners.pop();
+		//set this back to -1 so that on cant be called for regular listeners
+		this.lastConditionalListnerIdx = -1;
+
+	//we're doing a self conditional and another item to compare
+	} else if( this._doingSelfConditional ) {
+
+		this.selfItemsToCompare.push( node );
+	//this is just a regular old and when statement so add the node to items to compare
+	} else {
+
+		var idx = this.itemsToCompare.length - 1;
+		this.itemsToCompare[ idx ].push( node );
+	}
+	
 	return this;
 };
 
@@ -2995,6 +3104,7 @@ LayoutNode.prototype.default = function() {
 	}
 
 	this.lastConditionalListnerIdx = -1;
+	this.lastSelfConditionalListenerIdx = -1;
 	this.lastConditionalListenerIsDefault = true;
 
 	return this;
@@ -3025,14 +3135,26 @@ LayoutNode.prototype.on = function( listener ) {
 	if( this.conditionalParent ) {
 
 		this.conditionalParent.on( listener );
+	} else if( this._doingSelfConditional ) {
+
+		if( this.lastSelfConditionalListenerIdx > -1 ) {
+
+			this.selfConditionalListeners[ this.lastSelfConditionalListenerIdx ] = listener;
+		}
 	} else {
 
+		//are we doing the default listener
 		if( !this.lastConditionalListenerIsDefault ) {
 
+			//if we have a conditional listener idx (when called)
 			if( this.lastConditionalListnerIdx > -1 ) {
 
 				this.conditionalListeners[ this.lastConditionalListnerIdx ] = listener;
+			} else {
+
+				throw 'You must call the when function before trying to add a listener';
 			}
+		//we are doing the default listener
 		} else {
 
 			this.defaultConditionalListener = listener;

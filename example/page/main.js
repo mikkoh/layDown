@@ -99,10 +99,10 @@ function onResize() {
 
 function onMenu2SmallerThan600( isSmaller ) {
 
-	console.log( 'MENU2 IS SMALLER', isSmaller );
+	//console.log( 'MENU2 IS SMALLER', isSmaller );
 }
 
 function onMenu2GreaterThan600( isGreaterThan ) {
 
-	console.log( 'MENU2 IS GREATER', isGreaterThan );
+	//console.log( 'MENU2 IS GREATER', isGreaterThan );
 }

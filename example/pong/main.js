@@ -17,6 +17,8 @@ var ball = layout.create( document.getElementById( 'ball' ) );
 var field = layout.create( document.getElementById( 'field' ) );
 var velocity = layout.create( ballVelocity, null );
 
+ball.name = 'ball';
+
 velocity.readFunction = null;
 velocity.layoutFunction = function( ballVelocity, node ) {
 
@@ -38,7 +40,7 @@ paddle1
 paddle2.matchesSizeOf( paddle1 ).topAlignedWith( paddle1 ).rightAlignedWith( field ).minus( 20 );
 
 ball.matchesWidthOf( paddle1 ).heightIsProportional( 10, 10 ).centeredWith( field )
-.when( ball ).rightGreaterThan( field ).xIs( 0 ).on( function( rightSideOver ) {
+.when( ball ).rightGreaterThan( field ).on( function( rightSideOver ) {
 
 	if( rightSideOver ) {
 
@@ -46,7 +48,7 @@ ball.matchesWidthOf( paddle1 ).heightIsProportional( 10, 10 ).centeredWith( fiel
 		ball.x = field.x + field.width - ball.width;
 	}
 })
-.when( ball ).leftLessThan( field ).xIs( 0 ).on( function( leftSideOver ) {
+.when( ball ).leftLessThan( field ).on( function( leftSideOver ) {
 
 	if( leftSideOver ) {
 
@@ -54,7 +56,7 @@ ball.matchesWidthOf( paddle1 ).heightIsProportional( 10, 10 ).centeredWith( fiel
 		ball.x = field.x;
 	}
 })
-.when( ball ).topLessThan( field ).yIs( 0 ).on( function( topSideOver ) {
+.when( ball ).topLessThan( field ).on( function( topSideOver ) {
 
 	if( topSideOver ) {
 
@@ -62,7 +64,7 @@ ball.matchesWidthOf( paddle1 ).heightIsProportional( 10, 10 ).centeredWith( fiel
 		ball.y = field.y;
 	}
 })
-.when( ball ).bottomGreaterThan( field ).yIs( 0 ).on( function( bottomSideOver ) {
+.when( ball ).bottomGreaterThan( field ).on( function( bottomSideOver ) {
 
 	if( bottomSideOver ) {
 
@@ -70,7 +72,7 @@ ball.matchesWidthOf( paddle1 ).heightIsProportional( 10, 10 ).centeredWith( fiel
 		ball.y = field.y + field.height - ball.height;
 	}
 })
-.when( ball ).isInside( paddle1 ).xIs( 0 ).on( function( isInsidePaddle1 ) {
+.when( ball ).isInside( paddle1 ).on( function( isInsidePaddle1 ) {
 
 	if( isInsidePaddle1 ) {
 
@@ -78,7 +80,7 @@ ball.matchesWidthOf( paddle1 ).heightIsProportional( 10, 10 ).centeredWith( fiel
 		ball.x = paddle1.x + paddle1.width + ballXDirection * ballVelocity.x;
 	}
 })
-.when( ball ).isInside( paddle2 ).xIs( 0 ).on( function( isInsidePaddle2 ) {
+.when( ball ).isInside( paddle2 ).on( function( isInsidePaddle2 ) {
 
 	if( isInsidePaddle2 ) {
 
