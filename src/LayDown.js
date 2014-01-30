@@ -240,6 +240,38 @@ LayDown.prototype.doLayout = function() {
 	}
 };
 
+LayDown.prototype.leftAlign = function() {
+
+	var firstNode = arguments[ 0 ];
+	var node = null;
+
+	for( var i = 1, len = arguments.length; i < len; i++ ) {
+
+		node = arguments[ i ];
+
+		node.leftAlignedWith( firstNode );
+	}
+};
+
+LayDown.prototype.stackVertically = function() {
+
+	console.log( arguments );
+
+	var prevNode = arguments[ 0 ];
+	var node = null;
+
+	for( var i = 1, len = arguments.length; i < len; i++ ) {
+
+		node = arguments[ i ];
+
+		console.log( prevNode.name, node.name );
+
+		node.alignedBelow( prevNode );
+
+		prevNode = node;
+	}
+};
+
 
 
 module.exports = LayDown;
