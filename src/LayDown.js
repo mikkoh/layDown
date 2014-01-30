@@ -253,9 +253,20 @@ LayDown.prototype.leftAlign = function() {
 	}
 };
 
-LayDown.prototype.stackVertically = function() {
+LayDown.prototype.topAlign = function() {
 
-	console.log( arguments );
+	var firstNode = arguments[ 0 ];
+	var node = null;
+
+	for( var i = 1, len = arguments.length; i < len; i++ ) {
+
+		node = arguments[ i ];
+
+		node.topAlignedWith( firstNode );
+	}
+};
+
+LayDown.prototype.stackVertically = function() {
 
 	var prevNode = arguments[ 0 ];
 	var node = null;
@@ -264,9 +275,22 @@ LayDown.prototype.stackVertically = function() {
 
 		node = arguments[ i ];
 
-		console.log( prevNode.name, node.name );
-
 		node.alignedBelow( prevNode );
+
+		prevNode = node;
+	}
+};
+
+LayDown.prototype.stackHorizontally = function() {
+
+	var prevNode = arguments[ 0 ];
+	var node = null;
+
+	for( var i = 1, len = arguments.length; i < len; i++ ) {
+
+		node = arguments[ i ];
+
+		node.alignedRightOf( prevNode );
 
 		prevNode = node;
 	}
