@@ -595,7 +595,7 @@ LayoutNode.prototype.doLayout = function() {
 	this._x = this._y = this._width = this._height = 0;
 
 	//this is the listener added when an on function was called after creating a conditional
-	var listenerForConditional = null;
+	var trueConditionals = [];
 
 	if( this.itemsToCompare.length > 0 ) {
 
@@ -631,16 +631,10 @@ LayoutNode.prototype.doLayout = function() {
 			
 				conditionalLayedOut = true;
 
-				listenerForConditional = this.conditionalListeners[ i ];
-
-				//since layout is performed we'll just exit this function
-				break;
-			} else {
-
 				if( this.conditionalListeners[ i ] ) {
 
-					this.conditionalListeners[ i ]( false );
-				}				
+					trueConditionals.push( this.conditionalListeners[ i ] );	
+				}
 			}
 		}
 
@@ -648,9 +642,15 @@ LayoutNode.prototype.doLayout = function() {
 		//in which case we should check if theres a default
 		if( !conditionalLayedOut && this.layoutNodeForDefault ) {
 
-			listenerForConditional = this.defaultConditionalListener;
+			if( this.defaultConditionalListener ) {
 
-			this.layoutNodeForDefault.doLayout();
+				trueConditionals.push( this.defaultConditionalListener );	
+			}
+			
+			if( this.layoutNodeForDefault ) {
+
+				this.layoutNodeForDefault.doLayout();	
+			}
 		}
 	}
 
@@ -675,12 +675,9 @@ LayoutNode.prototype.doLayout = function() {
 				isConditionalValid = conditionals[ k ].apply( itemsToCompareTo[ k ], argumentsForConditionals[ k ] );
 			}
 
-			if( this.selfConditionalListeners[ i ] ) {
+			if( isConditionalValid && this.selfConditionalListeners[ i ] ) {
 
-				this.selfConditionalListeners[ i ]( isConditionalValid );	
-			} else {
-
-				throw 'If you add a self conditional you must add a listener using the on method';
+				trueConditionals.push( this.selfConditionalListeners[ i ] );
 			}
 		}
 	}
@@ -693,9 +690,9 @@ LayoutNode.prototype.doLayout = function() {
 	}
 
 	//if a conditional has been validated it should be called now
-	if( listenerForConditional ) {
+	for( var i = 0, len = trueConditionals.length; i < len; i++ ) {
 
-		listenerForConditional( true );
+		trueConditionals[ i ]();
 	}
 };
 

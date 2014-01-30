@@ -40,53 +40,35 @@ paddle1
 paddle2.matchesSizeOf( paddle1 ).topAlignedWith( paddle1 ).rightAlignedWith( field ).minus( 20 );
 
 ball.matchesWidthOf( paddle1 ).heightIsProportional( 10, 10 ).centeredWith( field )
-.when( ball ).rightGreaterThan( field ).on( function( rightSideOver ) {
+.when( ball ).rightGreaterThan( field ).on( function() {
 
-	if( rightSideOver ) {
-
-		ballXDirection *= -1;
+	ballXDirection *= -1;
 		ball.x = field.x + field.width - ball.width;
-	}
 })
-.when( ball ).leftLessThan( field ).on( function( leftSideOver ) {
+.when( ball ).leftLessThan( field ).on( function() {
 
-	if( leftSideOver ) {
-
-		ballXDirection *= -1;
-		ball.x = field.x;
-	}
+	ballXDirection *= -1;
+	ball.x = field.x;
 })
-.when( ball ).topLessThan( field ).on( function( topSideOver ) {
+.when( ball ).topLessThan( field ).on( function() {
 
-	if( topSideOver ) {
-
-		ballYDirection *= -1;
-		ball.y = field.y;
-	}
+	ballYDirection *= -1;
+	ball.y = field.y;
 })
-.when( ball ).bottomGreaterThan( field ).on( function( bottomSideOver ) {
+.when( ball ).bottomGreaterThan( field ).on( function() {
 
-	if( bottomSideOver ) {
-
-		ballYDirection *= -1;
-		ball.y = field.y + field.height - ball.height;
-	}
+	ballYDirection *= -1;
+	ball.y = field.y + field.height - ball.height;
 })
-.when( ball ).isInside( paddle1 ).on( function( isInsidePaddle1 ) {
+.when( ball ).isInside( paddle1 ).on( function() {
 
-	if( isInsidePaddle1 ) {
-
-		ballXDirection *= -1;
-		ball.x = paddle1.x + paddle1.width + ballXDirection * ballVelocity.x;
-	}
+	ballXDirection *= -1;
+	ball.x = paddle1.x + paddle1.width + ballXDirection * ballVelocity.x;
 })
-.when( ball ).isInside( paddle2 ).on( function( isInsidePaddle2 ) {
+.when( ball ).isInside( paddle2 ).on( function() {
 
-	if( isInsidePaddle2 ) {
-
-		ballXDirection *= -1;
-		ball.x = paddle2.x - ball.width + ballXDirection * ballVelocity.x;
-	}
+	ballXDirection *= -1;
+	ball.x = paddle2.x - ball.width + ballXDirection * ballVelocity.x;
 });
 
 velocity.positionIsAPercentageOf( field, 0.008 );
